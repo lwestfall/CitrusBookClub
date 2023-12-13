@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Claims;
 using Cbc.WebApi.Data;
 using Cbc.WebApi.Models.Entities;
@@ -6,10 +7,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using Serilog;
+using Serilog.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var config = builder.Configuration;
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .Enrich.WithProperty("ApplicationName", typeof(Program)!.Assembly!.GetName().Name!)
+    .Enrich.WithMachineName()
+    .Enrich.WithEnvironmentUserName()
+    .Enrich.WithEnvironmentName()
+    .WriteTo.Console(formatProvider: CultureInfo.CurrentCulture)
+    .CreateLogger();
+
+builder.Services
+    .AddSingleton<ILoggerFactory>(services => new SerilogLoggerFactory(Log.Logger, false))
+    .AddSingleton(builder.Configuration);
 
 builder.Services.AddDbContext<CbcDbContext>(options =>
 {
