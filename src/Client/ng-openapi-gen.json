@@ -1,0 +1,5 @@
+{
+  "$schema": "node_modules/ng-openapi-gen/ng-openapi-gen-schema.json",
+  "input": "https://localhost:7045/swagger/v1/swagger.json",
+  "skipJsonSuffix": true
+}

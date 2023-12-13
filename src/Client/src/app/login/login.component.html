@@ -1,0 +1,14 @@
+<asl-google-signin-button type="standard" size="medium" *ngIf="!user">
+</asl-google-signin-button>
+<div *ngIf="user" ngbDropdown class="d-inline-block">
+  <button
+    type="button"
+    class="btn btn-outline-primary"
+    id="dropdownBasic1"
+    ngbDropdownToggle>
+    Hi, {{ user.firstName }}!
+  </button>
+  <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+    <button ngbDropdownItem>Signout</button>
+  </div>
+</div>
