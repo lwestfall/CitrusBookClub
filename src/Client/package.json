@@ -6,6 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "build-dev": "ng build --configuration=development",
+    "build-staging": "ng build --configuration=staging",
     "build-prod": "ng build",
     "gen-api-unsafe": "set NODE_TLS_REJECT_UNAUTHORIZED=0&& ng-openapi-gen",
     "watch": "ng build --watch --configuration development",
