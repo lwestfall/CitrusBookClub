@@ -2,16 +2,18 @@
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Citrus Book Club</a>
     <button
-      class="navbar-toggler"
+      class="navbar-toggler d-lg-none"
       type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarSupportedContent"
+      (click)="isCollapsed = !isCollapsed"
+      [attr.aria-expanded]="!isCollapsed"
       aria-controls="navbarSupportedContent"
-      aria-expanded="false"
       aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div
+      class="collapse navbar-collapse"
+      id="navbarSupportedContent"
+      [ngbCollapse]="isCollapsed">
       <ul
         ngbNav
         [activeId]="route.fragment | async"
@@ -36,7 +38,7 @@
         }
       </ul>
       <div class="ml-auto mb-2 mb-lg-0">
-        <login></login>
+        <app-login></app-login>
       </div>
     </div>
   </div>

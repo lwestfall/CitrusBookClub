@@ -6,7 +6,7 @@ import { UserDto } from '../api/models';
 import { AuthService } from '../services/auth.service';
 
 @Component({
-  selector: 'login',
+  selector: 'app-login',
   standalone: true,
   imports: [CommonModule, NgbDropdownModule, GoogleSigninButtonModule],
   templateUrl: './login.component.html',

@@ -26,3 +26,7 @@
 - [ ] Google signin button flashes on page load
 - [ ] Fix signout
 - [ ] Mobile testing
+  - [ ] Make logo a little smaller
+- [ ] Error messages
+  - [ ] Sign in
+  - [ ] Any API error

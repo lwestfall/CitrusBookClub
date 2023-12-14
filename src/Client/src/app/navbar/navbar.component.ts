@@ -1,20 +1,27 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCollapseModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { LoginComponent } from '../login/login.component';
 import { AuthService } from '../services/auth.service';
 
 @Component({
-  selector: 'navbar',
+  selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
-  imports: [LoginComponent, NgbNavModule, AsyncPipe, RouterModule],
+  imports: [
+    LoginComponent,
+    NgbNavModule,
+    AsyncPipe,
+    RouterModule,
+    NgbCollapseModule,
+  ],
   standalone: true,
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
   verified = false;
   admin = false;
+  isCollapsed = true;
 
   verifiedLinks = [
     { title: 'Books', fragment: 'books', disabled: true },
@@ -27,11 +34,9 @@ export class NavbarComponent implements OnInit {
     private authService: AuthService,
     public route: ActivatedRoute
   ) {
-    authService.apiUser$.subscribe(user => {
+    authService.apiUser$.subscribe(() => {
       this.verified = authService.hasRole('Verified');
       this.admin = authService.hasRole('Admin');
     });
   }
-
-  ngOnInit() {}
 }
