@@ -8,7 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using Serilog;
+using Serilog.Context;
 using Serilog.Extensions.Logging;
+using Serilog.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,9 @@ var config = builder.Configuration;
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
+    .Filter.ByExcluding(
+        Matching.WithProperty<string>("RequestMethod", v =>
+            "OPTIONS".Equals(v, StringComparison.OrdinalIgnoreCase)))
     .Enrich.FromLogContext()
     .Enrich.WithProperty("ApplicationName", typeof(Program)!.Assembly!.GetName().Name!)
     .Enrich.WithMachineName()
@@ -23,6 +28,8 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.WithEnvironmentName()
     .WriteTo.Console(formatProvider: CultureInfo.CurrentCulture)
     .CreateLogger();
+
+builder.Host.UseSerilog(Log.Logger);
 
 builder.Services
     .AddSingleton<ILoggerFactory>(services => new SerilogLoggerFactory(Log.Logger, false))
@@ -149,6 +156,16 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+app.Use(async (ctx, next) =>
+{
+    using (LogContext.PushProperty("ClientIPAddress", ctx.Connection.RemoteIpAddress))
+    {
+        await next(ctx);
+    }
+});
+
+app.UseSerilogRequestLogging();
+
 app.UseCors("AllowSpecificOrigin");
 
 // Configure the HTTP request pipeline.
@@ -160,7 +177,8 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-app.UseHttpsRedirection();
+// in docker behind a reverse proxy, so we don't need to redirect to https
+// app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
