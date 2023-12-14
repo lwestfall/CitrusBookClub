@@ -3,7 +3,6 @@
 ## Misc
 
 - [ ] Workflows
-- [ ] Host on ljdub
 - [ ] Book ratings
 - [ ] Idea "I've read this" so users submitting a book know if someone else has already read it
 
@@ -26,3 +25,4 @@
 - [ ] Google signin button flashes on page load
 - [ ] Fix signout
 - [ ] Mobile testing
+  - [ ] Navbar is broken
