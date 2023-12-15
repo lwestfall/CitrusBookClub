@@ -1,11 +1,12 @@
 /* tslint:disable */
 /* eslint-disable */
+import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
 import { BooksService } from './services/books.service';
 import { MeetingsService } from './services/meetings.service';
+import { MiscService } from './services/misc.service';
 import { UsersService } from './services/users.service';
 
 /**
@@ -18,6 +19,7 @@ import { UsersService } from './services/users.service';
   providers: [
     BooksService,
     MeetingsService,
+    MiscService,
     UsersService,
     ApiConfiguration
   ],
@@ -35,12 +37,12 @@ export class ApiModule {
     }
   }
 
-  constructor(
+  constructor( 
     @Optional() @SkipSelf() parentModule: ApiModule,
     @Optional() http: HttpClient
   ) {
     if (parentModule) {
-      throw new Error('ApiModule is already loaded. import in your base AppModule only.');
+      throw new Error('ApiModule is already loaded. Import in your base AppModule only.');
     }
     if (!http) {
       throw new Error('You need to import the HttpClientModule in your AppModule! \n' +

@@ -7,3 +7,4 @@ export { MeetingDto } from './models/meeting-dto';
 export { MeetingSimpleDto } from './models/meeting-simple-dto';
 export { UpdateUserDto } from './models/update-user-dto';
 export { UserDto } from './models/user-dto';
+export { UserSimpleDto } from './models/user-simple-dto';

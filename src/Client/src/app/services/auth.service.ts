@@ -1,7 +1,4 @@
-import {
-    SocialAuthService,
-    SocialUser
-} from '@abacritt/angularx-social-login';
+import { SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
 import { Injectable } from '@angular/core';
 import { Subject, firstValueFrom } from 'rxjs';
 import { UserDto } from '../api/models';
@@ -15,7 +12,8 @@ export class AuthService {
   private _socialUser?: SocialUser;
   private _roles?: string[];
   private _tokenExpiration?: Date;
-  private _googleIdToken?: string;
+  private _googleIdToken?: string | undefined;
+
   apiUser$: Subject<UserDto> = new Subject<UserDto>();
 
   constructor(
@@ -31,8 +29,8 @@ export class AuthService {
       if (socialUser) {
         localStorage.setItem('id_token', this._socialUser.idToken);
         this._googleIdToken = socialUser.idToken;
-        this.initApiUser();
       }
+      this.initApiUser();
     });
   }
 
@@ -44,8 +42,8 @@ export class AuthService {
     this.apiUser$.next(this._authenticatedUser);
   }
 
-  isLoggedIn(): boolean {
-    return !!this._authenticatedUser;
+  public get googleIdToken(): string | undefined {
+    return this._googleIdToken;
   }
 
   get authenticatedUser(): UserDto {
@@ -56,8 +54,11 @@ export class AuthService {
     return this._authenticatedUser;
   }
 
+  isLoggedIn(): boolean {
+    return !!this._authenticatedUser;
+  }
+
   async signOut(): Promise<void> {
-    await this.socialAuthService.signOut();
     localStorage.removeItem('id_token');
     this._authenticatedUser = undefined;
     this._socialUser = undefined;
@@ -66,7 +67,15 @@ export class AuthService {
     this._googleIdToken = undefined;
   }
 
-  hasRole(role: string): boolean {
+  isVerified(): boolean {
+    return this.hasRole('Verified');
+  }
+
+  isAdmin(): boolean {
+    return this.hasRole('Admin');
+  }
+
+  private hasRole(role: string): boolean {
     return this._roles?.includes(role) ?? false;
   }
 }

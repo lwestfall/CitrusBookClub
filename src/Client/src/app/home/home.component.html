@@ -1,0 +1,36 @@
+<div class="d-flex flex-column align-items-center text-center">
+  <img
+    src="assets/cbc_logo.png"
+    alt="cbc logo"
+    class="cbc-logo"
+    height="250px" />
+</div>
+<div class="d-flex flex-column align-items-center text-center">
+  <h1 class="display-1">Citrus Book Club</h1>
+  <p class="lead">A book club for the Lancaster, PA community</p>
+  <div *ngIf="!signedIn">
+    <div>We're currently closed to new members. Please check back later.</div>
+    <div>If you're a current member, sign in below.</div>
+    <app-login></app-login>
+  </div>
+  <div *ngIf="signedIn && !verified">
+    <div>
+      You're signed in, but your account hasn't been verified yet. Please check
+      back later.
+    </div>
+  </div>
+  <div *ngIf="verified">
+    <div class="d-flex flex-row justify-content-center gap-2 my-2">
+      <a class="btn btn-primary btn-lg" routerLink="books" role="button"
+        >Books</a
+      >
+      <a
+        class="btn btn-primary btn-lg disabled"
+        routerLink="meetings"
+        role="button"
+        >Meetings</a
+      >
+    </div>
+    <app-meeting-countdown></app-meeting-countdown>
+  </div>
+</div>

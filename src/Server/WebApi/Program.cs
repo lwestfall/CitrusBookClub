@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using System.Security.Claims;
 using Cbc.WebApi.Data;
 using Cbc.WebApi.Models.Entities;
@@ -14,7 +15,21 @@ using Serilog.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var config = builder.Configuration;
+var appSettings = "appsettings.Development.json";
+
+if (builder.Environment.IsProduction())
+{
+    appSettings = "appsettings.json";
+}
+else if (builder.Environment.IsStaging())
+{
+    appSettings = "appsettings.Staging.json";
+}
+
+var config = builder.Configuration
+    .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location!)!)
+    .AddJsonFile(appSettings, false, true)
+    .Build();
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
@@ -143,7 +158,8 @@ builder.Services.AddAuthentication(options =>
 
         var roles = user.Roles.Select(e => e.Role);
 
-        var claims = roles.Select(role => new Claim(ClaimTypes.Role, role));
+        var claims = roles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
+        claims.Add(new Claim(ClaimTypes.Email, email));
         context.Principal?.AddIdentity(new ClaimsIdentity(claims));
         context.Success();
     };

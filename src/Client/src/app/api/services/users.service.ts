@@ -5,22 +5,34 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ApiConfiguration } from '../api-configuration';
 import { BaseService } from '../base-service';
+import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
-import { DeleteUser$Params, deleteUser } from '../fn/users/delete-user';
-import { DeleteUser$Plain$Params, deleteUser$Plain } from '../fn/users/delete-user-plain';
-import { GetAuthenticatedUser$Params, getAuthenticatedUser } from '../fn/users/get-authenticated-user';
-import { GetAuthenticatedUser$Plain$Params, getAuthenticatedUser$Plain } from '../fn/users/get-authenticated-user-plain';
-import { GetUsers$Params, getUsers } from '../fn/users/get-users';
-import { GetUsers$Plain$Params, getUsers$Plain } from '../fn/users/get-users-plain';
-import { UpdateAuthenticatedUser$Params, updateAuthenticatedUser } from '../fn/users/update-authenticated-user';
-import { UpdateAuthenticatedUser$Plain$Params, updateAuthenticatedUser$Plain } from '../fn/users/update-authenticated-user-plain';
-import { UpdateUser$Params, updateUser } from '../fn/users/update-user';
-import { UpdateUser$Plain$Params, updateUser$Plain } from '../fn/users/update-user-plain';
-import { UpdateUserRoles$Params, updateUserRoles } from '../fn/users/update-user-roles';
-import { UpdateUserRoles$Plain$Params, updateUserRoles$Plain } from '../fn/users/update-user-roles-plain';
+import { deleteUser } from '../fn/users/delete-user';
+import { DeleteUser$Params } from '../fn/users/delete-user';
+import { deleteUser$Plain } from '../fn/users/delete-user-plain';
+import { DeleteUser$Plain$Params } from '../fn/users/delete-user-plain';
+import { getAuthenticatedUser } from '../fn/users/get-authenticated-user';
+import { GetAuthenticatedUser$Params } from '../fn/users/get-authenticated-user';
+import { getAuthenticatedUser$Plain } from '../fn/users/get-authenticated-user-plain';
+import { GetAuthenticatedUser$Plain$Params } from '../fn/users/get-authenticated-user-plain';
+import { getUsers } from '../fn/users/get-users';
+import { GetUsers$Params } from '../fn/users/get-users';
+import { getUsers$Plain } from '../fn/users/get-users-plain';
+import { GetUsers$Plain$Params } from '../fn/users/get-users-plain';
+import { updateAuthenticatedUser } from '../fn/users/update-authenticated-user';
+import { UpdateAuthenticatedUser$Params } from '../fn/users/update-authenticated-user';
+import { updateAuthenticatedUser$Plain } from '../fn/users/update-authenticated-user-plain';
+import { UpdateAuthenticatedUser$Plain$Params } from '../fn/users/update-authenticated-user-plain';
+import { updateUser } from '../fn/users/update-user';
+import { UpdateUser$Params } from '../fn/users/update-user';
+import { updateUser$Plain } from '../fn/users/update-user-plain';
+import { UpdateUser$Plain$Params } from '../fn/users/update-user-plain';
+import { updateUserRoles } from '../fn/users/update-user-roles';
+import { UpdateUserRoles$Params } from '../fn/users/update-user-roles';
+import { updateUserRoles$Plain } from '../fn/users/update-user-roles-plain';
+import { UpdateUserRoles$Plain$Params } from '../fn/users/update-user-roles-plain';
 import { UserDto } from '../models/user-dto';
 
 @Injectable({ providedIn: 'root' })

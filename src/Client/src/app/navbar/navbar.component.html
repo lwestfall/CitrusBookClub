@@ -1,42 +1,61 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Citrus Book Club</a>
+<nav
+  class="navbar navbar-expand-lg bg-body-tertiary"
+  (clickOutside)="isCollapsed = true">
+  <div class="container-fluid d-flex flex-row text-center">
+    <a class="navbar-brand" href="#">
+      <img
+        src="assets/lemon.png"
+        alt="Citrus Book Club Lemon Icon"
+        height="30" />
+      Citrus Book Club</a
+    >
     <button
-      class="navbar-toggler"
+      class="navbar-toggler d-lg-none"
       type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarSupportedContent"
+      (click)="isCollapsed = !isCollapsed"
+      [attr.aria-expanded]="!isCollapsed"
       aria-controls="navbarSupportedContent"
-      aria-expanded="false"
       aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul
-        ngbNav
-        [activeId]="route.fragment | async"
-        class="flex-fill navbar-nav">
+    <div
+      class="collapse navbar-collapse flex-fill w-100"
+      id="navbarSupportedContent"
+      [ngbCollapse]="isCollapsed">
+      <ul ngbNav [activeId]="route.fragment | async" class="navbar-nav">
+        <li [ngbNavItem]="''">
+          <a ngbNavLink [routerLink]="['/']" (click)="isCollapsed = true"
+            >Home</a
+          >
+        </li>
         @for (link of verifiedLinks; track link) {
-          <li
-            [ngbNavItem]="link.fragment"
-            [disabled]="!verified || link.disabled">
-            <a ngbNavLink routerLink="." [fragment]="link.fragment">{{
-              link.title
-            }}</a>
+          <li [ngbNavItem]="link.route" [disabled]="!verified">
+            <a
+              ngbNavLink
+              [routerLink]="link.route"
+              (click)="isCollapsed = true"
+              >{{ link.title }}</a
+            >
           </li>
         }
         @if (admin) {
           @for (link of adminLinks; track link) {
-            <li [ngbNavItem]="link.fragment">
-              <a ngbNavLink routerLink="." [fragment]="link.fragment">{{
-                link.title
-              }}</a>
+            <li [ngbNavItem]="link.route" [disabled]="!admin">
+              <a
+                ngbNavLink
+                [routerLink]="link.route"
+                (click)="isCollapsed = true"
+                >{{ link.title }}</a
+              >
             </li>
           }
         }
       </ul>
-      <div class="ml-auto mb-2 mb-lg-0">
-        <login></login>
+      <div *ngIf="verified" class="ms-auto me-auto">
+        <app-meeting-countdown></app-meeting-countdown>
+      </div>
+      <div class="ms-auto mb-2 mb-lg-0">
+        <app-login></app-login>
       </div>
     </div>
   </div>
