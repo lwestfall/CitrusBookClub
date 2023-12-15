@@ -26,16 +26,29 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          CHANGED=$(git diff --name-only HEAD^ HEAD | grep '${{ matrix.path }}' || true)
+          if [ -n "$CHANGED" ]; then
+            echo "::set-output name=has_changes::true"
+          else
+            echo "::set-output name=has_changes::false"
+          fi
 
       - name: Login to Docker Hub
+        if: steps.check_changes.outputs.has_changes == 'true'
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and Push Docker Image
-        if: contains(github.event.head_commit.modified, matrix.path)
+        if: steps.check_changes.outputs.has_changes == 'true'
         run: |
           cd ${{ matrix.path }}
           docker build ${{ matrix.build_args }} -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.image }} .
