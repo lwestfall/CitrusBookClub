@@ -1,9 +1,7 @@
-name: Build and Push Docker Images
+name: Build and Push Server Docker Image
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   build-and-push:
