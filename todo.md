@@ -2,7 +2,6 @@
 
 ## Misc
 
-- [ ] Workflows
 - [ ] Book ratings
 - [ ] Idea "I've read this" so users submitting a book know if someone else has already read it
 
@@ -13,16 +12,17 @@
 ## Client
 
 - [ ] Components:
-  - [ ] MeetingCountdown
   - [ ] MeetingList
   - [ ] MyBooks
   - [ ] BookCard
-  - [ ] BookCreateForm
-    - [ ] ISBN import using Google Books API
   - [ ] BookEditForm
   - [ ] BookVote
-- [ ] Add route guards
+  - [ ] About
 - [ ] Google signin button flashes on page load
-- [ ] Fix signout
-- [ ] Mobile testing
-  - [ ] Navbar is broken
+- [ ] Toasts
+  - [ ] Success messages
+    - [ ] Book Created
+    - [ ] Signed In
+  - [ ] Error messages
+    - [ ] Sign in
+    - [ ] Any API error

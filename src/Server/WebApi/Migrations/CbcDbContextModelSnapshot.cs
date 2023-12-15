@@ -34,8 +34,8 @@ namespace Cbc.WebApi.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasMaxLength(1500)
+                        .HasColumnType("character varying(1500)");
 
                     b.Property<string>("Isbn")
                         .HasMaxLength(20)

@@ -12,4 +12,10 @@ public class CreateBookDto : IMapTo<Book>
     public string Author { get; set; } = null!;
 
     public string? Description { get; set; }
+
+    public string? ThumbnailLink { get; set; }
+
+    public string? Isbn { get; set; }
+
+    public int? PageCount { get; set; }
 }
