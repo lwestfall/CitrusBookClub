@@ -12,3 +12,4 @@ RUN npm run build-${PROFILE}
 
 FROM nginx:alpine
 COPY --from=node /app/dist/cbc/browser /usr/share/nginx/html
+COPY /nginx.conf  /etc/nginx/conf.d/default.conf

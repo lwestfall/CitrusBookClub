@@ -5,20 +5,28 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ApiConfiguration } from '../api-configuration';
 import { BaseService } from '../base-service';
+import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
-import { CreateMeeting$Params, createMeeting } from '../fn/meetings/create-meeting';
-import { CreateMeeting$Plain$Params, createMeeting$Plain } from '../fn/meetings/create-meeting-plain';
-import { GetMeeting$Params, getMeeting } from '../fn/meetings/get-meeting';
-import { GetMeeting$Plain$Params, getMeeting$Plain } from '../fn/meetings/get-meeting-plain';
-import { GetNextMeeting$Params, getNextMeeting } from '../fn/meetings/get-next-meeting';
-import { GetNextMeeting$Plain$Params, getNextMeeting$Plain } from '../fn/meetings/get-next-meeting-plain';
-import { UpdateMeeting$Params, updateMeeting } from '../fn/meetings/update-meeting';
-import { UpdateMeeting$Plain$Params, updateMeeting$Plain } from '../fn/meetings/update-meeting-plain';
+import { createMeeting } from '../fn/meetings/create-meeting';
+import { CreateMeeting$Params } from '../fn/meetings/create-meeting';
+import { createMeeting$Plain } from '../fn/meetings/create-meeting-plain';
+import { CreateMeeting$Plain$Params } from '../fn/meetings/create-meeting-plain';
+import { getMeeting } from '../fn/meetings/get-meeting';
+import { GetMeeting$Params } from '../fn/meetings/get-meeting';
+import { getMeeting$Plain } from '../fn/meetings/get-meeting-plain';
+import { GetMeeting$Plain$Params } from '../fn/meetings/get-meeting-plain';
+import { getNextMeeting } from '../fn/meetings/get-next-meeting';
+import { GetNextMeeting$Params } from '../fn/meetings/get-next-meeting';
+import { getNextMeeting$Plain } from '../fn/meetings/get-next-meeting-plain';
+import { GetNextMeeting$Plain$Params } from '../fn/meetings/get-next-meeting-plain';
 import { MeetingDto } from '../models/meeting-dto';
 import { MeetingSimpleDto } from '../models/meeting-simple-dto';
+import { updateMeeting } from '../fn/meetings/update-meeting';
+import { UpdateMeeting$Params } from '../fn/meetings/update-meeting';
+import { updateMeeting$Plain } from '../fn/meetings/update-meeting-plain';
+import { UpdateMeeting$Plain$Params } from '../fn/meetings/update-meeting-plain';
 
 @Injectable({ providedIn: 'root' })
 export class MeetingsService extends BaseService {

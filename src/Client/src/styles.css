@@ -1,4 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
 body {
   background-color: #a4c6d6;
+}
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: flex-start;
 }
