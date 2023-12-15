@@ -9,7 +9,9 @@ updates:
     directory: "src/Client/" # Location of package manifests
     schedule:
       interval: "daily"
+    target-branch: "deps"
   - package-ecosystem: "nuget" # See documentation for possible values
     directory: "src/Server/WebApi/" # Location of package manifests
     schedule:
       interval: "daily"
+    target-branch: "deps"

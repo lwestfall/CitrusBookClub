@@ -1,0 +1,27 @@
+name: ASP.NET Core CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.x" # specify your .NET Core version here
+
+      - name: Restore dependencies
+        run: |
+          cd src/Server
+          dotnet restore
+
+      - name: Build
+        run: |
+          cd src/Server
+          dotnet build --no-restore
