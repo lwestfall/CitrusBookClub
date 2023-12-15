@@ -10,4 +10,7 @@ public abstract class ApiControllerBase : ControllerBase
 
     protected IMapper Mapper
         => this.HttpContext.RequestServices.GetRequiredService<IMapper>();
+
+    protected IConfiguration Configuration
+        => this.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
 }

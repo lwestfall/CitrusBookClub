@@ -5,17 +5,23 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ApiConfiguration } from '../api-configuration';
 import { BaseService } from '../base-service';
+import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
-import { CreateBook$Params, createBook } from '../fn/books/create-book';
-import { CreateBook$Plain$Params, createBook$Plain } from '../fn/books/create-book-plain';
-import { GetBook$Params, getBook } from '../fn/books/get-book';
-import { GetBook$Plain$Params, getBook$Plain } from '../fn/books/get-book-plain';
-import { GetBooks$Params, getBooks } from '../fn/books/get-books';
-import { GetBooks$Plain$Params, getBooks$Plain } from '../fn/books/get-books-plain';
 import { BookDto } from '../models/book-dto';
+import { createBook } from '../fn/books/create-book';
+import { CreateBook$Params } from '../fn/books/create-book';
+import { createBook$Plain } from '../fn/books/create-book-plain';
+import { CreateBook$Plain$Params } from '../fn/books/create-book-plain';
+import { getBook } from '../fn/books/get-book';
+import { GetBook$Params } from '../fn/books/get-book';
+import { getBook$Plain } from '../fn/books/get-book-plain';
+import { GetBook$Plain$Params } from '../fn/books/get-book-plain';
+import { getBooks } from '../fn/books/get-books';
+import { GetBooks$Params } from '../fn/books/get-books';
+import { getBooks$Plain } from '../fn/books/get-books-plain';
+import { GetBooks$Plain$Params } from '../fn/books/get-books-plain';
 
 @Injectable({ providedIn: 'root' })
 export class BooksService extends BaseService {

@@ -3,7 +3,6 @@
 ## Misc
 
 - [ ] Workflows
-- [ ] Host on ljdub
 - [ ] Book ratings
 - [ ] Idea "I've read this" so users submitting a book know if someone else has already read it
 
@@ -14,19 +13,18 @@
 ## Client
 
 - [ ] Components:
-  - [ ] MeetingCountdown
   - [ ] MeetingList
   - [ ] MyBooks
   - [ ] BookCard
-  - [ ] BookCreateForm
-    - [ ] ISBN import using Google Books API
   - [ ] BookEditForm
   - [ ] BookVote
-- [ ] Add route guards
+  - [ ] About
+  - [ ] Footer w/ contact email
 - [ ] Google signin button flashes on page load
-- [ ] Fix signout
-- [ ] Mobile testing
-  - [ ] Make logo a little smaller
-- [ ] Error messages
-  - [ ] Sign in
-  - [ ] Any API error
+- [ ] Toasts
+  - [ ] Success messages
+    - [ ] Book Created
+    - [ ] Signed In
+  - [ ] Error messages
+    - [ ] Sign in
+    - [ ] Any API error

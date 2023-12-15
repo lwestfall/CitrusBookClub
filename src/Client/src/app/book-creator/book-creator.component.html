@@ -1,0 +1,187 @@
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Add a book!</h5>
+    <h6 class="card-subtitle mb-2 text-body-secondary">
+      You can add books here to recommend in a future meeting!
+    </h6>
+    <div class="card-text text-start">
+      <form [formGroup]="bookForm">
+        <div class="form-group mb-3">
+          <label for="isbn" class="form-label">Import by ISBN</label>
+          <input
+            type="text"
+            class="form-control"
+            id="isbn"
+            [formControl]="bookForm.controls['isbn']"
+            placeholder="Enter ISBN" />
+          <div class="form-text">This is optional, but easier! 😊</div>
+        </div>
+        <hr />
+        <div class="form-group mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            [formControl]="bookForm.controls['title']"
+            placeholder="Enter title" />
+          <div
+            class="form-text"
+            [ngClass]="{
+              'text-danger':
+                bookForm.controls['title'].value.length > 100 ||
+                bookForm.controls['title'].value.length < 1
+            }">
+            ({{ bookForm.controls['title'].value.length }} / 100)
+          </div>
+          <div
+            *ngIf="
+              bookForm.get('title')?.errors && bookForm.get('title')?.touched
+            "
+            class="alert alert-danger">
+            <div *ngIf="bookForm.get('title')?.errors?.['required']">
+              This field is required.
+            </div>
+            <div *ngIf="bookForm.get('title')?.errors?.['minlength'] ?? false">
+              Minimum length is 1.
+            </div>
+            <div *ngIf="bookForm.get('title')?.errors?.['maxlength'] ?? false">
+              Maximum length is 100.
+            </div>
+          </div>
+        </div>
+        <div class="form-group mb-3">
+          <label for="author" class="form-label">Author</label>
+          <input
+            type="text"
+            class="form-control"
+            id="author"
+            [formControl]="bookForm.controls['author']"
+            placeholder="Enter author" />
+          <div
+            class="form-text"
+            [ngClass]="{
+              'text-danger':
+                bookForm.controls['author'].value.length > 100 ||
+                bookForm.controls['author'].value.length < 1
+            }">
+            ({{ bookForm.controls['author'].value.length }} / 100)
+          </div>
+          <div
+            *ngIf="
+              bookForm.get('author')?.errors && bookForm.get('author')?.touched
+            "
+            class="alert alert-danger">
+            <div *ngIf="bookForm.get('author')?.errors?.['required']">
+              This field is required.
+            </div>
+            <div *ngIf="bookForm.get('author')?.errors?.['minlength'] ?? false">
+              Minimum length is 1.
+            </div>
+            <div *ngIf="bookForm.get('author')?.errors?.['maxlength'] ?? false">
+              Maximum length is 100.
+            </div>
+          </div>
+        </div>
+        <div class="form-group mb-3">
+          <label for="pagecount" class="form-label">Page Count</label>
+          <input
+            type="number"
+            class="form-control"
+            id="pagecount"
+            [formControl]="bookForm.controls['pageCount']"
+            placeholder="Enter page count" />
+          <div class="form-text">Optional</div>
+        </div>
+        <div class="form-group mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea
+            class="form-control"
+            id="description"
+            [formControl]="bookForm.controls['description']"
+            rows="6"
+            placeholder="Enter description"></textarea>
+          <div
+            class="form-text"
+            [ngClass]="{
+              'text-danger':
+                bookForm.controls['description'].value.length > 1500
+            }">
+            Optional - ({{ bookForm.controls['description'].value.length }} /
+            1500)
+          </div>
+          <div
+            *ngIf="
+              bookForm.get('description')?.errors &&
+              bookForm.get('description')?.touched
+            "
+            class="alert alert-danger">
+            <div
+              *ngIf="
+                bookForm.get('description')?.errors?.['maxlength'] ?? false
+              ">
+              Maximum length is 1500.
+            </div>
+          </div>
+        </div>
+        <div class="form-group mb-3">
+          <label for="cover" class="form-label">Cover image URL</label>
+          <input
+            type="text"
+            class="form-control"
+            id="cover"
+            [formControl]="bookForm.controls['thumbnailLink']"
+            placeholder="Enter cover URL" />
+          <div
+            class="form-text"
+            [ngClass]="{
+              'text-danger':
+                bookForm.controls['thumbnailLink'].value.length > 1000
+            }">
+            Optional - ({{ bookForm.controls['thumbnailLink'].value.length }} /
+            1000)
+          </div>
+          <div
+            *ngIf="
+              bookForm.get('thumbnailLink')?.errors &&
+              bookForm.get('thumbnailLink')?.touched
+            "
+            class="alert alert-danger">
+            <div
+              *ngIf="
+                bookForm.get('thumbnailLink')?.errors?.['maxlength'] ?? false
+              ">
+              Maximum length is 1000.
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="card-footer container text-body-secondary">
+    <div class="row">
+      <div class="col">
+        <button class="btn btn-secondary float-start" (click)="clear()">
+          Clear
+        </button>
+      </div>
+      <div class="col-5 text-center">
+        <img *ngIf="validUrl" [src]="validUrl" />
+      </div>
+      <div class="col">
+        <div
+          *ngIf="createPending"
+          class="spinner-border text-primary"
+          role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <button
+          class="btn btn-primary float-end"
+          (click)="save()"
+          [disabled]="bookForm.invalid">
+          Save!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,8 +2,8 @@ import { GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { UserDto } from '../api/models';
-import { AuthService } from '../services/auth.service';
+import { UserDto } from '../../api/models';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -26,6 +26,8 @@ export class LoginComponent implements OnInit {
       this.user = this.authService.authenticatedUser;
     }
   }
+
+  async signIn(): Promise<void> {}
 
   async signOut(): Promise<void> {
     await this.authService.signOut();

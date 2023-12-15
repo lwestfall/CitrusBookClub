@@ -15,6 +15,7 @@ import {
   provideHttpClient,
   withInterceptors,
 } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { environment } from '../environments/environment';
 import { ApiModule } from './api/api.module';
 
@@ -60,5 +61,7 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(ApiModule.forRoot({ rootUrl: environment.apiBaseUrl })),
     importProvidersFrom(HttpClientModule),
     provideHttpClient(withInterceptors([authenticationInterceptor])),
+    provideRouter(routes),
+    provideAnimations(),
   ],
 };
