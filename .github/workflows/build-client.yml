@@ -24,4 +24,4 @@ jobs:
       - name: Build
         run: |
           cd src/Client
-          npm run build -- --prod
+          npm run build
