@@ -19,6 +19,6 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          cd src/client
+          cd src/Client
           docker build --build-arg PROFILE=staging -t ${{ secrets.DOCKER_USERNAME }}/cbc-app-test .
           docker push ${{ secrets.DOCKER_USERNAME }}/cbc-app-test:latest
