@@ -10,7 +10,7 @@
   <p class="lead">A book club for the Lancaster, PA community</p>
   <div *ngIf="!signedIn">
     <div>We're currently closed to new members. Please check back later.</div>
-    <div>If you're a current member, sign in below.</div>
+    <div class="mb-2">If you're a current member, sign in below.</div>
     <app-login></app-login>
   </div>
   <div *ngIf="signedIn && !verified">
