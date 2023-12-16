@@ -1,0 +1,20 @@
+<div class="d-flex flex-column align-items-center">
+  <div class="w-100" style="max-width: 30rem">
+    <button
+      class="btn btn-primary btn-block w-100"
+      (click)="this.formCollapsed = !this.formCollapsed">
+      {{ this.formCollapsed ? 'Add A Book!' : 'Close Form' }}
+    </button>
+    <div #collapse="ngbCollapse" [(ngbCollapse)]="formCollapsed">
+      <app-book-creator></app-book-creator>
+    </div>
+  </div>
+</div>
+<h3 class="display-3 my-4">My Bookshelf</h3>
+<div
+  class="d-flex flex-wrap align-items-stretch gap-2 justify-content-lg-start justify-content-md-start justify-content-center">
+  <app-book-card
+    *ngFor="let book of books"
+    [book]="book"
+    (bookDeleted)="fetchMyBooks()"></app-book-card>
+</div>

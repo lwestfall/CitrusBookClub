@@ -1,0 +1,14 @@
+.card {
+  max-width: 30rem;
+  min-width: 20rem;
+}
+
+a.remove {
+  color: var(--bs-danger);
+  cursor: pointer;
+  -webkit-text-stroke: 1px var(--bs-danger);
+}
+
+a.remove:hover {
+  -webkit-text-stroke: 3px var(--bs-danger);
+}

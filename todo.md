@@ -13,16 +13,7 @@
 
 - [ ] Components:
   - [ ] MeetingList
-  - [ ] MyBooks
-  - [ ] BookCard
   - [ ] BookEditForm
   - [ ] BookVote
   - [ ] About
 - [ ] Google signin button flashes on page load
-- [ ] Toasts
-  - [ ] Success messages
-    - [ ] Book Created
-    - [ ] Signed In
-  - [ ] Error messages
-    - [ ] Sign in
-    - [ ] Any API error

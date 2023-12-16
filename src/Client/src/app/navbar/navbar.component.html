@@ -1,8 +1,9 @@
 <nav
-  class="navbar navbar-expand-lg bg-body-tertiary"
+  class="navbar fixed-top navbar-expand-lg bg-body-tertiary"
+  #nav
   (clickOutside)="isCollapsed = true">
   <div class="container-fluid d-flex flex-row text-center">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" [routerLink]="['/']">
       <img
         src="assets/lemon.png"
         alt="Citrus Book Club Lemon Icon"
@@ -22,9 +23,13 @@
       class="collapse navbar-collapse flex-fill w-100"
       id="navbarSupportedContent"
       [ngbCollapse]="isCollapsed">
-      <ul ngbNav [activeId]="route.fragment | async" class="navbar-nav">
+      <ul ngbNav class="navbar-nav">
         <li [ngbNavItem]="''">
-          <a ngbNavLink [routerLink]="['/']" (click)="isCollapsed = true"
+          <a
+            ngbNavLink
+            [routerLink]="['/']"
+            [routerLinkActive]="['active']"
+            (click)="isCollapsed = true"
             >Home</a
           >
         </li>
@@ -33,6 +38,7 @@
             <a
               ngbNavLink
               [routerLink]="link.route"
+              [routerLinkActive]="['active']"
               (click)="isCollapsed = true"
               >{{ link.title }}</a
             >
@@ -44,6 +50,7 @@
               <a
                 ngbNavLink
                 [routerLink]="link.route"
+                [routerLinkActive]="['active']"
                 (click)="isCollapsed = true"
                 >{{ link.title }}</a
               >
