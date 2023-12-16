@@ -12,10 +12,10 @@ using Microsoft.EntityFrameworkCore;
 public class BooksController : ApiControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<BookDto>>> GetBooks()
+    public async Task<ActionResult<List<BookAnonymousDto>>> GetBooks()
     {
         var books = await this.CbcContext.Books.ToListAsync();
-        return this.Ok(this.Mapper.Map<List<BookDto>>(books));
+        return this.Ok(this.Mapper.Map<List<BookAnonymousDto>>(books));
     }
 
     [HttpGet("mine")]

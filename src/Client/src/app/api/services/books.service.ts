@@ -9,6 +9,7 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
+import { BookAnonymousDto } from '../models/book-anonymous-dto';
 import { BookDto } from '../models/book-dto';
 import { createBook } from '../fn/books/create-book';
 import { CreateBook$Params } from '../fn/books/create-book';
@@ -42,7 +43,7 @@ export class BooksService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBooks$Plain$Response(params?: GetBooks$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookDto>>> {
+  getBooks$Plain$Response(params?: GetBooks$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookAnonymousDto>>> {
     return getBooks$Plain(this.http, this.rootUrl, params, context);
   }
 
@@ -52,9 +53,9 @@ export class BooksService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBooks$Plain(params?: GetBooks$Plain$Params, context?: HttpContext): Observable<Array<BookDto>> {
+  getBooks$Plain(params?: GetBooks$Plain$Params, context?: HttpContext): Observable<Array<BookAnonymousDto>> {
     return this.getBooks$Plain$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<BookDto>>): Array<BookDto> => r.body)
+      map((r: StrictHttpResponse<Array<BookAnonymousDto>>): Array<BookAnonymousDto> => r.body)
     );
   }
 
@@ -64,7 +65,7 @@ export class BooksService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBooks$Response(params?: GetBooks$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookDto>>> {
+  getBooks$Response(params?: GetBooks$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookAnonymousDto>>> {
     return getBooks(this.http, this.rootUrl, params, context);
   }
 
@@ -74,9 +75,9 @@ export class BooksService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBooks(params?: GetBooks$Params, context?: HttpContext): Observable<Array<BookDto>> {
+  getBooks(params?: GetBooks$Params, context?: HttpContext): Observable<Array<BookAnonymousDto>> {
     return this.getBooks$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<BookDto>>): Array<BookDto> => r.body)
+      map((r: StrictHttpResponse<Array<BookAnonymousDto>>): Array<BookAnonymousDto> => r.body)
     );
   }
 

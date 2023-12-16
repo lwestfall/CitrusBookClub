@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { BookDto } from '../../api/models';
+import _ from 'lodash';
+import { BookAnonymousDto, BookDto } from '../../api/models';
 import { BooksService } from '../../api/services';
 import { ToastsService } from '../../services/toasts.service';
 import { BookCardComponent } from '../book-card/book-card.component';
@@ -21,7 +22,8 @@ import { BookCreatorComponent } from '../book-creator/book-creator.component';
 })
 export class BooksPageComponent implements OnInit {
   formCollapsed = true;
-  books: BookDto[] = [];
+  myBooks: BookDto[] = [];
+  otherBooks: BookAnonymousDto[] = [];
 
   constructor(
     private booksService: BooksService,
@@ -35,12 +37,26 @@ export class BooksPageComponent implements OnInit {
   fetchMyBooks() {
     this.booksService.getUsersBooks().subscribe({
       next: books => {
-        this.books = books;
+        this.myBooks = _.sortBy(books, b => b.title);
       },
       error: () => {
         this.toastsService.show({
           header: 'Ah, nuts!',
           body: 'Failed to fetch your books. Try again in a little bit.',
+        });
+      },
+    });
+  }
+
+  fetchOthersBooks() {
+    this.booksService.getBooks().subscribe({
+      next: books => {
+        this.otherBooks = _.sortBy(books, b => b.title);
+      },
+      error: () => {
+        this.toastsService.show({
+          header: 'Ah, nuts!',
+          body: "Failed to fetch others' books. Try again in a little bit.",
         });
       },
     });
