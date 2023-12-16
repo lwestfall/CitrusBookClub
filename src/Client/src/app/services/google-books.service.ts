@@ -31,6 +31,36 @@ export class GoogleBooksService {
 
     return response.items[0];
   }
+
+  async getBookVolumeFuzzy(
+    title: string | null | undefined,
+    author: string | null | undefined,
+    maxResults: number
+  ): Promise<GoogleBookVolume[]> {
+    const token = await firstValueFrom(this.miscService.googleApiKey());
+
+    if (!token) {
+      throw new Error('Google API key unavailable');
+    }
+
+    let queryStr = 'q=';
+
+    if (title) {
+      queryStr += `intitle:${encodeURIComponent(title)}`;
+    }
+
+    if (author) {
+      queryStr += `+inauthor:${encodeURIComponent(author)}`;
+    }
+
+    const response = await firstValueFrom(
+      this.http.get<GoogleBookVolumeResponse>(
+        `https://www.googleapis.com/books/v1/volumes?q=${queryStr}&maxResults=${maxResults}&key=${token}`
+      )
+    );
+
+    return response.items ?? [];
+  }
 }
 
 interface GoogleBookVolumeResponse {
@@ -42,10 +72,11 @@ interface GoogleBookVolume {
   volumeInfo: GoogleBookVolumeInfo;
 }
 
-interface GoogleBookVolumeInfo {
+export interface GoogleBookVolumeInfo {
   title: string;
   authors: string[];
   description: string;
   pageCount: number;
+  industryIdentifiers: { type: string; identifier: string }[];
   imageLinks: { smallThumbnail: string; thumbnail: string };
 }

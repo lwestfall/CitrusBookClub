@@ -1,23 +1,38 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import {
   NonNullableFormBuilder,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { CreateBookDto } from '../../api/models';
+import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { BookDto, CreateBookDto } from '../../api/models';
 import { BooksService } from '../../api/services';
-import { GoogleBooksService } from '../../services/google-books.service';
+import {
+  GoogleBookVolumeInfo,
+  GoogleBooksService,
+} from '../../services/google-books.service';
 import { ToastsService } from '../../services/toasts.service';
+import { BookCardComponent } from '../book-card/book-card.component';
 
 @Component({
   selector: 'app-book-creator',
   templateUrl: './book-creator.component.html',
   styleUrls: ['./book-creator.component.css'],
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    BookCardComponent,
+    NgbCollapseModule,
+  ],
   standalone: true,
 })
 export class BookCreatorComponent implements OnInit {
+  @Output() bookCreated = new EventEmitter<BookDto>();
+  suggestions: BookDto[] = [];
+  suppressSuggestions = false;
+  suggestionsCollapsed = true;
   bookForm = this.fb.group({
     title: [
       '',
@@ -38,6 +53,7 @@ export class BookCreatorComponent implements OnInit {
 
   createPending = false;
   isbnSearchPending = false;
+  suggestionClicked = false;
 
   constructor(
     private booksService: BooksService,
@@ -53,12 +69,38 @@ export class BookCreatorComponent implements OnInit {
         return;
       }
 
+      if (this.suggestionClicked) {
+        return;
+      }
+
       this.searchIsbn(isbn);
     });
 
     this.bookForm.get('thumbnailLink')?.valueChanges.subscribe(url => {
       this.checkThumbnailUrl(url);
     });
+
+    this.bookForm
+      .get('title')
+      ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(() => {
+        if (this.suggestionClicked) {
+          return;
+        }
+
+        this.fetchSuggestions();
+      });
+
+    this.bookForm
+      .get('author')
+      ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(() => {
+        if (this.suggestionClicked) {
+          return;
+        }
+
+        this.fetchSuggestions();
+      });
   }
 
   async searchIsbn(isbn: string | null) {
@@ -97,6 +139,35 @@ export class BookCreatorComponent implements OnInit {
     this.isbnSearchPending = false;
   }
 
+  async fetchSuggestions(): Promise<void> {
+    const title = this.bookForm.get('title')?.value;
+    const author = this.bookForm.get('author')?.value;
+
+    if (!title && !author) {
+      this.suggestions = [];
+      this.suggestionsCollapsed = true;
+      return;
+    }
+
+    try {
+      const volumes = await this.googleBooksSvc.getBookVolumeFuzzy(
+        title,
+        author,
+        5
+      );
+
+      this.suggestions = volumes.map(volume =>
+        this.volumeInfoToDto(volume.volumeInfo)
+      );
+    } catch (err) {
+      console.error(err);
+    }
+
+    if (!this.suppressSuggestions) {
+      this.suggestionsCollapsed = this.suggestions.length === 0;
+    }
+  }
+
   checkThumbnailUrl(url: string | null) {
     if (!url) {
       this.validUrl = null;
@@ -111,12 +182,13 @@ export class BookCreatorComponent implements OnInit {
     this.createPending = true;
     this.bookForm.disable();
     this.booksService.createBook({ body }).subscribe({
-      next: () => {
+      next: book => {
         this.clear();
         this.toastsService.show({
           classname: 'text-bg-success text-light',
           header: 'Book Created!',
         });
+        this.bookCreated.emit(book);
       },
       error: err => {
         console.error(err);
@@ -132,7 +204,42 @@ export class BookCreatorComponent implements OnInit {
     });
   }
 
+  fillFromSuggestion(suggestion: BookDto) {
+    this.suggestionClicked = true;
+    this.bookForm.patchValue(suggestion as any);
+    this.suggestionsCollapsed = true;
+  }
+
   clear() {
+    this.suppressSuggestions = false;
+    this.suggestionClicked = false;
     this.bookForm.reset();
+  }
+
+  volumeInfoToDto(volume: GoogleBookVolumeInfo): BookDto {
+    return {
+      title: volume.title,
+      author: volume.authors?.join(', '),
+      isbn: this.getBestIsbn(volume),
+      description: volume.description,
+      pageCount: volume.pageCount,
+      thumbnailLink: volume.imageLinks?.smallThumbnail,
+    };
+  }
+
+  getBestIsbn(volume: GoogleBookVolumeInfo): string | null {
+    if (!volume.industryIdentifiers) {
+      return null;
+    }
+
+    const isbn = volume.industryIdentifiers.find(
+      id => id.type === 'ISBN_13' || id.type === 'ISBN_10'
+    );
+
+    if (!isbn) {
+      return null;
+    }
+
+    return isbn.identifier;
   }
 }

@@ -6,17 +6,32 @@
     </h6>
     <div class="card-text text-start">
       <form [formGroup]="bookForm">
-        <div class="form-group mb-3">
-          <label for="isbn" class="form-label">Import by ISBN</label>
-          <input
-            type="text"
-            class="form-control"
-            id="isbn"
-            [formControl]="bookForm.controls['isbn']"
-            placeholder="Enter ISBN" />
-          <div class="form-text">This is optional, but easier! 😊</div>
+        <div class="text-center">
+          <button
+            class="btn btn-outline-secondary"
+            *ngIf="suggestionsCollapsed && suggestions.length"
+            (click)="suggestionsCollapsed = false; suppressSuggestions = false">
+            Show Suggestions ({{ suggestions.length }})
+          </button>
         </div>
-        <hr />
+        <div #collapse="ngbCollapse" [(ngbCollapse)]="suggestionsCollapsed">
+          <div class="d-flex flex-column justify-content-center text-left">
+            <h4>Are you looking for one of these?</h4>
+            <small>Click one to autofill</small>
+            <button
+              class="btn btn-outline-secondary"
+              (click)="suggestionsCollapsed = true; suppressSuggestions = true">
+              Hide Suggestions
+            </button>
+            <button
+              class="btn text-start"
+              *ngFor="let book of suggestions"
+              (click)="fillFromSuggestion(book)">
+              <app-book-card [book]="book" [mine]="false"></app-book-card>
+            </button>
+          </div>
+          <hr />
+        </div>
         <div class="form-group mb-3">
           <label for="title" class="form-label">Title</label>
           <input
@@ -82,6 +97,16 @@
               Maximum length is 100.
             </div>
           </div>
+        </div>
+        <div class="form-group mb-3">
+          <label for="isbn" class="form-label">Import by ISBN</label>
+          <input
+            type="text"
+            class="form-control"
+            id="isbn"
+            [formControl]="bookForm.controls['isbn']"
+            placeholder="Enter ISBN" />
+          <div class="form-text">Optional</div>
         </div>
         <div class="form-group mb-3">
           <label for="pagecount" class="form-label">Page Count</label>

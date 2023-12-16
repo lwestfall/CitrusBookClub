@@ -13,6 +13,7 @@ import { BooksService } from '../../api/services';
 })
 export class BookCardComponent implements OnInit {
   @Input({ required: true }) book!: BookDto;
+  @Input() mine = false;
   expanded = false;
 
   constructor(private booksService: BooksService) {}

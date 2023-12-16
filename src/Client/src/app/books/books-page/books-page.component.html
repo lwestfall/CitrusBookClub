@@ -6,7 +6,7 @@
       {{ this.formCollapsed ? 'Add A Book!' : 'Close Form' }}
     </button>
     <div #collapse="ngbCollapse" [(ngbCollapse)]="formCollapsed">
-      <app-book-creator></app-book-creator>
+      <app-book-creator (bookCreated)="fetchMyBooks()"></app-book-creator>
     </div>
   </div>
 </div>
@@ -16,5 +16,6 @@
   <app-book-card
     *ngFor="let book of books"
     [book]="book"
+    [mine]="true"
     (bookDeleted)="fetchMyBooks()"></app-book-card>
 </div>
