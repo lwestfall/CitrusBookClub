@@ -1,0 +1,8 @@
+<h3 class="display-3 mb-4">User Management</h3>
+
+<div class="d-flex flex-wrap align-items-stretch gap-2">
+  <app-user-card
+    *ngFor="let user of users"
+    [user]="user"
+    (rolesChanged)="fetchAllUsers()"></app-user-card>
+</div>

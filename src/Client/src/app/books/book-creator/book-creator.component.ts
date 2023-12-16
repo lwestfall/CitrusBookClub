@@ -5,9 +5,10 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { CreateBookDto } from '../api/models';
-import { BooksService } from '../api/services';
-import { GoogleBooksService } from '../services/google-books.service';
+import { CreateBookDto } from '../../api/models';
+import { BooksService } from '../../api/services';
+import { GoogleBooksService } from '../../services/google-books.service';
+import { ToastsService } from '../../services/toasts.service';
 
 @Component({
   selector: 'app-book-creator',
@@ -41,6 +42,7 @@ export class BookCreatorComponent implements OnInit {
   constructor(
     private booksService: BooksService,
     private googleBooksSvc: GoogleBooksService,
+    private toastsService: ToastsService,
     private fb: NonNullableFormBuilder
   ) {}
 
@@ -111,11 +113,17 @@ export class BookCreatorComponent implements OnInit {
     this.booksService.createBook({ body }).subscribe({
       next: () => {
         this.clear();
-        // TODO: show success message
+        this.toastsService.show({
+          classname: 'text-bg-success text-light',
+          header: 'Book Created!',
+        });
       },
       error: err => {
         console.error(err);
-        // TODO: show error
+        this.toastsService.show({
+          header: 'Uh oh!',
+          body: 'There was an error creating the book, please try again.',
+        });
       },
       complete: () => {
         this.createPending = false;

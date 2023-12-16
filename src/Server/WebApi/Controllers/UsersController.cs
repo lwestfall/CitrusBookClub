@@ -1,6 +1,7 @@
 namespace Cbc.WebApi.Controllers;
 using System.Security.Claims;
 using System.Text;
+using AutoMapper.QueryableExtensions;
 using Cbc.WebApi.Dtos;
 using Cbc.WebApi.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -15,8 +16,10 @@ public class UsersController : ApiControllerBase
     [HttpGet]
     public async Task<ActionResult<List<UserDto>>> GetUsers()
     {
-        var users = await this.CbcContext.Users.ToListAsync();
-        return this.Ok(this.Mapper.Map<List<UserDto>>(users));
+        return await this.CbcContext
+            .Users
+            .ProjectTo<UserDto>(this.Mapper.ConfigurationProvider)
+            .ToListAsync();
     }
 
     [HttpGet("/me")]
@@ -67,7 +70,9 @@ public class UsersController : ApiControllerBase
     public async Task<ActionResult<UserDto>> UpdateUser(string b64Email, [FromBody] UpdateUserDto updateUserDto)
     {
         var email = Encoding.UTF8.GetString(Convert.FromBase64String(b64Email));
-        var user = await this.CbcContext.Users.FindAsync(email);
+
+        var user = await this.CbcContext.Users
+            .SingleOrDefaultAsync(u => u.EmailAddress == email);
 
         if (user == null)
         {
@@ -105,8 +110,8 @@ public class UsersController : ApiControllerBase
             return this.NotFound();
         }
 
-        var rolesToAdd = roles.Except(user.Roles.Select(e => e.Role));
-        var rolesToRemove = user.Roles.Select(e => e.Role).Except(roles);
+        var rolesToAdd = roles.Except(user.Roles.Select(e => e.Role)).ToList();
+        var rolesToRemove = user.Roles.Select(e => e.Role).Except(roles).ToList();
 
         foreach (var role in rolesToAdd)
         {
@@ -119,6 +124,6 @@ public class UsersController : ApiControllerBase
         }
 
         await this.CbcContext.SaveChangesAsync();
-        return this.NoContent();
+        return this.Ok(this.Mapper.Map<UserDto>(user));
     }
 }

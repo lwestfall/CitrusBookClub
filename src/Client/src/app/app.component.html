@@ -1,5 +1,6 @@
-<app-navbar></app-navbar>
-<div class="p-4" [@routeAnimations]="getRouteAnimationData()">
+<app-navbar #navbar (heightChange)="onNavbarHeightChange($event)"></app-navbar>
+<app-toasts-container></app-toasts-container>
+<div class="p-4 content" [@routeAnimations]="getRouteAnimationData()">
   <router-outlet></router-outlet>
 </div>
 <footer class="mt-auto">
@@ -23,7 +24,9 @@
       <small>Hosted with ❤️ from Lancaster, Pennsylvania, USA</small>
       <small
         >Copyright &copy; Luke Westfall {{ year }} -
-        <a href="mailto: cbc@ljdub.com">cbc&#64;ljdub.com</a></small
+        <a href="mailto:cbc@ljdub.com?subject=Citrus Book Club" target="_blank"
+          >cbc&#64;ljdub.com</a
+        ></small
       >
     </div>
   </div>

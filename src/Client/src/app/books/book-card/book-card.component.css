@@ -1,0 +1,9 @@
+.chevron-down {
+  transform: rotate(0deg);
+  transition: transform 0.3s ease-in-out;
+}
+
+.chevron-down.expanded {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease-in-out;
+}

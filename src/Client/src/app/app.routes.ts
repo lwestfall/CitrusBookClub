@@ -12,6 +12,16 @@ const canActivateVerified: CanActivateFn = () => {
   return false;
 };
 
+const canActivateAdmin: CanActivateFn = () => {
+  if (inject(AuthService).isAdmin()) {
+    return true;
+  } else {
+    inject(Router).navigate(['/']);
+  }
+
+  return false;
+};
+
 export const routes: Routes = [
   {
     path: '',
@@ -22,11 +32,20 @@ export const routes: Routes = [
   {
     path: 'books',
     loadComponent: () =>
-      import('./books-page/books-page.component').then(
+      import('./books/books-page/books-page.component').then(
         mod => mod.BooksPageComponent
       ),
     canActivate: [canActivateVerified],
     data: { animation: 'BooksPage' },
+  },
+  {
+    path: 'users',
+    loadComponent: () =>
+      import('./users/users-page/users-page.component').then(
+        mod => mod.UsersPageComponent
+      ),
+    canActivate: [canActivateAdmin],
+    data: { animation: 'UsersPage' },
   },
   {
     path: '**',

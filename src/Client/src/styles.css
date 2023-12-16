@@ -1,5 +1,8 @@
+@import '../node_modules/bootstrap-icons/font/bootstrap-icons.css';
+
 body {
   background-color: #a4c6d6;
+  overflow-x: hidden;
 }
 
 app-root {
@@ -7,4 +10,8 @@ app-root {
   flex-direction: column;
   min-height: 100vh;
   justify-content: flex-start;
+}
+
+:root {
+  --navbar-height: 59px;
 }

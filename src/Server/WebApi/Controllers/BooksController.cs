@@ -1,6 +1,5 @@
 namespace Cbc.WebApi.Controllers;
 
-using System.Security.Claims;
 using Cbc.WebApi.Dtos;
 using Cbc.WebApi.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +18,28 @@ public class BooksController : ApiControllerBase
         return this.Ok(this.Mapper.Map<List<BookDto>>(books));
     }
 
+    [HttpGet("mine")]
+    public async Task<ActionResult<List<BookDto>>> GetUsersBooks()
+    {
+        var email = this.GetEmail();
+
+        if (email is null)
+        {
+            return this.Unauthorized();
+        }
+
+        var user = await this.CbcContext.Users
+            .Include(u => u.Books)
+            .FirstOrDefaultAsync(u => u.EmailAddress == this.GetEmail());
+
+        if (user == null)
+        {
+            return this.NotFound();
+        }
+
+        return this.Ok(this.Mapper.Map<List<BookDto>>(user.Books));
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<BookDto>> GetBook(Guid id)
     {
@@ -35,7 +56,12 @@ public class BooksController : ApiControllerBase
     public async Task<ActionResult<BookDto>> CreateBook([FromBody] CreateBookDto createBookDto)
     {
         var book = this.Mapper.Map<Book>(createBookDto);
-        var email = this.User!.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ?? string.Empty;
+        var email = this.GetEmail();
+
+        if (email is null)
+        {
+            return this.Unauthorized();
+        }
 
         book.User = await this.CbcContext.Users
             .FirstOrDefaultAsync(u => u.EmailAddress == email);
