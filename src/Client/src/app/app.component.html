@@ -4,6 +4,24 @@
   <router-outlet></router-outlet>
 </div>
 <footer class="mt-auto">
+  <div
+    *ngIf="isWinter"
+    class="form-check form-switch form-check-reverse"
+    style="background-color: var(--content-bg-color)">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      id="snowSwitch"
+      [checked]="snowEnabled"
+      (click)="snowSwitchChanged()" />
+    <label class="form-check-label" for="snowSwitch"
+      ><a
+        href="https://www.bennadel.com/blog/3957-making-snow-animations-in-angular-11-0-5.htm"
+        >Snow</a
+      ></label
+    >
+    <app-snow-generator *ngIf="snowEnabled"></app-snow-generator>
+  </div>
   <hr class="p-0 m-0" />
   <div class="d-flex flex-row align-items-center gap-2 py-1 px-2">
     <a

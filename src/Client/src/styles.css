@@ -1,7 +1,7 @@
 @import '../node_modules/bootstrap-icons/font/bootstrap-icons.css';
 
 body {
-  background-color: #a4c6d6;
+  background-color: var(--content-bg-color);
   overflow-x: hidden;
 }
 
@@ -13,5 +13,6 @@ app-root {
 }
 
 :root {
+  --content-bg-color: #a4c6d6;
   --navbar-height: 59px;
 }
