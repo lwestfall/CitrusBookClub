@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using Serilog;
-using Serilog.Context;
 using Serilog.Extensions.Logging;
 using Serilog.Filters;
 
@@ -64,35 +63,40 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
+
+if (builder.Environment.IsDevelopment())
 {
-    options.SupportNonNullableReferenceTypes();
-    options.CustomOperationIds(e => $"{e.ActionDescriptor.RouteValues["action"]}");
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.SupportNonNullableReferenceTypes();
+        options.CustomOperationIds(e => $"{e.ActionDescriptor.RouteValues["action"]}");
 
-    // options.AddSecurityDefinition("Bearer,", new OpenApiSecurityScheme
-    // {
-    //     Description = "Please insert your JWT Token into field",
-    //     Name = "Authorization",
-    //     Type = SecuritySchemeType.ApiKey,
-    //     In = ParameterLocation.Header,
-    //     Scheme = "Bearer",
-    //     BearerFormat = "JWT"
-    // });
+        // options.AddSecurityDefinition("Bearer,", new OpenApiSecurityScheme
+        // {
+        //     Description = "Please insert your JWT Token into field",
+        //     Name = "Authorization",
+        //     Type = SecuritySchemeType.ApiKey,
+        //     In = ParameterLocation.Header,
+        //     Scheme = "Bearer",
+        //     BearerFormat = "JWT"
+        // });
 
-    // options.AddSecurityRequirement(new OpenApiSecurityRequirement{
-    //     {
-    //         new OpenApiSecurityScheme{
-    //             Reference = new OpenApiReference{
-    //                 Type = ReferenceType.SecurityScheme,
-    //                 Id = "Bearer"
-    //             }
-    //         },
-    //         new string[]{}
-    //     }
-    // });
-});
+        // options.AddSecurityRequirement(new OpenApiSecurityRequirement{
+        //     {
+        //         new OpenApiSecurityScheme{
+        //             Reference = new OpenApiReference{
+        //                 Type = ReferenceType.SecurityScheme,
+        //                 Id = "Bearer"
+        //             }
+        //         },
+        //         new string[]{}
+        //     }
+        // });
+    });
+}
 
-builder.Services.AddAuthorization(options => options.FallbackPolicy = new AuthorizationPolicyBuilder()
+builder.Services
+    .AddAuthorization(options => options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .Build())
     .AddCors(options => options
@@ -170,13 +174,14 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-app.Use(async (ctx, next) =>
-{
-    using (LogContext.PushProperty("ClientIPAddress", ctx.Connection.RemoteIpAddress))
-    {
-        await next(ctx);
-    }
-});
+// Not applicable in our docker environment
+// app.Use(async (ctx, next) =>
+// {
+//     using (LogContext.PushProperty("ClientIPAddress", ctx.Connection.RemoteIpAddress))
+//     {
+//         await next(ctx);
+//     }
+// });
 
 app.UseSerilogRequestLogging();
 
