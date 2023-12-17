@@ -40,7 +40,7 @@ export class BookCreatorComponent implements OnInit {
     ],
     author: [
       '',
-      [Validators.required, Validators.minLength(3), Validators.maxLength(100)],
+      [Validators.required, Validators.minLength(1), Validators.maxLength(100)],
     ],
     description: ['', [Validators.maxLength(1500)]],
     isbn: ['', [Validators.maxLength(20)]],
@@ -207,6 +207,7 @@ export class BookCreatorComponent implements OnInit {
   fillFromSuggestion(suggestion: BookDto) {
     this.suggestionClicked = true;
     this.bookForm.patchValue(suggestion as any);
+    this.bookForm.markAllAsTouched();
     this.suggestionsCollapsed = true;
   }
 
@@ -223,7 +224,10 @@ export class BookCreatorComponent implements OnInit {
       isbn: this.getBestIsbn(volume),
       description: volume.description,
       pageCount: volume.pageCount,
-      thumbnailLink: volume.imageLinks?.smallThumbnail,
+      thumbnailLink: volume.imageLinks?.smallThumbnail.replace(
+        /^http:/i,
+        'https:'
+      ),
     };
   }
 

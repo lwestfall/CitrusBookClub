@@ -37,6 +37,7 @@ export class BooksPageComponent implements OnInit {
   fetchMyBooks() {
     this.booksService.getUsersBooks().subscribe({
       next: books => {
+        this.myBooks.forEach(this.httpToHttps);
         this.myBooks = _.sortBy(books, b => b.title);
       },
       error: () => {
@@ -51,6 +52,7 @@ export class BooksPageComponent implements OnInit {
   fetchOthersBooks() {
     this.booksService.getBooks().subscribe({
       next: books => {
+        this.otherBooks.forEach(this.httpToHttps);
         this.otherBooks = _.sortBy(books, b => b.title);
       },
       error: () => {
@@ -60,5 +62,9 @@ export class BooksPageComponent implements OnInit {
         });
       },
     });
+  }
+
+  httpToHttps(bookDto: BookDto | BookAnonymousDto) {
+    bookDto.thumbnailLink = bookDto.thumbnailLink?.replace(/^http:/i, 'https:');
   }
 }
