@@ -39,6 +39,15 @@ export const routes: Routes = [
     data: { animation: 'BooksPage' },
   },
   {
+    path: 'meetings',
+    loadComponent: () =>
+      import('./meetings/meetings-page/meetings-page.component').then(
+        mod => mod.MeetingsPageComponent
+      ),
+    canActivate: [canActivateVerified],
+    data: { animation: 'MeetingsPage' },
+  },
+  {
     path: 'users',
     loadComponent: () =>
       import('./users/users-page/users-page.component').then(

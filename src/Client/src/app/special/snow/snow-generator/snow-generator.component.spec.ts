@@ -11,9 +11,8 @@ describe('SnowGeneratorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SnowGeneratorComponent ]
-    })
-    .compileComponents();
+      declarations: [SnowGeneratorComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

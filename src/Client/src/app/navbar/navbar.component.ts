@@ -39,7 +39,10 @@ export class NavbarComponent {
       title: 'Books',
       route: 'books',
     },
-    // { title: 'Meetings', route: 'meetings' },
+    {
+      title: 'Meetings',
+      route: 'meetings',
+    },
   ];
 
   adminLinks = [{ title: 'Users', route: 'users' }];

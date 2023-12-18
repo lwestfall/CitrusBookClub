@@ -20,6 +20,11 @@ public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
             .HasForeignKey<Meeting>(e => e.WinningBookId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(e => e.PreviousMeeting)
+            .WithOne()
+            .HasForeignKey<Meeting>(e => e.PreviousMeetingId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         builder.HasMany(e => e.Votes)
             .WithOne()
             .HasForeignKey(e => e.MeetingId)

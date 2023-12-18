@@ -3,20 +3,20 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { SnowFlakeComponent } from './snow-flake.component';
+import { MeetingsPageComponent } from './meetings-page.component';
 
-describe('SnowFlakeComponent', () => {
-  let component: SnowFlakeComponent;
-  let fixture: ComponentFixture<SnowFlakeComponent>;
+describe('MeetingsPageComponent', () => {
+  let component: MeetingsPageComponent;
+  let fixture: ComponentFixture<MeetingsPageComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SnowFlakeComponent],
+      declarations: [MeetingsPageComponent],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SnowFlakeComponent);
+    fixture = TestBed.createComponent(MeetingsPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

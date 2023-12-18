@@ -6,11 +6,14 @@ import { GoogleBooksService } from './google-books.service';
 describe('Service: GoogleBooks', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [GoogleBooksService]
+      providers: [GoogleBooksService],
     });
   });
 
-  it('should ...', inject([GoogleBooksService], (service: GoogleBooksService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should ...', inject(
+    [GoogleBooksService],
+    (service: GoogleBooksService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

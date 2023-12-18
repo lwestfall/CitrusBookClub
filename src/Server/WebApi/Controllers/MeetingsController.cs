@@ -16,7 +16,7 @@ public class MeetingsController : ApiControllerBase
     public async Task<ActionResult<MeetingSimpleDto>> GetNextMeeting()
     {
         var meeting = await this.CbcContext.Meetings
-            .Where(m => m.DateTime > DateTime.UtcNow)
+            .Where(m => m.WinningBookId == null)
             .OrderBy(m => m.DateTime)
             .ProjectTo<MeetingDto>(this.Mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
