@@ -18,6 +18,18 @@ public class BooksController : ApiControllerBase
         return this.Ok(this.Mapper.Map<List<BookAnonymousDto>>(books));
     }
 
+    [HttpGet("others")]
+    public async Task<ActionResult<List<BookAnonymousDto>>> GetOthersBooks()
+    {
+        var email = this.GetEmail();
+
+        var books = await this.CbcContext.Books
+            .Where(x => x.UserEmail != email)
+            .ToListAsync();
+
+        return this.Ok(this.Mapper.Map<List<BookAnonymousDto>>(books));
+    }
+
     [HttpGet("mine")]
     public async Task<ActionResult<List<BookDto>>> GetUsersBooks()
     {

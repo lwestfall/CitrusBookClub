@@ -32,6 +32,7 @@ export class BooksPageComponent implements OnInit {
 
   ngOnInit() {
     this.fetchMyBooks();
+    this.fetchOthersBooks();
   }
 
   fetchMyBooks() {
@@ -50,8 +51,9 @@ export class BooksPageComponent implements OnInit {
   }
 
   fetchOthersBooks() {
-    this.booksService.getBooks().subscribe({
+    this.booksService.getOthersBooks().subscribe({
       next: books => {
+        // todo: this returns all books, including ours. we should filter those out (but can't because they're anonymous)
         this.otherBooks.forEach(this.httpToHttps);
         this.otherBooks = _.sortBy(books, b => b.title);
       },

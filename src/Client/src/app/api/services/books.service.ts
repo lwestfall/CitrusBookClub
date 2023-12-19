@@ -23,6 +23,10 @@ import { getBooks } from '../fn/books/get-books';
 import { GetBooks$Params } from '../fn/books/get-books';
 import { getBooks$Plain } from '../fn/books/get-books-plain';
 import { GetBooks$Plain$Params } from '../fn/books/get-books-plain';
+import { getOthersBooks } from '../fn/books/get-others-books';
+import { GetOthersBooks$Params } from '../fn/books/get-others-books';
+import { getOthersBooks$Plain } from '../fn/books/get-others-books-plain';
+import { GetOthersBooks$Plain$Params } from '../fn/books/get-others-books-plain';
 import { getUsersBooks } from '../fn/books/get-users-books';
 import { GetUsersBooks$Params } from '../fn/books/get-users-books';
 import { getUsersBooks$Plain } from '../fn/books/get-users-books-plain';
@@ -125,6 +129,53 @@ export class BooksService extends BaseService {
   createBook(params?: CreateBook$Params, context?: HttpContext): Observable<BookDto> {
     return this.createBook$Response(params, context).pipe(
       map((r: StrictHttpResponse<BookDto>): BookDto => r.body)
+    );
+  }
+
+  /** Path part for operation `getOthersBooks()` */
+  static readonly GetOthersBooksPath = '/api/Books/others';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getOthersBooks$Plain()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getOthersBooks$Plain$Response(params?: GetOthersBooks$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookAnonymousDto>>> {
+    return getOthersBooks$Plain(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getOthersBooks$Plain$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getOthersBooks$Plain(params?: GetOthersBooks$Plain$Params, context?: HttpContext): Observable<Array<BookAnonymousDto>> {
+    return this.getOthersBooks$Plain$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<BookAnonymousDto>>): Array<BookAnonymousDto> => r.body)
+    );
+  }
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getOthersBooks()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getOthersBooks$Response(params?: GetOthersBooks$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookAnonymousDto>>> {
+    return getOthersBooks(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getOthersBooks$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getOthersBooks(params?: GetOthersBooks$Params, context?: HttpContext): Observable<Array<BookAnonymousDto>> {
+    return this.getOthersBooks$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<BookAnonymousDto>>): Array<BookAnonymousDto> => r.body)
     );
   }
 
