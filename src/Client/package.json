@@ -57,7 +57,7 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "ng-openapi-gen": "^0.51.0",
     "prettier": "^3.1.1",
-    "prettier-eslint": "^16.1.2",
+    "prettier-eslint": "^16.2.0",
     "typescript": "~5.2.2"
   }
 }
