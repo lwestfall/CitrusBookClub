@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import moment from 'moment';
 import { MeetingDto } from '../../api/models';
 import { MeetingsService } from '../../api/services';
+import { NextMeetingCardComponent } from '../next-meeting-card/next-meeting-card.component';
 
 @Component({
   selector: 'app-meetings-page',
   templateUrl: './meetings-page.component.html',
   styleUrls: ['./meetings-page.component.css'],
+  imports: [NextMeetingCardComponent],
   standalone: true,
 })
 export class MeetingsPageComponent implements OnInit {
