@@ -26,6 +26,7 @@
     "@angular/platform-browser-dynamic": "^17.0.7",
     "@angular/router": "^17.0.7",
     "@ng-bootstrap/ng-bootstrap": "^16.0.0",
+    "@ngrx/store": "^17.0.1",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.2",
     "bootstrap-icons": "^1.11.2",
@@ -61,6 +62,7 @@
     "ng-openapi-gen": "^0.51.0",
     "prettier": "^3.1.1",
     "prettier-eslint": "^16.1.2",
-    "typescript": "~5.2.2"
+    "typescript": "~5.2.2",
+    "@ngrx/eslint-plugin": "^17.0.1"
   }
 }
