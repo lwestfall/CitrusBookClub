@@ -1,54 +1,56 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+import { Store } from '@ngrx/store';
 import _ from 'lodash';
+import { Observable } from 'rxjs';
 import { BookAnonymousDto, BookDto } from '../../api/models';
 import { BooksService } from '../../api/services';
+import { AppState } from '../../app-state';
 import { ToastsService } from '../../services/toasts.service';
-import { BookCardComponent } from '../book-card/book-card.component';
-import { BookCreatorComponent } from '../book-creator/book-creator.component';
+import { getMyBooks } from '../state/books.actions';
+import * as bookSelectors from '../state/books.selectors';
 
 @Component({
   selector: 'app-books-page',
   templateUrl: './books-page.component.html',
-  imports: [
-    BookCreatorComponent,
-    BookCardComponent,
-    CommonModule,
-    NgbCollapseModule,
-  ],
   styleUrls: ['./books-page.component.css'],
-  standalone: true,
 })
 export class BooksPageComponent implements OnInit {
   formCollapsed = true;
-  myBooks: BookDto[] = [];
+  myBooks$: Observable<BookDto[]>;
   otherBooks: BookAnonymousDto[] = [];
+  isLoadingMyBooks$: Observable<boolean>;
 
   constructor(
     private booksService: BooksService,
+    private store: Store<AppState>,
     private toastsService: ToastsService
-  ) {}
+  ) {
+    this.isLoadingMyBooks$ = this.store.select(
+      bookSelectors.selectIsLoadingMyBooks
+    );
+    this.myBooks$ = this.store.select(bookSelectors.selectMyBooks);
+  }
 
   ngOnInit() {
-    this.fetchMyBooks();
+    this.store.dispatch(getMyBooks());
+    // this.fetchMyBooks();
     this.fetchOthersBooks();
   }
 
-  fetchMyBooks() {
-    this.booksService.getUsersBooks().subscribe({
-      next: books => {
-        this.myBooks.forEach(this.httpToHttps);
-        this.myBooks = _.sortBy(books, b => b.title);
-      },
-      error: () => {
-        this.toastsService.show({
-          header: 'Ah, nuts!',
-          body: 'Failed to fetch your books. Try again in a little bit.',
-        });
-      },
-    });
-  }
+  // fetchMyBooks() {
+  //   this.booksService.getUsersBooks().subscribe({
+  //     next: books => {
+  //       this.myBooks.forEach(this.httpToHttps);
+  //       this.myBooks = _.sortBy(books, b => b.title);
+  //     },
+  //     error: () => {
+  //       this.toastsService.show({
+  //         header: 'Ah, nuts!',
+  //         body: 'Failed to fetch your books. Try again in a little bit.',
+  //       });
+  //     },
+  //   });
+  // }
 
   fetchOthersBooks() {
     this.booksService.getOthersBooks().subscribe({

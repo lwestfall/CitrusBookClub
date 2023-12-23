@@ -61,7 +61,10 @@
       ],
       "extends": [
         "plugin:@ngrx/strict-requiring-type-checking"
-      ]
+      ],
+      "rules": {
+        "@ngrx/no-typed-global-store": "off"
+      }
     }
   ]
 }

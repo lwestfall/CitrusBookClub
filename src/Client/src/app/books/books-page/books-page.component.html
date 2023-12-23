@@ -6,20 +6,17 @@
       {{ this.formCollapsed ? 'Add A Book!' : 'Close Form' }}
     </button>
     <div #collapse="ngbCollapse" [(ngbCollapse)]="formCollapsed">
-      <app-book-creator (bookCreated)="fetchMyBooks()"></app-book-creator>
+      <app-book-creator></app-book-creator>
     </div>
   </div>
 </div>
 <h3 class="display-3 my-4 text-lg-start text-center">My Bookshelf</h3>
 <div
   class="d-flex flex-wrap align-items-stretch gap-2 justify-content-lg-start justify-content-center">
-  <div *ngFor="let book of myBooks" style="max-width: 22rem">
-    <app-book-card
-      [book]="book"
-      [mine]="true"
-      (bookDeleted)="fetchMyBooks()"></app-book-card>
+  <div *ngFor="let book of myBooks$ | async" style="max-width: 22rem">
+    <app-book-card [book]="book" [mine]="true"></app-book-card>
   </div>
-  <div *ngIf="!myBooks.length" class="text-center">
+  <div *ngIf="!(myBooks$ | async)?.length" class="text-center">
     <h6 class="display-6">You haven't added any books yet!</h6>
     <h6 class="display-6">Add one using the button above!</h6>
   </div>

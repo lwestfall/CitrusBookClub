@@ -1,11 +1,5 @@
-import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import {
-  NonNullableFormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { BookDto, CreateBookDto } from '../../api/models';
 import { BooksService } from '../../api/services';
@@ -14,19 +8,11 @@ import {
   GoogleBooksService,
 } from '../../services/google-books.service';
 import { ToastsService } from '../../services/toasts.service';
-import { BookCardComponent } from '../book-card/book-card.component';
 
 @Component({
   selector: 'app-book-creator',
   templateUrl: './book-creator.component.html',
   styleUrls: ['./book-creator.component.css'],
-  imports: [
-    ReactiveFormsModule,
-    CommonModule,
-    BookCardComponent,
-    NgbCollapseModule,
-  ],
-  standalone: true,
 })
 export class BookCreatorComponent implements OnInit {
   @Output() bookCreated = new EventEmitter<BookDto>();
@@ -206,7 +192,14 @@ export class BookCreatorComponent implements OnInit {
 
   fillFromSuggestion(suggestion: BookDto) {
     this.suggestionClicked = true;
-    this.bookForm.patchValue(suggestion as any);
+    this.bookForm.patchValue({
+      title: suggestion.title,
+      author: suggestion.author,
+      description: suggestion.description ?? '',
+      isbn: suggestion.isbn ?? '',
+      pageCount: suggestion.pageCount ?? 0,
+      thumbnailLink: suggestion.thumbnailLink ?? '',
+    });
     this.bookForm.markAllAsTouched();
     this.suggestionsCollapsed = true;
   }

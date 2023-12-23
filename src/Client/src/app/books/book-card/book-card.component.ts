@@ -1,6 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
-import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+import { Component, Input } from '@angular/core';
 import { BookDto } from '../../api/models';
 import { BooksService } from '../../api/services';
 
@@ -8,18 +6,13 @@ import { BooksService } from '../../api/services';
   selector: 'app-book-card',
   templateUrl: './book-card.component.html',
   styleUrls: ['./book-card.component.css'],
-  imports: [CommonModule, NgbCollapseModule],
-  standalone: true,
 })
-export class BookCardComponent implements OnInit {
+export class BookCardComponent {
   @Input({ required: true }) book!: BookDto;
   @Input() mine = false;
   expanded = false;
 
   constructor(private booksService: BooksService) {}
-
-  ngOnInit() {}
-
   deleteBook() {
     // TODO
   }

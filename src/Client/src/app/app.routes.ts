@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, Routes } from '@angular/router';
+import { BooksPageComponent } from './books/books-page/books-page.component';
 import { AuthService } from './services/auth.service';
 
 const canActivateVerified: CanActivateFn = () => {
@@ -31,10 +32,11 @@ export const routes: Routes = [
   },
   {
     path: 'books',
-    loadComponent: () =>
-      import('./books/books-page/books-page.component').then(
-        mod => mod.BooksPageComponent
-      ),
+    component: BooksPageComponent,
+    // loadComponent: () =>
+    //   import('./books/books-page/books-page.component').then(
+    //     mod => mod.BooksPageComponent
+    //   ),
     canActivate: [canActivateVerified],
     data: { animation: 'BooksPage' },
   },

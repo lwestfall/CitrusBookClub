@@ -1,4 +1,8 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import {
+  ApplicationConfig,
+  importProvidersFrom,
+  isDevMode,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -16,9 +20,12 @@ import {
   withInterceptors,
 } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideStore } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule, provideStore } from '@ngrx/store';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
 import { ApiModule } from './api/api.module';
+import { booksReducer } from './books/state/books.reducer';
 
 export const authenticationInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
@@ -64,6 +71,9 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authenticationInterceptor])),
     provideRouter(routes),
     provideAnimations(),
-    provideStore(),
+    importProvidersFrom(StoreModule.forRoot()),
+    importProvidersFrom(EffectsModule.forRoot()),
+    provideStore({ books: booksReducer }),
+    provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
   ],
 };

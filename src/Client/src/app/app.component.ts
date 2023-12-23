@@ -3,6 +3,7 @@ import { Component, ElementRef } from '@angular/core';
 import { ChildrenOutletContexts, RouterOutlet } from '@angular/router';
 import { slideInAnimation } from './animations';
 import { UserDto } from './api/models';
+import { BooksModule } from './books/books.module';
 import { NavbarComponent } from './navbar/navbar.component';
 import { AuthService } from './services/auth.service';
 import { SnowGeneratorComponent } from './special/snow/snow-generator/snow-generator.component';
@@ -15,6 +16,7 @@ import { ToastsContainerComponent } from './toasts-container/toasts-container.co
     CommonModule,
     RouterOutlet,
     NavbarComponent,
+    BooksModule,
     AsyncPipe,
     ToastsContainerComponent,
     SnowGeneratorComponent,
