@@ -6,6 +6,16 @@ export const addBook = createAction(
   props<{ bookDto: CreateBookDto }>()
 );
 
+export const addBookSuccess = createAction(
+  '[Books] Add Book Success',
+  props<{ book: BookDto }>()
+);
+
+export const addBookFailure = createAction(
+  '[Books] Add Book Failure',
+  props<{ error: string }>()
+);
+
 export const getMyBooks = createAction('[Books] Get My Books');
 
 export const getMyBooksSuccess = createAction(

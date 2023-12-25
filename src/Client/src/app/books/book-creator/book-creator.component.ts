@@ -1,13 +1,20 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { ofType } from '@ngrx/effects';
+import { ActionsSubject, Store } from '@ngrx/store';
+import { Observable, debounceTime, distinctUntilChanged } from 'rxjs';
 import { BookDto, CreateBookDto } from '../../api/models';
-import { BooksService } from '../../api/services';
+import { AppState } from '../../app-state';
 import {
   GoogleBookVolumeInfo,
   GoogleBooksService,
 } from '../../services/google-books.service';
 import { ToastsService } from '../../services/toasts.service';
+import { addBook, addBookSuccess } from '../state/books.actions';
+import {
+  selectAddFormError,
+  selectAddFormPending,
+} from '../state/books.selectors';
 
 @Component({
   selector: 'app-book-creator',
@@ -15,7 +22,6 @@ import { ToastsService } from '../../services/toasts.service';
   styleUrls: ['./book-creator.component.css'],
 })
 export class BookCreatorComponent implements OnInit {
-  @Output() bookCreated = new EventEmitter<BookDto>();
   suggestions: BookDto[] = [];
   suppressSuggestions = false;
   suggestionsCollapsed = true;
@@ -37,16 +43,29 @@ export class BookCreatorComponent implements OnInit {
   validUrl: string | null = null;
   isbnChangedByHandler = false;
 
-  createPending = false;
+  addPending$: Observable<boolean>;
+  addError$: Observable<string | null>;
   isbnSearchPending = false;
   suggestionClicked = false;
 
   constructor(
-    private booksService: BooksService,
     private googleBooksSvc: GoogleBooksService,
     private toastsService: ToastsService,
+    private store: Store<AppState>,
+    actionsSubj: ActionsSubject,
     private fb: NonNullableFormBuilder
-  ) {}
+  ) {
+    this.addPending$ = this.store.select(selectAddFormPending);
+    this.addError$ = this.store.select(selectAddFormError);
+
+    actionsSubj.pipe(ofType(addBookSuccess)).subscribe(() => {
+      this.clear();
+      this.toastsService.show({
+        classname: 'text-bg-success text-light',
+        header: 'Book Created!',
+      });
+    });
+  }
 
   ngOnInit() {
     this.bookForm.get('isbn')?.valueChanges.subscribe(isbn => {
@@ -164,30 +183,9 @@ export class BookCreatorComponent implements OnInit {
   }
 
   save() {
-    const body = this.bookForm.value as CreateBookDto;
-    this.createPending = true;
-    this.bookForm.disable();
-    this.booksService.createBook({ body }).subscribe({
-      next: book => {
-        this.clear();
-        this.toastsService.show({
-          classname: 'text-bg-success text-light',
-          header: 'Book Created!',
-        });
-        this.bookCreated.emit(book);
-      },
-      error: err => {
-        console.error(err);
-        this.toastsService.show({
-          header: 'Uh oh!',
-          body: 'There was an error creating the book, please try again.',
-        });
-      },
-      complete: () => {
-        this.createPending = false;
-        this.bookForm.enable();
-      },
-    });
+    this.store.dispatch(
+      addBook({ bookDto: this.bookForm.value as CreateBookDto })
+    );
   }
 
   fillFromSuggestion(suggestion: BookDto) {

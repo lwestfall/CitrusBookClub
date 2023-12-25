@@ -6,6 +6,20 @@ import * as actions from './books.actions';
 
 @Injectable()
 export class BooksEffects {
+  addBook$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(actions.addBook),
+      mergeMap(({ bookDto }) =>
+        this.booksService.createBook({ body: bookDto }).pipe(
+          map(book => actions.addBookSuccess({ book })),
+          catchError(error =>
+            of(actions.addBookFailure({ error: error.message }))
+          )
+        )
+      )
+    );
+  });
+
   getMyBooks$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(actions.getMyBooks),

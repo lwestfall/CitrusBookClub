@@ -5,7 +5,7 @@
       You can add books here to recommend in a future meeting!
     </h6>
     <div class="card-text text-start">
-      <form [formGroup]="bookForm">
+      <form [formGroup]="bookForm" [attr.disabled]="addPending$ | async">
         <div class="text-center">
           <button
             class="btn btn-outline-secondary"
@@ -191,11 +191,11 @@
         </button>
       </div>
       <div class="col-5 text-center">
-        <img *ngIf="validUrl" [src]="validUrl" />
+        <img *ngIf="validUrl" [src]="validUrl" alt="Book cover thumbnail" />
       </div>
       <div class="col">
         <div
-          *ngIf="createPending"
+          *ngIf="addPending$ | async"
           class="spinner-border text-primary"
           role="status">
           <span class="visually-hidden">Loading...</span>
@@ -206,6 +206,13 @@
           [disabled]="bookForm.invalid">
           Save!
         </button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div *ngIf="addError$ | async" class="alert alert-danger" role="alert">
+          {{ addError$ | async }}
+        </div>
       </div>
     </div>
   </div>
