@@ -1,11 +1,11 @@
 import { createReducer, on } from '@ngrx/store';
 
-import { BookDto } from '../../api/models';
+import { BookAnonymousDto, BookDto } from '../../api/models';
 import * as bookActions from './books.actions';
 
 export interface BooksState {
   myBooks: Array<BookDto>;
-  othersBooks: Array<BookDto>;
+  othersBooks: Array<BookAnonymousDto>;
   isLoadingMyBooks: boolean;
   myBooksError: string | null;
   isLoadingOthersBooks: boolean;
@@ -42,6 +42,28 @@ export const booksReducer = createReducer(
       isLoadingMyBooks: false,
       myBooksError: action.error,
     })
+  ),
+  on(
+    bookActions.getOthersBooks,
+    (state): BooksState => ({
+      ...state,
+      isLoadingOthersBooks: true,
+    })
+  ),
+  on(
+    bookActions.getOthersBooksSuccess,
+    (state, action): BooksState => ({
+      ...state,
+      isLoadingOthersBooks: false,
+      othersBooks: action.books,
+    })
+  ),
+  on(
+    bookActions.getOthersBooksFailure,
+    (state, action): BooksState => ({
+      ...state,
+      isLoadingOthersBooks: false,
+      othersBooksError: action.error,
+    })
   )
-  // on(addBook, (_state, { bookDto }) => _state.concat(bookDto))
 );

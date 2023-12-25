@@ -12,6 +12,7 @@
 </div>
 <h3 class="display-3 my-4 text-lg-start text-center">My Bookshelf</h3>
 <div
+  *ngIf="myBooks$ | async"
   class="d-flex flex-wrap align-items-stretch gap-2 justify-content-lg-start justify-content-center">
   <div *ngFor="let book of myBooks$ | async" style="max-width: 22rem">
     <app-book-card [book]="book" [mine]="true"></app-book-card>
@@ -24,13 +25,13 @@
 <hr />
 <h3 class="display-3 my-4 text-lg-start text-center">Books Added By Others</h3>
 <div
+  *ngIf="othersBooks$ | async"
   class="d-flex flex-wrap align-items-stretch gap-2 justify-content-lg-start justify-content-center">
   <app-book-card
-    *ngFor="let book of otherBooks"
+    *ngFor="let book of othersBooks$ | async"
     [book]="book"
-    [mine]="false"
-    (bookDeleted)="fetchOthersBooks()"></app-book-card>
-  <div *ngIf="!otherBooks.length" class="text-center">
+    [mine]="false"></app-book-card>
+  <div *ngIf="!(othersBooks$ | async)!.length" class="text-center">
     <h6 class="display-6">No one else has added any books yet!</h6>
   </div>
 </div>
