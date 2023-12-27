@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { MeetingCountdownComponent } from '../meetings/meeting-countdown/meeting-countdown.component';
+import { MeetingsModule } from '../meetings/meetings.module';
 import { LoginComponent } from '../navbar/login/login.component';
 import { AuthService } from '../services/auth.service';
 
@@ -9,12 +9,7 @@ import { AuthService } from '../services/auth.service';
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  imports: [
-    CommonModule,
-    LoginComponent,
-    RouterModule,
-    MeetingCountdownComponent,
-  ],
+  imports: [CommonModule, LoginComponent, RouterModule, MeetingsModule],
   standalone: true,
 })
 export class HomeComponent implements OnInit {

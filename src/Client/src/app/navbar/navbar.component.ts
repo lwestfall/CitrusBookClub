@@ -1,5 +1,6 @@
 import { AsyncPipe, CommonModule } from '@angular/common';
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -9,7 +10,7 @@ import {
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgbCollapseModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { ClickOutsideDirective } from '../directives/click-outside.directive';
-import { MeetingCountdownComponent } from '../meetings/meeting-countdown/meeting-countdown.component';
+import { MeetingsModule } from '../meetings/meetings.module';
 import { AuthService } from '../services/auth.service';
 import { LoginComponent } from './login/login.component';
 
@@ -24,12 +25,12 @@ import { LoginComponent } from './login/login.component';
     AsyncPipe,
     RouterModule,
     NgbCollapseModule,
-    MeetingCountdownComponent,
+    MeetingsModule,
     ClickOutsideDirective,
   ],
   standalone: true,
 })
-export class NavbarComponent {
+export class NavbarComponent implements AfterViewInit {
   verified = false;
   admin = false;
   isCollapsed = true;
@@ -63,7 +64,7 @@ export class NavbarComponent {
   }
 
   ngAfterViewInit() {
-    const resizeObserver = new ResizeObserver(entries => {
+    const resizeObserver = new ResizeObserver(() => {
       const height = this.nav.nativeElement.offsetHeight;
 
       if (height !== this.previousHeight) {

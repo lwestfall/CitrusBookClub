@@ -29,5 +29,10 @@ public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
             .WithOne()
             .HasForeignKey(e => e.MeetingId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(e => e.BookRecommendations)
+            .WithOne()
+            .HasForeignKey(e => e.MeetingId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

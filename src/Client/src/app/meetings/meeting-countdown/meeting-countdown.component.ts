@@ -1,18 +1,15 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import moment from 'moment';
-import { MeetingSimpleDto } from '../../api/models';
+import { MeetingDto } from '../../api/models';
 import { MeetingsService } from '../../api/services';
 
 @Component({
   selector: 'app-meeting-countdown',
   templateUrl: './meeting-countdown.component.html',
   styleUrls: ['./meeting-countdown.component.css'],
-  imports: [CommonModule],
-  standalone: true,
 })
 export class MeetingCountdownComponent implements OnInit {
-  nextMeeting?: MeetingSimpleDto;
+  nextMeeting?: MeetingDto;
   nextMeetingStr?: string;
 
   constructor(private mtgSvc: MeetingsService) {}

@@ -7,14 +7,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-[ApiController]
-[Route("api/[controller]")]
 [Authorize(Roles = "Verified")]
 public class MeetingsController : ApiControllerBase
 {
     [HttpGet("next")]
-    public async Task<ActionResult<MeetingSimpleDto>> GetNextMeeting()
+    public async Task<ActionResult<MeetingDto>> GetNextMeeting()
     {
+        var email = this.GetEmail();
+
+        if (email is null)
+        {
+            return this.Unauthorized();
+        }
+
         var meeting = await this.CbcContext.Meetings
             .Where(m => m.WinningBookId == null)
             .OrderBy(m => m.DateTime)

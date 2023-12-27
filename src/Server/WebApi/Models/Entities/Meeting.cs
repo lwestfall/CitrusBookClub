@@ -15,4 +15,6 @@ public class Meeting
     public Book? WinningBook { get; set; }
 
     public List<BookVote> Votes { get; set; } = [];
+
+    public List<BookRecommendation> BookRecommendations { get; set; } = [];
 }

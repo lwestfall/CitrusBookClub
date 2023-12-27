@@ -11,9 +11,8 @@ describe('NextMeetingCardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NextMeetingCardComponent ]
-    })
-    .compileComponents();
+      declarations: [NextMeetingCardComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
