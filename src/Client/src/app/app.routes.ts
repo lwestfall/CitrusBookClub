@@ -1,27 +1,24 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router, Routes } from '@angular/router';
+import { CanActivateFn, Routes } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { AppState } from './app-state';
 import { BooksPageComponent } from './books/books-page/books-page.component';
 import { MeetingsPageComponent } from './meetings/meetings-page/meetings-page.component';
-import { AuthService } from './services/auth.service';
+import {
+  selectAuthenticatedUserIsAdmin,
+  selectAuthenticatedUserIsVerified,
+} from './users/state/users.selectors';
+import { UsersPageComponent } from './users/users-page/users-page.component';
 
-const canActivateVerified: CanActivateFn = () => {
-  if (inject(AuthService).isVerified()) {
-    return true;
-  } else {
-    inject(Router).navigate(['/']);
-  }
-
-  return false;
+const canActivateVerified: CanActivateFn = (): Observable<boolean> => {
+  const store = inject(Store<AppState>);
+  return store.select(selectAuthenticatedUserIsVerified);
 };
 
 const canActivateAdmin: CanActivateFn = () => {
-  if (inject(AuthService).isAdmin()) {
-    return true;
-  } else {
-    inject(Router).navigate(['/']);
-  }
-
-  return false;
+  const store = inject(Store<AppState>);
+  return store.select(selectAuthenticatedUserIsAdmin);
 };
 
 export const routes: Routes = [
@@ -45,10 +42,7 @@ export const routes: Routes = [
   },
   {
     path: 'users',
-    loadComponent: () =>
-      import('./users/users-page/users-page.component').then(
-        mod => mod.UsersPageComponent
-      ),
+    component: UsersPageComponent,
     canActivate: [canActivateAdmin],
     data: { animation: 'UsersPage' },
   },

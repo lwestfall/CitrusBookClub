@@ -2,13 +2,12 @@ import { AsyncPipe, CommonModule } from '@angular/common';
 import { Component, ElementRef } from '@angular/core';
 import { ChildrenOutletContexts, RouterOutlet } from '@angular/router';
 import { slideInAnimation } from './animations';
-import { UserDto } from './api/models';
 import { BooksModule } from './books/books.module';
 import { MeetingsModule } from './meetings/meetings.module';
 import { NavbarComponent } from './navbar/navbar.component';
-import { AuthService } from './services/auth.service';
 import { SnowGeneratorComponent } from './special/snow/snow-generator/snow-generator.component';
 import { ToastsContainerComponent } from './toasts-container/toasts-container.component';
+import { UsersModule } from './users/users.module';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +18,7 @@ import { ToastsContainerComponent } from './toasts-container/toasts-container.co
     NavbarComponent,
     BooksModule,
     MeetingsModule,
+    UsersModule,
     AsyncPipe,
     ToastsContainerComponent,
     SnowGeneratorComponent,
@@ -29,21 +29,13 @@ import { ToastsContainerComponent } from './toasts-container/toasts-container.co
 })
 export class AppComponent {
   year = new Date().getFullYear();
-  user?: UserDto;
-  verified = false;
   isWinter = this.winter();
   snowEnabled = this.winter();
 
   constructor(
-    authService: AuthService,
     private contexts: ChildrenOutletContexts,
     private elementRef: ElementRef
   ) {
-    authService.apiUser$.subscribe(user => {
-      this.user = user;
-      this.verified = authService.isVerified();
-    });
-
     if (localStorage.getItem('snow') === 'false') {
       this.snowEnabled = false;
     }

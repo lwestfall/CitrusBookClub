@@ -34,7 +34,9 @@
           >
         </li>
         @for (link of verifiedLinks; track link) {
-          <li [ngbNavItem]="link.route" [disabled]="!verified">
+          <li
+            [ngbNavItem]="link.route"
+            [disabled]="(verified$ | async) === false">
             <a
               ngbNavLink
               [routerLink]="link.route"
@@ -44,9 +46,11 @@
             >
           </li>
         }
-        @if (admin) {
+        @if (admin$ | async) {
           @for (link of adminLinks; track link) {
-            <li [ngbNavItem]="link.route" [disabled]="!admin">
+            <li
+              [ngbNavItem]="link.route"
+              [disabled]="(admin$ | async) === false">
               <a
                 ngbNavLink
                 [routerLink]="link.route"
@@ -58,7 +62,7 @@
           }
         }
       </ul>
-      <div *ngIf="verified" class="ms-auto me-auto">
+      <div *ngIf="verified$ | async" class="ms-auto me-auto">
         <app-meeting-countdown></app-meeting-countdown>
       </div>
       <div class="ms-auto mb-2 mb-lg-0">

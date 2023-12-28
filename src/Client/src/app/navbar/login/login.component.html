@@ -1,19 +1,20 @@
-<asl-google-signin-button
-  type="standard"
-  size="medium"
-  theme="filled_blue"
-  logo_alignment="center"
-  *ngIf="!user">
-</asl-google-signin-button>
-<div *ngIf="user" ngbDropdown class="d-inline-block">
+<div *ngIf="user$ | async; else notLoggedIn" ngbDropdown class="d-inline-block">
   <button
     type="button"
     class="btn btn-outline-primary"
     id="dropdownBasic1"
     ngbDropdownToggle>
-    Hi, {{ user.firstName }}!
+    Hi, {{ (user$ | async)!.firstName }}!
   </button>
   <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
     <button ngbDropdownItem (click)="signOut()">Signout</button>
   </div>
 </div>
+<ng-template #notLoggedIn>
+  <asl-google-signin-button
+    type="standard"
+    size="medium"
+    theme="filled_blue"
+    logo_alignment="center">
+  </asl-google-signin-button>
+</ng-template>

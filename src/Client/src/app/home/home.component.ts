@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app-state';
 import { MeetingsModule } from '../meetings/meetings.module';
 import { LoginComponent } from '../navbar/login/login.component';
-import { AuthService } from '../services/auth.service';
+import { selectAuthenticatedUser } from '../users/state/users.selectors';
 
 @Component({
   selector: 'app-home',
@@ -12,19 +14,18 @@ import { AuthService } from '../services/auth.service';
   imports: [CommonModule, LoginComponent, RouterModule, MeetingsModule],
   standalone: true,
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   signedIn = false;
   verified = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(store: Store<AppState>) {
+    const obs = store.select(selectAuthenticatedUser);
 
-  ngOnInit() {
-    this.signedIn = this.authService.isLoggedIn();
-    this.verified = this.authService.isVerified();
-
-    this.authService.apiUser$.subscribe(() => {
-      this.signedIn = this.authService.isLoggedIn();
-      this.verified = this.authService.isVerified();
+    obs.subscribe(user => {
+      if (user) {
+        this.signedIn = true;
+        this.verified = user.roles?.includes('Verified') ?? false;
+      }
     });
   }
 }

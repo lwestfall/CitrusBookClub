@@ -9,9 +9,15 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgbCollapseModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { AppState } from '../app-state';
 import { ClickOutsideDirective } from '../directives/click-outside.directive';
 import { MeetingsModule } from '../meetings/meetings.module';
-import { AuthService } from '../services/auth.service';
+import {
+  selectAuthenticatedUserIsAdmin,
+  selectAuthenticatedUserIsVerified,
+} from '../users/state/users.selectors';
 import { LoginComponent } from './login/login.component';
 
 @Component({
@@ -31,8 +37,8 @@ import { LoginComponent } from './login/login.component';
   standalone: true,
 })
 export class NavbarComponent implements AfterViewInit {
-  verified = false;
-  admin = false;
+  verified$: Observable<boolean>;
+  admin$: Observable<boolean>;
   isCollapsed = true;
 
   verifiedLinks = [
@@ -54,13 +60,11 @@ export class NavbarComponent implements AfterViewInit {
   previousHeight = 0;
 
   constructor(
-    authService: AuthService,
+    store: Store<AppState>,
     public route: ActivatedRoute
   ) {
-    authService.apiUser$.subscribe(() => {
-      this.verified = authService.isVerified();
-      this.admin = authService.isAdmin();
-    });
+    this.verified$ = store.select(selectAuthenticatedUserIsVerified);
+    this.admin$ = store.select(selectAuthenticatedUserIsAdmin);
   }
 
   ngAfterViewInit() {
