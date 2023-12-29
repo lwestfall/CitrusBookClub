@@ -27,7 +27,7 @@ export class GoogleBooksService {
 
     const response = await firstValueFrom(
       this.http.get<GoogleBookVolumeResponse>(
-        `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=${this.token}`
+        `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&printType=books&key=${this.token}`
       )
     );
 
@@ -50,7 +50,8 @@ export class GoogleBooksService {
     let queryStr = 'q=';
 
     if (title) {
-      queryStr += `intitle:${encodeURIComponent(title)}`;
+      // queryStr += `intitle:${title}`;
+      queryStr += `"${title}"`;
     }
 
     if (author) {
@@ -59,15 +60,49 @@ export class GoogleBooksService {
 
     const response = await firstValueFrom(
       this.http.get<GoogleBookVolumeResponse>(
-        `https://www.googleapis.com/books/v1/volumes?q=${queryStr}&key=${this.token}`
+        `https://www.googleapis.com/books/v1/volumes?${queryStr}&printType=books&key=${this.token}`
       )
     );
 
+    const volumes = GoogleBooksService.filterDuplicates(response.items ?? []);
+
     return (
-      response.items
-        ?.filter(i => i.volumeInfo.pageCount < MAX_PAGE_COUNT)
+      volumes
+        .filter(i => i.volumeInfo.pageCount < MAX_PAGE_COUNT)
         ?.slice(0, maxResults) ?? []
     );
+  }
+
+  private static filterDuplicates(
+    volumes: GoogleBookVolume[]
+  ): GoogleBookVolume[] {
+    const seen = new Map<string, GoogleBookVolume>();
+
+    volumes.forEach(volume => {
+      const id =
+        volume.volumeInfo.title + (volume.volumeInfo.authors?.join(',') || '');
+      const existingVolume = seen.get(id);
+
+      if (
+        !existingVolume ||
+        this.calculateScore(volume) > this.calculateScore(existingVolume)
+      ) {
+        seen.set(id, volume);
+      }
+    });
+
+    return Array.from(seen.values());
+  }
+
+  private static calculateScore(volume: GoogleBookVolume): number {
+    let score = 0;
+    score += volume.volumeInfo.title ? 1 : 0;
+    score += volume.volumeInfo.authors ? 1 : 0;
+    score += volume.volumeInfo.description ? 1 : 0;
+    score += volume.volumeInfo.pageCount ? 1 : 0;
+    score += volume.volumeInfo.imageLinks ? 1 : 0;
+
+    return score;
   }
 }
 
