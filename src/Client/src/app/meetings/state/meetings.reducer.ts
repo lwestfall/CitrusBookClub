@@ -4,13 +4,13 @@ import * as meetingsActions from './meetings.actions';
 
 export interface MeetingsState {
   nextMeeting: MeetingDto | null;
-  loadingNextMeeting: boolean;
+  isLoadingNextMeeting: boolean;
   nextMeetingError: string | null;
 }
 
 export const initialState: MeetingsState = {
   nextMeeting: null,
-  loadingNextMeeting: false,
+  isLoadingNextMeeting: false,
   nextMeetingError: null,
 };
 
@@ -20,14 +20,14 @@ export const meetingsReducer = createReducer(
     meetingsActions.getNextMeeting,
     (state): MeetingsState => ({
       ...state,
-      loadingNextMeeting: true,
+      isLoadingNextMeeting: true,
     })
   ),
   on(
     meetingsActions.getNextMeetingSuccess,
     (state, action): MeetingsState => ({
       ...state,
-      loadingNextMeeting: false,
+      isLoadingNextMeeting: false,
       nextMeeting: action.nextMeeting,
     })
   ),
@@ -35,7 +35,7 @@ export const meetingsReducer = createReducer(
     meetingsActions.getNextMeetingFailure,
     (state, action): MeetingsState => ({
       ...state,
-      loadingNextMeeting: false,
+      isLoadingNextMeeting: false,
       nextMeetingError: action.error,
     })
   )

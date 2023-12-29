@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 import { AppState } from '../app-state';
 import { ClickOutsideDirective } from '../directives/click-outside.directive';
 import { MeetingsModule } from '../meetings/meetings.module';
+import { getNextMeeting } from '../meetings/state/meetings.actions';
 import {
   selectAuthenticatedUserIsAdmin,
   selectAuthenticatedUserIsVerified,
@@ -63,6 +64,8 @@ export class NavbarComponent implements AfterViewInit {
     store: Store<AppState>,
     public route: ActivatedRoute
   ) {
+    store.dispatch(getNextMeeting());
+
     this.verified$ = store.select(selectAuthenticatedUserIsVerified);
     this.admin$ = store.select(selectAuthenticatedUserIsAdmin);
   }

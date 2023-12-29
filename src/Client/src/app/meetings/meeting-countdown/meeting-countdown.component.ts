@@ -1,36 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { Store } from '@ngrx/store';
 import moment from 'moment';
+import { Observable } from 'rxjs';
 import { MeetingDto } from '../../api/models';
-import { MeetingsService } from '../../api/services';
+import { AppState } from '../../app-state';
+import { selectNextMeeting } from '../state/meetings.selectors';
 
 @Component({
   selector: 'app-meeting-countdown',
   templateUrl: './meeting-countdown.component.html',
   styleUrls: ['./meeting-countdown.component.css'],
 })
-export class MeetingCountdownComponent implements OnInit {
-  nextMeeting?: MeetingDto;
+export class MeetingCountdownComponent {
+  nextMeeting$: Observable<MeetingDto | null>;
   nextMeetingStr?: string;
 
-  constructor(private mtgSvc: MeetingsService) {}
+  constructor(store: Store<AppState>) {
+    this.nextMeeting$ = store.select(selectNextMeeting);
 
-  ngOnInit() {
-    this.mtgSvc
-      .getNextMeeting()
-      .subscribe({ next: mtg => (this.nextMeeting = mtg) });
-
-    setInterval(() => {
-      this.nextMeetingStr = this.timeUntilNextMeeting();
-    }, 1000);
+    this.nextMeeting$.subscribe(nextMeeting => {
+      setInterval(() => {
+        this.nextMeetingStr = this.timeUntilMeeting(nextMeeting);
+      }, 1000);
+    });
   }
 
-  timeUntilNextMeeting(): string {
-    if (!this.nextMeeting) {
+  timeUntilMeeting(meeting: MeetingDto | null): string {
+    if (!meeting) {
       return '';
     }
 
     const now = moment();
-    const meetingStart = moment(this.nextMeeting.dateTime);
+    const meetingStart = moment(meeting.dateTime);
     const diffSecondsTotal = meetingStart.diff(now, 'seconds');
     const diffDays = Math.floor(diffSecondsTotal / 86400);
     const diffHours = Math.floor((diffSecondsTotal % 86400) / 3600);
