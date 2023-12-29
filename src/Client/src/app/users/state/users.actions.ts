@@ -7,7 +7,7 @@ export const getAuthenticatedUser = createAction(
 
 export const getAuthenticatedUserSuccess = createAction(
   '[Users] Get Authenticated User Success',
-  props<{ userDto: UpdateUserDto }>()
+  props<{ userDto: UserDto }>()
 );
 
 export const getAuthenticatedUserFailure = createAction(
@@ -22,7 +22,7 @@ export const updateUser = createAction(
 
 export const updateUserSuccess = createAction(
   '[Users] Update User Success',
-  props<{ userDto: UpdateUserDto }>()
+  props<{ userDto: UserDto }>()
 );
 
 export const updateUserFailure = createAction(
@@ -49,7 +49,7 @@ export const updateUserRoles = createAction(
 
 export const updateUserRolesSuccess = createAction(
   '[Users] Update User Roles Success',
-  props<{ userDto: UpdateUserDto }>()
+  props<{ userDto: UserDto }>()
 );
 
 export const updateUserRolesFailure = createAction(

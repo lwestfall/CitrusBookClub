@@ -80,4 +80,25 @@ public class BooksController : ApiControllerBase
         await this.CbcContext.SaveChangesAsync();
         return this.CreatedAtAction(nameof(GetBook), new { id = book.Id }, this.Mapper.Map<BookDto>(book));
     }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteBook(Guid id)
+    {
+        var book = await this.CbcContext.Books.FindAsync(id);
+        if (book == null)
+        {
+            return this.NotFound();
+        }
+
+        var email = this.GetEmail();
+
+        if (book.UserEmail != email && !this.User.IsInRole("Admin"))
+        {
+            return this.Unauthorized();
+        }
+
+        this.CbcContext.Books.Remove(book);
+        await this.CbcContext.SaveChangesAsync();
+        return this.NoContent();
+    }
 }

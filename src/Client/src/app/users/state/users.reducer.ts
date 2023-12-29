@@ -86,7 +86,6 @@ export const usersReducer = createReducer(
       ...state,
       authenticatedUser: {
         ...state.authenticatedUser,
-        user: action.userDto,
         isLoading: false,
         error: null,
       },
@@ -163,7 +162,6 @@ export const usersReducer = createReducer(
       ...state,
       authenticatedUser: {
         ...state.authenticatedUser,
-        user: action.userDto,
         isLoading: false,
         error: null,
       },

@@ -15,6 +15,8 @@ import { createBook } from '../fn/books/create-book';
 import { CreateBook$Params } from '../fn/books/create-book';
 import { createBook$Plain } from '../fn/books/create-book-plain';
 import { CreateBook$Plain$Params } from '../fn/books/create-book-plain';
+import { deleteBook } from '../fn/books/delete-book';
+import { DeleteBook$Params } from '../fn/books/delete-book';
 import { getBook } from '../fn/books/get-book';
 import { GetBook$Params } from '../fn/books/get-book';
 import { getBook$Plain } from '../fn/books/get-book-plain';
@@ -270,6 +272,31 @@ export class BooksService extends BaseService {
   getBook(params: GetBook$Params, context?: HttpContext): Observable<BookDto> {
     return this.getBook$Response(params, context).pipe(
       map((r: StrictHttpResponse<BookDto>): BookDto => r.body)
+    );
+  }
+
+  /** Path part for operation `deleteBook()` */
+  static readonly DeleteBookPath = '/api/Books/{id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `deleteBook()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteBook$Response(params: DeleteBook$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return deleteBook(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `deleteBook$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteBook(params: DeleteBook$Params, context?: HttpContext): Observable<void> {
+    return this.deleteBook$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 

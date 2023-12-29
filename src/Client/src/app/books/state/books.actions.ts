@@ -39,3 +39,33 @@ export const getOthersBooksFailure = createAction(
   '[Books] Get Others Books Failure',
   props<{ error: string }>()
 );
+
+export const deleteBook = createAction(
+  '[Books] Delete Book',
+  props<{ bookId: string }>()
+);
+
+export const deleteBookSuccess = createAction(
+  '[Books] Delete Book Success',
+  props<{ bookId: string }>()
+);
+
+export const deleteBookFailure = createAction(
+  '[Books] Delete Book Failure',
+  props<{ error: string }>()
+);
+
+export const recommendBookForMeeting = createAction(
+  '[Books] Recommend Book For Meeting',
+  props<{ bookId: string; meetingId: string }>()
+);
+
+export const recommendBookForMeetingSuccess = createAction(
+  '[Books] Recommend Book For Meeting Success',
+  props<{ bookId: string }>()
+);
+
+export const recommendBookForMeetingFailure = createAction(
+  '[Books] Recommend Book For Meeting Failure',
+  props<{ error: string }>()
+);

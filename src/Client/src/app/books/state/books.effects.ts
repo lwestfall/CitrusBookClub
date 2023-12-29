@@ -48,6 +48,20 @@ export class BooksEffects {
     );
   });
 
+  deleteBook$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(actions.deleteBook),
+      mergeMap(({ bookId }) =>
+        this.booksService.deleteBook({ id: bookId }).pipe(
+          map(() => actions.deleteBookSuccess({ bookId })),
+          catchError(error =>
+            of(actions.deleteBookFailure({ error: error.message }))
+          )
+        )
+      )
+    );
+  });
+
   constructor(
     private actions$: Actions,
     private booksService: BooksService

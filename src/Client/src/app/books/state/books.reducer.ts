@@ -60,7 +60,7 @@ export const booksReducer = createReducer(
       mine: {
         ...state.mine,
         isLoading: false,
-        books: _.orderBy([...state.mine.books, action.book], b => b.title),
+        books: sortBooksByTitle([...state.mine.books, action.book]),
       },
       addForm: {
         ...state.addForm,
@@ -146,5 +146,43 @@ export const booksReducer = createReducer(
         error: action.error,
       },
     })
+  ),
+  on(
+    bookActions.deleteBook,
+    (state): BooksState => ({
+      ...state,
+      mine: {
+        ...state.mine,
+        isLoading: true,
+      },
+    })
+  ),
+  on(
+    bookActions.deleteBookSuccess,
+    (state, action): BooksState => ({
+      ...state,
+      mine: {
+        ...state.mine,
+        isLoading: false,
+        books: sortBooksByTitle(
+          state.mine.books.filter(b => b.id !== action.bookId)
+        ),
+      },
+    })
+  ),
+  on(
+    bookActions.deleteBookFailure,
+    (state, action): BooksState => ({
+      ...state,
+      mine: {
+        ...state.mine,
+        isLoading: false,
+        error: action.error,
+      },
+    })
   )
 );
+
+function sortBooksByTitle(books: BookDto[]) {
+  return _.orderBy(books, b => b.title);
+}

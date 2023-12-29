@@ -1,6 +1,10 @@
 import { Component, Input } from '@angular/core';
+import { Actions, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import { BookDto } from '../../api/models';
-import { BooksService } from '../../api/services';
+import { AppState } from '../../app-state';
+import { ToastsService } from '../../services/toasts.service';
+import { deleteBook, deleteBookSuccess } from '../state/books.actions';
 
 @Component({
   selector: 'app-book-card',
@@ -12,8 +16,17 @@ export class BookCardComponent {
   @Input() mine = false;
   expanded = false;
 
-  constructor(private booksService: BooksService) {}
+  constructor(
+    private store: Store<AppState>,
+    private actions$: Actions,
+    private toastService: ToastsService
+  ) {}
+
   deleteBook() {
-    // TODO
+    this.store.dispatch(deleteBook({ bookId: this.book.id! }));
+
+    this.actions$.pipe(ofType(deleteBookSuccess)).subscribe(() => {
+      this.toastService.showSuccess('Book deleted');
+    });
   }
 }
