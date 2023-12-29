@@ -23,15 +23,17 @@ public class MeetingsController : ApiControllerBase
         var meeting = await this.CbcContext.Meetings
             .Where(m => m.WinningBookId == null)
             .OrderBy(m => m.DateTime)
-            .ProjectTo<MeetingDto>(this.Mapper.ConfigurationProvider)
+            .Include(m => m.PreviousMeeting)
+                .ThenInclude(m => m!.WinningBook)
             .FirstOrDefaultAsync();
+        // note: avoid projection here because of the recursive relationship to last meeting
 
         if (meeting is null)
         {
             return this.NotFound();
         }
 
-        return this.Ok(meeting);
+        return this.Ok(this.Mapper.Map<MeetingDto>(meeting));
     }
 
     [HttpGet("{id}")]
