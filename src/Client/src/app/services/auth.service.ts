@@ -22,17 +22,14 @@ export class AuthService {
     private socialAuthService: SocialAuthService
   ) {
     this.apiUser$ = this.store.select(selectAuthenticatedUser);
-    if (localStorage.getItem('id_token')) {
-      this.store.dispatch(getAuthenticatedUser());
-    }
 
     this.socialAuthService.authState.subscribe(socialUser => {
       this._socialUser = socialUser;
       if (socialUser) {
         localStorage.setItem('id_token', this._socialUser.idToken);
         this._googleIdToken = socialUser.idToken;
+        this.store.dispatch(getAuthenticatedUser());
       }
-      this.store.dispatch(getAuthenticatedUser());
     });
   }
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AppState } from '../app-state';
@@ -15,7 +15,7 @@ import { selectAuthenticatedUser } from '../users/state/users.selectors';
   imports: [CommonModule, LoginComponent, RouterModule, MeetingsModule],
   standalone: true,
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   signedIn = false;
   verified = false;
 
@@ -26,13 +26,9 @@ export class HomeComponent implements OnInit {
       if (user) {
         this.signedIn = true;
         this.verified = user.roles?.includes('Verified') ?? false;
+      } else {
+        this.store.dispatch(getAuthenticatedUser());
       }
     });
-  }
-
-  ngOnInit(): void {
-    if (!this.signedIn) {
-      this.store.dispatch(getAuthenticatedUser());
-    }
   }
 }

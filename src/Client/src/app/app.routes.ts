@@ -1,25 +1,30 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Routes } from '@angular/router';
+import {
+  CanActivateFn,
+  Router,
+  RouterStateSnapshot,
+  Routes,
+} from '@angular/router';
+import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, catchError, filter, of, switchMap, take, tap } from 'rxjs';
+import { UserDto } from './api/models';
 import { AppState } from './app-state';
 import { BooksPageComponent } from './books/books-page/books-page.component';
 import { MeetingsPageComponent } from './meetings/meetings-page/meetings-page.component';
 import {
-  selectAuthenticatedUserIsAdmin,
-  selectAuthenticatedUserIsVerified,
-} from './users/state/users.selectors';
+  getAuthenticatedUser,
+  getAuthenticatedUserFailure,
+  getAuthenticatedUserSuccess,
+} from './users/state/users.actions';
+import { selectAuthenticatedUser } from './users/state/users.selectors';
 import { UsersPageComponent } from './users/users-page/users-page.component';
 
-const canActivateVerified: CanActivateFn = (): Observable<boolean> => {
-  const store = inject(Store<AppState>);
-  return store.select(selectAuthenticatedUserIsVerified);
-};
+const canActivateVerified: CanActivateFn = (_, state): Observable<boolean> =>
+  roleBasedCanActivate('Verified', state);
 
-const canActivateAdmin: CanActivateFn = () => {
-  const store = inject(Store<AppState>);
-  return store.select(selectAuthenticatedUserIsAdmin);
-};
+const canActivateAdmin: CanActivateFn = (_, state): Observable<boolean> =>
+  roleBasedCanActivate('Admin', state);
 
 export const routes: Routes = [
   {
@@ -51,3 +56,45 @@ export const routes: Routes = [
     redirectTo: '',
   },
 ];
+
+function roleBasedCanActivate(
+  role: string,
+  state: RouterStateSnapshot
+): Observable<boolean> {
+  const router = inject(Router);
+
+  return getAuthenticatedUserLocal().pipe(
+    switchMap(u => (u?.roles?.includes(role) ? of(true) : of(false))),
+    catchError(() => of(false)),
+    tap(isVerified => {
+      if (!isVerified) {
+        router.navigate(['/'], { queryParams: { returnUrl: state.url } });
+      }
+    })
+  );
+}
+
+function getAuthenticatedUserLocal(): Observable<UserDto | null> {
+  const store = inject(Store<AppState>);
+  const actions$ = inject(Actions);
+
+  return store.select(selectAuthenticatedUser).pipe(
+    tap(user => {
+      if (!user) {
+        store.dispatch(getAuthenticatedUser());
+      }
+    }),
+    switchMap(user => {
+      if (user) {
+        return of(user);
+      } else {
+        return actions$.pipe(
+          ofType(getAuthenticatedUserSuccess, getAuthenticatedUserFailure),
+          switchMap(() => store.select(selectAuthenticatedUser)),
+          filter(user => user !== undefined),
+          take(1)
+        );
+      }
+    })
+  );
+}
