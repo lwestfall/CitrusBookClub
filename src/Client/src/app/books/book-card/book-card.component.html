@@ -9,7 +9,10 @@
         <div>{{ book.pageCount }} pages</div>
       </div>
       <div class="ms-auto" *ngIf="book.thumbnailLink">
-        <img src="{{ book.thumbnailLink }}" width="40px" />
+        <img
+          src="{{ book.thumbnailLink }}"
+          width="40px"
+          alt="Thumbnail image of the book: {{ book.title }}" />
       </div>
     </div>
     <div class="text-center" *ngIf="mine">

@@ -6,9 +6,9 @@
     <h6 class="card-subtitle mb-2 text-muted">
       <app-meeting-countdown></app-meeting-countdown>
     </h6>
-    <p class="card-text">
-      We'll discuss our previous book, <i>{{ meeting.winningBook?.title }}</i
-      >.
+    <p class="card-text" *ngIf="meeting.previousMeeting?.winningBook">
+      We'll discuss
+      <i>{{ meeting.previousMeeting?.winningBook?.title }}</i>
     </p>
     <p class="card-text">
       Make sure you've recommended a book for this meeting!

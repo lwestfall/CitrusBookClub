@@ -1,6 +1,6 @@
 <div class="card">
   <div class="card-body">
-    <div class="d-flex flex-row">
+    <div class="d-flex flex-row gap-2">
       <div>
         <h5 class="card-title">{{ user.firstName }} {{ user.lastName }}</h5>
         <h6 class="card-subtitle mb-2 text-body-secondary">
@@ -13,21 +13,21 @@
           >
         </h6>
       </div>
-      <div class="ms-auto d-flex flex-column gap-2">
+      <div class="ms-auto d-flex flex-column gap-2 align-items-end">
         <ng-container *ngIf="verified; else unverified">
           <div class="badge bg-success d-flex flex-row gap-1">
             <div>Verified</div>
-            <a class="ms-auto remove" (click)="removeRole(user, 'Verified')"
-              ><i class="bi bi-x-lg"></i
-            ></a>
+            <button class="remove" (click)="removeRole(user, 'Verified')">
+              <i class="bi bi-x-lg"></i>
+            </button>
           </div>
         </ng-container>
         <ng-container *ngIf="admin; else notAdmin">
           <div class="badge bg-info d-flex flex-row gap-1">
             <div>Admin</div>
-            <a class="ms-auto remove" (click)="removeRole(user, 'Admin')"
-              ><i class="bi bi-x-lg"></i
-            ></a>
+            <button class="remove" (click)="removeRole(user, 'Admin')">
+              <i class="bi bi-x-lg"></i>
+            </button>
           </div>
         </ng-container>
         <ng-template #notAdmin>

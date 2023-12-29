@@ -3,12 +3,16 @@
   min-width: 20rem;
 }
 
-a.remove {
+button.remove {
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
   color: var(--bs-danger);
   cursor: pointer;
   -webkit-text-stroke: 1px var(--bs-danger);
 }
 
-a.remove:hover {
+button.remove:hover {
   -webkit-text-stroke: 3px var(--bs-danger);
 }

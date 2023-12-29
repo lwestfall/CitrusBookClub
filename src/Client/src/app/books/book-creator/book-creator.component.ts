@@ -60,10 +60,7 @@ export class BookCreatorComponent implements OnInit {
 
     actionsSubj.pipe(ofType(addBookSuccess)).subscribe(() => {
       this.clear();
-      this.toastsService.show({
-        classname: 'text-bg-success text-light',
-        header: 'Book Created!',
-      });
+      this.toastsService.showSuccess('Book Created!');
     });
   }
 
@@ -219,6 +216,7 @@ export class BookCreatorComponent implements OnInit {
         /^http:/i,
         'https:'
       ),
+      id: '',
     };
   }
 
