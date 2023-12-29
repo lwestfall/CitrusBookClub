@@ -19,6 +19,6 @@ import { meetingsReducer } from './state/meetings.reducer';
     MeetingsPageComponent,
     NextMeetingCardComponent,
   ],
-  exports: [MeetingCountdownComponent],
+  exports: [MeetingCountdownComponent, NextMeetingCardComponent],
 })
 export class MeetingsModule {}

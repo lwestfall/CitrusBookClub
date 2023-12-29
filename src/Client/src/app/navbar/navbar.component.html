@@ -62,8 +62,13 @@
           }
         }
       </ul>
-      <div *ngIf="verified$ | async" class="ms-auto me-auto">
-        <app-meeting-countdown></app-meeting-countdown>
+      <div
+        *ngIf="(verified$ | async) && (nextMeeting$ | async)"
+        class="ms-auto me-auto">
+        <span
+          >Next meeting in
+          <app-meeting-countdown></app-meeting-countdown>!</span
+        >
       </div>
       <div class="ms-auto mb-2 mb-lg-0">
         <app-login></app-login>

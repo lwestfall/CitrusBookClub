@@ -11,10 +11,12 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgbCollapseModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { MeetingDto } from '../api/models';
 import { AppState } from '../app-state';
 import { ClickOutsideDirective } from '../directives/click-outside.directive';
 import { MeetingsModule } from '../meetings/meetings.module';
 import { getNextMeeting } from '../meetings/state/meetings.actions';
+import { selectNextMeeting } from '../meetings/state/meetings.selectors';
 import {
   selectAuthenticatedUserIsAdmin,
   selectAuthenticatedUserIsVerified,
@@ -40,6 +42,7 @@ import { LoginComponent } from './login/login.component';
 export class NavbarComponent implements AfterViewInit {
   verified$: Observable<boolean>;
   admin$: Observable<boolean>;
+  nextMeeting$: Observable<MeetingDto | null>;
   isCollapsed = true;
 
   verifiedLinks = [
@@ -68,6 +71,7 @@ export class NavbarComponent implements AfterViewInit {
 
     this.verified$ = store.select(selectAuthenticatedUserIsVerified);
     this.admin$ = store.select(selectAuthenticatedUserIsAdmin);
+    this.nextMeeting$ = store.select(selectNextMeeting);
   }
 
   ngAfterViewInit() {

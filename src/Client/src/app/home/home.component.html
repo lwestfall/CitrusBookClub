@@ -19,7 +19,7 @@
       back later.
     </div>
   </div>
-  <div *ngIf="verified">
+  <div *ngIf="verified" class="d-flex flex-column gap-3">
     <div class="d-flex flex-row justify-content-center gap-2 my-2">
       <a class="btn btn-primary btn-lg" routerLink="books" role="button"
         >Books</a
@@ -28,6 +28,11 @@
         >Meetings</a
       >
     </div>
-    <app-meeting-countdown></app-meeting-countdown>
+    <div *ngIf="nextMeeting$ | async as meeting">
+      <h5 class="display-5">Next Meeting</h5>
+      <app-next-meeting-card
+        [meeting]="meeting"
+        class="text-start"></app-next-meeting-card>
+    </div>
   </div>
 </div>

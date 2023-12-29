@@ -1,5 +1,10 @@
 <h2 class="display-2 text-center">Next Meeting</h2>
 <div class="d-flex flex-column align-items-center mb-4">
-  <app-next-meeting-card></app-next-meeting-card>
+  <app-next-meeting-card
+    *ngIf="nextMeeting$ | async as meeting; else noNextMeeting"
+    [meeting]="meeting"></app-next-meeting-card>
+  <ng-template #noNextMeeting>
+    <h4>No upcoming meetings have been set</h4>
+  </ng-template>
 </div>
 <h4 class="display-4 text-center">Past Meetings</h4>

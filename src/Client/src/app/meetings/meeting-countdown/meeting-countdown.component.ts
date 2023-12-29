@@ -19,6 +19,8 @@ export class MeetingCountdownComponent {
     this.nextMeeting$ = store.select(selectNextMeeting);
 
     this.nextMeeting$.subscribe(nextMeeting => {
+      this.nextMeetingStr = this.timeUntilMeeting(nextMeeting);
+
       setInterval(() => {
         this.nextMeetingStr = this.timeUntilMeeting(nextMeeting);
       }, 1000);
@@ -69,6 +71,6 @@ export class MeetingCountdownComponent {
       timeUntilStrs.push(`${diffSeconds} seconds`);
     }
 
-    return `Next meeting in ${timeUntilStrs.join(', ')}!`;
+    return `${timeUntilStrs.join(', ')}`;
   }
 }

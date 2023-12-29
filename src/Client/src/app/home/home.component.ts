@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AppState } from '../app-state';
 import { MeetingsModule } from '../meetings/meetings.module';
+import { selectNextMeeting } from '../meetings/state/meetings.selectors';
 import { LoginComponent } from '../navbar/login/login.component';
 import { getAuthenticatedUser } from '../users/state/users.actions';
 import { selectAuthenticatedUser } from '../users/state/users.selectors';
@@ -18,6 +19,7 @@ import { selectAuthenticatedUser } from '../users/state/users.selectors';
 export class HomeComponent {
   signedIn = false;
   verified = false;
+  nextMeeting$ = this.store.select(selectNextMeeting);
 
   constructor(private store: Store<AppState>) {
     const obs = store.select(selectAuthenticatedUser);

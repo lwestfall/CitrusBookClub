@@ -1,8 +1,15 @@
 <div class="card meeting-card">
   <div class="card-body">
-    <h5 class="card-title">Meeting Date</h5>
-    <h6 class="card-subtitle mb-2 text-muted">Meeting Countdown</h6>
-    <p class="card-text">We'll discuss our previous book, Book Title.</p>
+    <h5 class="card-title">
+      {{ meeting.dateTime | date: 'EEE, MMMM d, y, h:mm a' }}
+    </h5>
+    <h6 class="card-subtitle mb-2 text-muted">
+      <app-meeting-countdown></app-meeting-countdown>
+    </h6>
+    <p class="card-text">
+      We'll discuss our previous book, <i>{{ meeting.winningBook?.title }}</i
+      >.
+    </p>
     <p class="card-text">
       Make sure you've recommended a book for this meeting!
     </p>
