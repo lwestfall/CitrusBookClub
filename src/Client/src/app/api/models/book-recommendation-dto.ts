@@ -3,6 +3,6 @@
 import { BookDto } from '../models/book-dto';
 import { MeetingDto } from '../models/meeting-dto';
 export interface BookRecommendationDto {
-  book?: BookDto;
-  meeting?: MeetingDto;
+  book: BookDto;
+  meeting: MeetingDto;
 }
