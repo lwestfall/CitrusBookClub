@@ -3,25 +3,31 @@ import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { MiscService } from '../api/services';
 
+const MAX_PAGE_COUNT = 600;
+
 @Injectable({
   providedIn: 'root',
 })
 export class GoogleBooksService {
+  token: string | null = null;
+
   constructor(
     private miscService: MiscService,
     private http: HttpClient
-  ) {}
+  ) {
+    this.miscService.googleApiKey().subscribe(token => {
+      this.token = token;
+    });
+  }
 
   async getBookVolumeByIsbn(isbn: string): Promise<GoogleBookVolume | null> {
-    const token = await firstValueFrom(this.miscService.googleApiKey());
-
-    if (!token) {
+    if (!this.token) {
       throw new Error('Google API key unavailable');
     }
 
     const response = await firstValueFrom(
       this.http.get<GoogleBookVolumeResponse>(
-        `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=${token}`
+        `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=${this.token}`
       )
     );
 
@@ -37,9 +43,7 @@ export class GoogleBooksService {
     author: string | null | undefined,
     maxResults: number
   ): Promise<GoogleBookVolume[]> {
-    const token = await firstValueFrom(this.miscService.googleApiKey());
-
-    if (!token) {
+    if (!this.token) {
       throw new Error('Google API key unavailable');
     }
 
@@ -55,11 +59,15 @@ export class GoogleBooksService {
 
     const response = await firstValueFrom(
       this.http.get<GoogleBookVolumeResponse>(
-        `https://www.googleapis.com/books/v1/volumes?q=${queryStr}&maxResults=${maxResults}&key=${token}`
+        `https://www.googleapis.com/books/v1/volumes?q=${queryStr}&key=${this.token}`
       )
     );
 
-    return response.items ?? [];
+    return (
+      response.items
+        ?.filter(i => i.volumeInfo.pageCount < MAX_PAGE_COUNT)
+        ?.slice(0, maxResults) ?? []
+    );
   }
 }
 
