@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Security.Claims;
 using Cbc.WebApi.Data;
+using Cbc.WebApi.Helpers;
 using Cbc.WebApi.Models.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -70,6 +71,8 @@ if (builder.Environment.IsDevelopment())
     {
         options.SupportNonNullableReferenceTypes();
         options.CustomOperationIds(e => $"{e.ActionDescriptor.RouteValues["action"]}");
+        options.UseAllOfToExtendReferenceSchemas();
+        options.SchemaFilter<RequiredNotNullableSchemaFilter>();
 
         // options.AddSecurityDefinition("Bearer,", new OpenApiSecurityScheme
         // {
@@ -191,7 +194,7 @@ app.UseCors("AllowSpecificOrigin");
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    // app.UseSwaggerUI();
 
     app.UseDeveloperExceptionPage();
 }
