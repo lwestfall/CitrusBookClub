@@ -11,10 +11,9 @@ updates:
       interval: "daily"
     target-branch: "deps"
     groups:
-      client-production-dependencies:
-        dependency-type: "production"
-      client-development-dependencies:
-        dependency-type: "development"
+      client-dependencies:
+        patterns:
+          - "*"
   - package-ecosystem: "nuget" # See documentation for possible values
     directory: "src/Server/WebApi/" # Location of package manifests
     schedule:
