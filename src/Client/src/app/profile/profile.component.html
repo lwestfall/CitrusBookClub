@@ -79,6 +79,7 @@
             id="emailAddress"
             disabled="true"
             ngbTooltip="You can't currently update your own email address. If you need to change it, let us know."
+            placement="right"
             [value]="(user$ | async)?.emailAddress" />
         </div>
         <div class="text-end">
