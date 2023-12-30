@@ -1,5 +1,10 @@
 import { createAction, props } from '@ngrx/store';
-import { BookAnonymousDto, BookDto, CreateBookDto } from '../../api/models';
+import {
+  BookAnonymousDto,
+  BookDto,
+  BookRecommendationDto,
+  CreateBookDto,
+} from '../../api/models';
 
 export const addBook = createAction(
   '[Books] Add Book',
@@ -55,6 +60,20 @@ export const deleteBookFailure = createAction(
   props<{ error: string }>()
 );
 
+export const getMyBookRecommendations = createAction(
+  '[Books] Get My Recommendations'
+);
+
+export const getMyBookRecommendationsSuccess = createAction(
+  '[Books] Get My Recommendations Success',
+  props<{ bookRecommendations: Array<BookRecommendationDto> }>()
+);
+
+export const getMyBookRecommendationsFailure = createAction(
+  '[Books] Get My Recommendations Failure',
+  props<{ error: string }>()
+);
+
 export const recommendBookForMeeting = createAction(
   '[Books] Recommend Book For Meeting',
   props<{ bookId: string; meetingId: string }>()
@@ -62,7 +81,7 @@ export const recommendBookForMeeting = createAction(
 
 export const recommendBookForMeetingSuccess = createAction(
   '[Books] Recommend Book For Meeting Success',
-  props<{ bookId: string }>()
+  props<{ bookRecommendation: BookRecommendationDto }>()
 );
 
 export const recommendBookForMeetingFailure = createAction(

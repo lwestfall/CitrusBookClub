@@ -1,5 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { MeetingDto } from '../../api/models';
+import { Store } from '@ngrx/store';
+import { Observable, map, tap } from 'rxjs';
+import { BookRecommendationDto, MeetingDto } from '../../api/models';
+import { AppState } from '../../app-state';
+import { selectMyRecommendations } from '../../books/state/books.selectors';
 
 @Component({
   selector: 'app-next-meeting-card',
@@ -8,6 +12,14 @@ import { MeetingDto } from '../../api/models';
 })
 export class NextMeetingCardComponent {
   @Input({ required: true }) meeting!: MeetingDto;
+  myRecommendation$!: Observable<BookRecommendationDto | undefined>;
 
-  constructor() {}
+  constructor(store: Store<AppState>) {
+    this.myRecommendation$ = store.select(selectMyRecommendations).pipe(
+      tap(recommendations =>
+        recommendations.filter(r => r.meeting.id === this.meeting.id)
+      ),
+      map(recommendations => recommendations[0])
+    );
+  }
 }

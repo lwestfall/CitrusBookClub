@@ -10,10 +10,10 @@ import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
 import { BookRecommendationDto } from '../models/book-recommendation-dto';
-import { getMyBookRecommendation } from '../fn/book-recommendations/get-my-book-recommendation';
-import { GetMyBookRecommendation$Params } from '../fn/book-recommendations/get-my-book-recommendation';
-import { getMyBookRecommendation$Plain } from '../fn/book-recommendations/get-my-book-recommendation-plain';
-import { GetMyBookRecommendation$Plain$Params } from '../fn/book-recommendations/get-my-book-recommendation-plain';
+import { getMyBookRecommendations } from '../fn/book-recommendations/get-my-book-recommendations';
+import { GetMyBookRecommendations$Params } from '../fn/book-recommendations/get-my-book-recommendations';
+import { getMyBookRecommendations$Plain } from '../fn/book-recommendations/get-my-book-recommendations-plain';
+import { GetMyBookRecommendations$Plain$Params } from '../fn/book-recommendations/get-my-book-recommendations-plain';
 import { recommendBook } from '../fn/book-recommendations/recommend-book';
 import { RecommendBook$Params } from '../fn/book-recommendations/recommend-book';
 import { recommendBook$Plain } from '../fn/book-recommendations/recommend-book-plain';
@@ -25,49 +25,49 @@ export class BookRecommendationsService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `getMyBookRecommendation()` */
-  static readonly GetMyBookRecommendationPath = '/api/BookRecommendations/meeting/{meetingId}/mine';
+  /** Path part for operation `getMyBookRecommendations()` */
+  static readonly GetMyBookRecommendationsPath = '/api/BookRecommendations/mine';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getMyBookRecommendation$Plain()` instead.
+   * To access only the response body, use `getMyBookRecommendations$Plain()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getMyBookRecommendation$Plain$Response(params: GetMyBookRecommendation$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookRecommendationDto>>> {
-    return getMyBookRecommendation$Plain(this.http, this.rootUrl, params, context);
+  getMyBookRecommendations$Plain$Response(params?: GetMyBookRecommendations$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookRecommendationDto>>> {
+    return getMyBookRecommendations$Plain(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getMyBookRecommendation$Plain$Response()` instead.
+   * To access the full response (for headers, for example), `getMyBookRecommendations$Plain$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getMyBookRecommendation$Plain(params: GetMyBookRecommendation$Plain$Params, context?: HttpContext): Observable<Array<BookRecommendationDto>> {
-    return this.getMyBookRecommendation$Plain$Response(params, context).pipe(
+  getMyBookRecommendations$Plain(params?: GetMyBookRecommendations$Plain$Params, context?: HttpContext): Observable<Array<BookRecommendationDto>> {
+    return this.getMyBookRecommendations$Plain$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<BookRecommendationDto>>): Array<BookRecommendationDto> => r.body)
     );
   }
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getMyBookRecommendation()` instead.
+   * To access only the response body, use `getMyBookRecommendations()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getMyBookRecommendation$Response(params: GetMyBookRecommendation$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookRecommendationDto>>> {
-    return getMyBookRecommendation(this.http, this.rootUrl, params, context);
+  getMyBookRecommendations$Response(params?: GetMyBookRecommendations$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookRecommendationDto>>> {
+    return getMyBookRecommendations(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getMyBookRecommendation$Response()` instead.
+   * To access the full response (for headers, for example), `getMyBookRecommendations$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getMyBookRecommendation(params: GetMyBookRecommendation$Params, context?: HttpContext): Observable<Array<BookRecommendationDto>> {
-    return this.getMyBookRecommendation$Response(params, context).pipe(
+  getMyBookRecommendations(params?: GetMyBookRecommendations$Params, context?: HttpContext): Observable<Array<BookRecommendationDto>> {
+    return this.getMyBookRecommendations$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<BookRecommendationDto>>): Array<BookRecommendationDto> => r.body)
     );
   }

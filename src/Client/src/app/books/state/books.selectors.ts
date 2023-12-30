@@ -42,3 +42,8 @@ export const selectAddFormError = createSelector(
   selectFeature,
   state => state.addForm.error
 );
+
+export const selectMyRecommendations = createSelector(
+  selectFeature,
+  state => state.myRecommendations
+);

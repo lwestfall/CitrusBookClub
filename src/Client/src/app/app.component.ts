@@ -1,12 +1,15 @@
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { Component, ElementRef } from '@angular/core';
 import { ChildrenOutletContexts, RouterOutlet } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { slideInAnimation } from './animations';
+import { AppState, fetchAppData } from './app-state';
 import { BooksModule } from './books/books.module';
 import { MeetingsModule } from './meetings/meetings.module';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SnowGeneratorComponent } from './special/snow/snow-generator/snow-generator.component';
 import { ToastsContainerComponent } from './toasts-container/toasts-container.component';
+import { selectAuthenticatedUserIsVerified } from './users/state/users.selectors';
 import { UsersModule } from './users/users.module';
 
 @Component({
@@ -33,12 +36,21 @@ export class AppComponent {
   snowEnabled = this.winter();
 
   constructor(
+    store: Store<AppState>,
     private contexts: ChildrenOutletContexts,
     private elementRef: ElementRef
   ) {
     if (localStorage.getItem('snow') === 'false') {
       this.snowEnabled = false;
     }
+
+    const obs = store.select(selectAuthenticatedUserIsVerified);
+
+    obs.subscribe(verified => {
+      if (verified) {
+        store.dispatch(fetchAppData());
+      }
+    });
   }
 
   getRouteAnimationData() {

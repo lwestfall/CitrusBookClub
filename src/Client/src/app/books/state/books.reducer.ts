@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 
 import _ from 'lodash';
-import { BookDto } from '../../api/models';
+import { BookDto, BookRecommendationDto } from '../../api/models';
 import * as bookActions from './books.actions';
 
 export interface BooksState {
@@ -11,6 +11,7 @@ export interface BooksState {
     pending: boolean;
     error: string | null;
   };
+  myRecommendations: BookRecommendationDto[];
 }
 
 interface BookShelfState {
@@ -34,6 +35,7 @@ export const initialState: BooksState = {
     pending: false,
     error: null,
   },
+  myRecommendations: [],
 };
 
 export const booksReducer = createReducer(
@@ -100,7 +102,7 @@ export const booksReducer = createReducer(
       mine: {
         ...state.mine,
         isLoading: false,
-        books: action.books,
+        books: sortBooksByTitle(action.books),
       },
     })
   ),
@@ -180,8 +182,61 @@ export const booksReducer = createReducer(
         error: action.error,
       },
     })
+  ),
+  on(
+    bookActions.getMyBookRecommendations,
+    (state): BooksState => ({
+      ...state,
+    })
+  ),
+  on(
+    bookActions.getMyBookRecommendationsSuccess,
+    (state, action): BooksState => ({
+      ...state,
+      myRecommendations: action.bookRecommendations,
+    })
+  ),
+  on(
+    bookActions.getMyBookRecommendationsFailure,
+    (state): BooksState => ({
+      ...state,
+    })
+  ),
+  on(
+    bookActions.recommendBookForMeeting,
+    (state): BooksState => ({
+      ...state,
+    })
+  ),
+  on(
+    bookActions.recommendBookForMeetingSuccess,
+    (state): BooksState => ({
+      ...state,
+      // myRecommendations: addBookRecommendation(
+      //   state.myRecommendations,
+      //   action.bookRecommendation
+      // ),
+    })
+  ),
+  on(
+    bookActions.recommendBookForMeetingFailure,
+    (state): BooksState => ({
+      ...state,
+    })
   )
 );
+
+// function addBookRecommendation(
+//   recommendations: BookRecommendationDto[],
+//   newRecommendation: BookRecommendationDto
+// ): BookRecommendationDto[] {
+//   return [
+//     ...recommendations.filter(
+//       x => x.meeting.id !== newRecommendation.meeting.id
+//     ),
+//     newRecommendation,
+//   ];
+// }
 
 function sortBooksByTitle(books: BookDto[]) {
   return _.orderBy(books, b => b.title);

@@ -8,18 +8,16 @@ import { RequestBuilder } from '../../request-builder';
 
 import { BookRecommendationDto } from '../../models/book-recommendation-dto';
 
-export interface GetMyBookRecommendation$Plain$Params {
-  meetingId: string;
+export interface GetMyBookRecommendations$Params {
 }
 
-export function getMyBookRecommendation$Plain(http: HttpClient, rootUrl: string, params: GetMyBookRecommendation$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookRecommendationDto>>> {
-  const rb = new RequestBuilder(rootUrl, getMyBookRecommendation$Plain.PATH, 'get');
+export function getMyBookRecommendations(http: HttpClient, rootUrl: string, params?: GetMyBookRecommendations$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookRecommendationDto>>> {
+  const rb = new RequestBuilder(rootUrl, getMyBookRecommendations.PATH, 'get');
   if (params) {
-    rb.path('meetingId', params.meetingId, {"style":"simple"});
   }
 
   return http.request(
-    rb.build({ responseType: 'text', accept: 'text/plain', context })
+    rb.build({ responseType: 'json', accept: 'text/json', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
@@ -28,4 +26,4 @@ export function getMyBookRecommendation$Plain(http: HttpClient, rootUrl: string,
   );
 }
 
-getMyBookRecommendation$Plain.PATH = '/api/BookRecommendations/meeting/{meetingId}/mine';
+getMyBookRecommendations.PATH = '/api/BookRecommendations/mine';

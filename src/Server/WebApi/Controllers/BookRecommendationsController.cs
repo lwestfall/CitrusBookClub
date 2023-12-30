@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 public class BookRecommendationsController : ApiControllerBase
 {
-    [HttpGet("meeting/{meetingId}/mine")]
-    public async Task<ActionResult<List<BookRecommendationDto>>> GetMyBookRecommendation(Guid meetingId)
+    [HttpGet("mine")]
+    public async Task<ActionResult<List<BookRecommendationDto>>> GetMyBookRecommendations()
     {
         var email = this.GetEmail();
 
@@ -18,17 +18,10 @@ public class BookRecommendationsController : ApiControllerBase
             return this.Unauthorized();
         }
 
-        var meeting = await this.CbcContext.Meetings.FindAsync(meetingId);
-
-        if (meeting is null)
-        {
-            return this.NotFound($"No meeting found with Id: {meetingId}");
-        }
-
         var recommendation = await this.CbcContext.BookRecommendations
-            .Where(r => r.MeetingId == meetingId && r.MemberEmail == email)
+            .Where(r => r.MemberEmail == email)
             .ProjectTo<BookRecommendationDto>(this.Mapper.ConfigurationProvider)
-            .SingleOrDefaultAsync();
+            .ToListAsync();
 
         return this.Ok(recommendation);
     }
@@ -58,7 +51,7 @@ public class BookRecommendationsController : ApiControllerBase
         }
 
         var existingRecommendation = await this.CbcContext.BookRecommendations
-            .FirstOrDefaultAsync(r => r.BookId == bookId && r.MeetingId == meetingId && r.MemberEmail == email);
+            .FirstOrDefaultAsync(r => r.MeetingId == meetingId && r.MemberEmail == email);
 
         if (existingRecommendation is not null)
         {

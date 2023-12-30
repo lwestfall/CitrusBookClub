@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, mergeMap, of } from 'rxjs';
-import { BooksService } from '../../api/services';
+import { BookRecommendationsService, BooksService } from '../../api/services';
+import { fetchAppData } from '../../app-state';
 import * as actions from './books.actions';
 
 @Injectable()
@@ -22,7 +23,7 @@ export class BooksEffects {
 
   getMyBooks$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(actions.getMyBooks),
+      ofType(actions.getMyBooks, fetchAppData),
       mergeMap(() =>
         this.booksService.getUsersBooks().pipe(
           map(books => actions.getMyBooksSuccess({ books })),
@@ -62,8 +63,56 @@ export class BooksEffects {
     );
   });
 
+  getMyBookRecommendations$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(
+        actions.getMyBookRecommendations,
+        actions.recommendBookForMeetingSuccess,
+        actions.deleteBookSuccess,
+        fetchAppData
+      ),
+      mergeMap(() =>
+        this.bookRecommendationsService.getMyBookRecommendations().pipe(
+          map(bookRecommendations =>
+            actions.getMyBookRecommendationsSuccess({ bookRecommendations })
+          ),
+          catchError(error =>
+            of(
+              actions.getMyBookRecommendationsFailure({
+                error: error.message,
+              })
+            )
+          )
+        )
+      )
+    );
+  });
+
+  recommendBookForMeeting$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(actions.recommendBookForMeeting),
+      mergeMap(({ bookId, meetingId }) =>
+        this.bookRecommendationsService
+          .recommendBook({ bookId, meetingId })
+          .pipe(
+            map(bookRecommendation =>
+              actions.recommendBookForMeetingSuccess({ bookRecommendation })
+            ),
+            catchError(error =>
+              of(
+                actions.recommendBookForMeetingFailure({
+                  error: error.message,
+                })
+              )
+            )
+          )
+      )
+    );
+  });
+
   constructor(
     private actions$: Actions,
-    private booksService: BooksService
+    private booksService: BooksService,
+    private bookRecommendationsService: BookRecommendationsService
   ) {}
 }

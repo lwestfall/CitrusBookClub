@@ -15,7 +15,7 @@ public class BookRecommendationConfiguration : IEntityTypeConfiguration<BookReco
         builder.HasOne(e => e.Book)
             .WithMany()
             .HasForeignKey(bookRecommendation => bookRecommendation.BookId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(e => e.RecommendedBy)
             .WithMany()

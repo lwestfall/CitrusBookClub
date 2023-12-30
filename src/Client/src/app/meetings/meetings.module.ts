@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { MeetingCountdownComponent } from './meeting-countdown/meeting-countdown.component';
@@ -11,6 +12,7 @@ import { meetingsReducer } from './state/meetings.reducer';
 @NgModule({
   imports: [
     CommonModule,
+    RouterModule,
     StoreModule.forFeature('meetings', meetingsReducer),
     EffectsModule.forFeature([MeetingsEffects]),
   ],

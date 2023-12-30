@@ -15,7 +15,6 @@ import { MeetingDto } from '../api/models';
 import { AppState } from '../app-state';
 import { ClickOutsideDirective } from '../directives/click-outside.directive';
 import { MeetingsModule } from '../meetings/meetings.module';
-import { getNextMeeting } from '../meetings/state/meetings.actions';
 import { selectNextMeeting } from '../meetings/state/meetings.selectors';
 import {
   selectAuthenticatedUserIsAdmin,
@@ -67,8 +66,6 @@ export class NavbarComponent implements AfterViewInit {
     store: Store<AppState>,
     public route: ActivatedRoute
   ) {
-    store.dispatch(getNextMeeting());
-
     this.verified$ = store.select(selectAuthenticatedUserIsVerified);
     this.admin$ = store.select(selectAuthenticatedUserIsAdmin);
     this.nextMeeting$ = store.select(selectNextMeeting);
