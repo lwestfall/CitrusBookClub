@@ -1,0 +1,38 @@
+<div class="card meeting-card">
+  <div class="card-body">
+    <h5 class="card-title">
+      {{ meeting.dateTime | date: 'EEE, MMMM d, y, h:mm a' }}
+    </h5>
+    <h6 class="card-subtitle mb-2 text-muted">
+      <app-meeting-countdown></app-meeting-countdown>
+    </h6>
+    <p class="card-text" *ngIf="meeting.previousMeeting?.winningBook">
+      We'll discuss
+      <i>{{ meeting.previousMeeting?.winningBook?.title }}</i>
+    </p>
+    <div
+      class="card-text"
+      *ngIf="myRecommendation$ | async; else noReccomendation">
+      You recommended <i>{{ (myRecommendation$ | async)!.book.title }}</i>
+      <p class="my-0">
+        <a
+          [routerLink]="['/books']"
+          routerLinkActive="router-link-active"
+          class="link-info"
+          >Want to recommend something else?</a
+        >
+      </p>
+    </div>
+    <ng-template #noReccomendation>
+      <p class="card-text my-0">
+        You haven't recommended a book yet.
+        <a
+          [routerLink]="['/books']"
+          routerLinkActive="router-link-active"
+          class="link-primary"
+          >Recommend one now!</a
+        >
+      </p>
+    </ng-template>
+  </div>
+</div>

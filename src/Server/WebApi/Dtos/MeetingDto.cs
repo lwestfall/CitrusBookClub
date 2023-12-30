@@ -9,9 +9,9 @@ public class MeetingDto : IMapFrom<Meeting>
 
     public DateTime DateTime { get; set; }
 
-    public Guid? WinningBookId { get; set; }
-
     public BookDto? WinningBook { get; set; }
+
+    public MeetingDto? PreviousMeeting { get; set; }
 
     public List<BookVoteDto> Votes { get; set; } = [];
 }

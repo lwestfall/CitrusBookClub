@@ -1,12 +1,32 @@
-<app-navbar></app-navbar>
-<div class="p-4" [@routeAnimations]="getRouteAnimationData()">
+<app-navbar #navbar (heightChange)="onNavbarHeightChange($event)"></app-navbar>
+<app-toasts-container></app-toasts-container>
+<div class="p-4 content" [@routeAnimations]="getRouteAnimationData()">
   <router-outlet></router-outlet>
 </div>
 <footer class="mt-auto">
+  <div
+    *ngIf="isWinter"
+    class="form-check form-switch form-check-reverse"
+    style="background-color: var(--content-bg-color)">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      id="snowSwitch"
+      [checked]="snowEnabled"
+      (click)="snowSwitchChanged()" />
+    <label class="form-check-label" for="snowSwitch"
+      ><a
+        href="https://www.bennadel.com/blog/3957-making-snow-animations-in-angular-11-0-5.htm"
+        >Snow</a
+      ></label
+    >
+    <app-snow-generator *ngIf="snowEnabled"></app-snow-generator>
+  </div>
   <hr class="p-0 m-0" />
-  <div class="d-flex flex-row align-items-center gap-2 py-1 px-2">
+  <div
+    class="footer-content d-flex flex-row align-items-center gap-2 py-1 px-2">
     <a
-      href="https://github.com/lwestfall/citrusbookcollective"
+      href="https://github.com/lwestfall/citrusbookclub"
       class="text-decoration-none text-center">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -22,8 +42,12 @@
     <div class="d-flex flex-fill flex-column align-items-center text-center">
       <small>Hosted with ❤️ from Lancaster, Pennsylvania, USA</small>
       <small
-        >Copyright &copy; Luke Westfall {{ year }} -
-        <a href="mailto: cbc@ljdub.com">cbc&#64;ljdub.com</a></small
+        >Copyright &copy; Citrus Book Club {{ year }} -
+        <a
+          href="mailto:luke@citrusbook.club?subject=Citrus Book Club"
+          target="_blank"
+          >Email Us!</a
+        ></small
       >
     </div>
   </div>

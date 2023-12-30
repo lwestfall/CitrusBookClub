@@ -84,6 +84,8 @@ namespace Cbc.WebApi.Migrations
 
                     b.HasIndex("BookId");
 
+                    b.HasIndex("MeetingId");
+
                     b.HasIndex("MemberEmail");
 
                     b.ToTable("BookRecommendation", (string)null);
@@ -128,10 +130,16 @@ namespace Cbc.WebApi.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("PreviousMeetingId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("WinningBookId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PreviousMeetingId")
+                        .IsUnique();
 
                     b.HasIndex("WinningBookId")
                         .IsUnique();
@@ -190,7 +198,13 @@ namespace Cbc.WebApi.Migrations
                     b.HasOne("Cbc.WebApi.Models.Entities.Book", "Book")
                         .WithMany()
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cbc.WebApi.Models.Entities.Meeting", "Meeting")
+                        .WithMany("BookRecommendations")
+                        .HasForeignKey("MeetingId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Cbc.WebApi.Models.Entities.User", "RecommendedBy")
@@ -200,6 +214,8 @@ namespace Cbc.WebApi.Migrations
                         .IsRequired();
 
                     b.Navigation("Book");
+
+                    b.Navigation("Meeting");
 
                     b.Navigation("RecommendedBy");
                 });
@@ -231,10 +247,17 @@ namespace Cbc.WebApi.Migrations
 
             modelBuilder.Entity("Cbc.WebApi.Models.Entities.Meeting", b =>
                 {
+                    b.HasOne("Cbc.WebApi.Models.Entities.Meeting", "PreviousMeeting")
+                        .WithOne()
+                        .HasForeignKey("Cbc.WebApi.Models.Entities.Meeting", "PreviousMeetingId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Cbc.WebApi.Models.Entities.Book", "WinningBook")
                         .WithOne()
                         .HasForeignKey("Cbc.WebApi.Models.Entities.Meeting", "WinningBookId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("PreviousMeeting");
 
                     b.Navigation("WinningBook");
                 });
@@ -250,6 +273,8 @@ namespace Cbc.WebApi.Migrations
 
             modelBuilder.Entity("Cbc.WebApi.Models.Entities.Meeting", b =>
                 {
+                    b.Navigation("BookRecommendations");
+
                     b.Navigation("Votes");
                 });
 

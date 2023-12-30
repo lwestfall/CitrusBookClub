@@ -1,10 +1,25 @@
 import { AsyncPipe, CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgbCollapseModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { MeetingDto } from '../api/models';
+import { AppState } from '../app-state';
 import { ClickOutsideDirective } from '../directives/click-outside.directive';
-import { MeetingCountdownComponent } from '../meetings/meeting-countdown/meeting-countdown.component';
-import { AuthService } from '../services/auth.service';
+import { MeetingsModule } from '../meetings/meetings.module';
+import { selectNextMeeting } from '../meetings/state/meetings.selectors';
+import {
+  selectAuthenticatedUserIsAdmin,
+  selectAuthenticatedUserIsVerified,
+} from '../users/state/users.selectors';
 import { LoginComponent } from './login/login.component';
 
 @Component({
@@ -18,14 +33,15 @@ import { LoginComponent } from './login/login.component';
     AsyncPipe,
     RouterModule,
     NgbCollapseModule,
-    MeetingCountdownComponent,
-    ClickOutsideDirective
+    MeetingsModule,
+    ClickOutsideDirective,
   ],
   standalone: true,
 })
-export class NavbarComponent {
-  verified = false;
-  admin = false;
+export class NavbarComponent implements AfterViewInit {
+  verified$: Observable<boolean>;
+  admin$: Observable<boolean>;
+  nextMeeting$: Observable<MeetingDto | null>;
   isCollapsed = true;
 
   verifiedLinks = [
@@ -33,18 +49,37 @@ export class NavbarComponent {
       title: 'Books',
       route: 'books',
     },
-    // { title: 'Meetings', route: 'meetings' },
+    {
+      title: 'Meetings',
+      route: 'meetings',
+    },
   ];
 
-  adminLinks = [{ title: 'Admin', route: 'admin' }];
+  adminLinks = [{ title: 'Users', route: 'users' }];
+
+  @ViewChild('nav') nav!: ElementRef;
+  @Output() heightChange = new EventEmitter<number>();
+
+  previousHeight = 0;
 
   constructor(
-    authService: AuthService,
+    store: Store<AppState>,
     public route: ActivatedRoute
   ) {
-    authService.apiUser$.subscribe(() => {
-      this.verified = authService.isVerified();
-      this.admin = authService.isAdmin();
+    this.verified$ = store.select(selectAuthenticatedUserIsVerified);
+    this.admin$ = store.select(selectAuthenticatedUserIsAdmin);
+    this.nextMeeting$ = store.select(selectNextMeeting);
+  }
+
+  ngAfterViewInit() {
+    const resizeObserver = new ResizeObserver(() => {
+      const height = this.nav.nativeElement.offsetHeight;
+
+      if (height !== this.previousHeight) {
+        this.heightChange.emit(this.nav.nativeElement.offsetHeight);
+      }
     });
+
+    resizeObserver.observe(this.nav.nativeElement);
   }
 }

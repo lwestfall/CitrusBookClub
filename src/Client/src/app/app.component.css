@@ -1,4 +1,20 @@
 footer {
-  background-color: #89aed1;
+  position: relative;
   width: 100%;
+  z-index: 1000;
+}
+
+.content {
+  position: relative;
+  top: var(--navbar-height);
+  margin-bottom: var(--navbar-height);
+}
+
+footer .footer-content {
+  background-color: #5489bb;
+  color: var(--bs-dark);
+}
+
+footer .footer-content a {
+  color: var(--bs-light-bg-subtle);
 }

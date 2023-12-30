@@ -22,7 +22,6 @@ import { GetNextMeeting$Params } from '../fn/meetings/get-next-meeting';
 import { getNextMeeting$Plain } from '../fn/meetings/get-next-meeting-plain';
 import { GetNextMeeting$Plain$Params } from '../fn/meetings/get-next-meeting-plain';
 import { MeetingDto } from '../models/meeting-dto';
-import { MeetingSimpleDto } from '../models/meeting-simple-dto';
 import { updateMeeting } from '../fn/meetings/update-meeting';
 import { UpdateMeeting$Params } from '../fn/meetings/update-meeting';
 import { updateMeeting$Plain } from '../fn/meetings/update-meeting-plain';
@@ -43,7 +42,7 @@ export class MeetingsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getNextMeeting$Plain$Response(params?: GetNextMeeting$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingSimpleDto>> {
+  getNextMeeting$Plain$Response(params?: GetNextMeeting$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingDto>> {
     return getNextMeeting$Plain(this.http, this.rootUrl, params, context);
   }
 
@@ -53,9 +52,9 @@ export class MeetingsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getNextMeeting$Plain(params?: GetNextMeeting$Plain$Params, context?: HttpContext): Observable<MeetingSimpleDto> {
+  getNextMeeting$Plain(params?: GetNextMeeting$Plain$Params, context?: HttpContext): Observable<MeetingDto> {
     return this.getNextMeeting$Plain$Response(params, context).pipe(
-      map((r: StrictHttpResponse<MeetingSimpleDto>): MeetingSimpleDto => r.body)
+      map((r: StrictHttpResponse<MeetingDto>): MeetingDto => r.body)
     );
   }
 
@@ -65,7 +64,7 @@ export class MeetingsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getNextMeeting$Response(params?: GetNextMeeting$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingSimpleDto>> {
+  getNextMeeting$Response(params?: GetNextMeeting$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingDto>> {
     return getNextMeeting(this.http, this.rootUrl, params, context);
   }
 
@@ -75,9 +74,9 @@ export class MeetingsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getNextMeeting(params?: GetNextMeeting$Params, context?: HttpContext): Observable<MeetingSimpleDto> {
+  getNextMeeting(params?: GetNextMeeting$Params, context?: HttpContext): Observable<MeetingDto> {
     return this.getNextMeeting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<MeetingSimpleDto>): MeetingSimpleDto => r.body)
+      map((r: StrictHttpResponse<MeetingDto>): MeetingDto => r.body)
     );
   }
 

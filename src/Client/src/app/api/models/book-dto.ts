@@ -2,13 +2,13 @@
 /* eslint-disable */
 import { UserSimpleDto } from '../models/user-simple-dto';
 export interface BookDto {
-  author?: string;
+  author: string;
   description?: string | null;
-  id?: string;
+  id: string;
   isbn?: string | null;
   pageCount?: number | null;
   thumbnailLink?: string | null;
-  title?: string;
-  user?: UserSimpleDto;
+  title: string;
+  user?: UserSimpleDto | null;
   userEmail?: string | null;
 }

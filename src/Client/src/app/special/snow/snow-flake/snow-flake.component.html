@@ -1,0 +1,16 @@
+<div
+  [style.animation-duration.s]="verticalDuration"
+  [style.animation-delay.s]="verticalDelay"
+  class="vertical-track">
+  <div
+    [style.animation-duration.s]="horizontalDuration"
+    [style.animation-delay.s]="horizontalDelay"
+    class="horizontal-track">
+    <span
+      [style.opacity]="flakeOpacity"
+      [style.width.px]="flakeSize"
+      [style.height.px]="flakeSize"
+      class="flake">
+    </span>
+  </div>
+</div>

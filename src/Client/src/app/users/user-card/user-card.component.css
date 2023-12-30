@@ -1,0 +1,18 @@
+.card {
+  max-width: 30rem;
+  min-width: 20rem;
+}
+
+button.remove {
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  color: var(--bs-danger);
+  cursor: pointer;
+  -webkit-text-stroke: 1px var(--bs-danger);
+}
+
+button.remove:hover {
+  -webkit-text-stroke: 3px var(--bs-danger);
+}

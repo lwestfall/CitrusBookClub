@@ -1,0 +1,54 @@
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex flex-row gap-2">
+      <div>
+        <h5 class="card-title">{{ user.firstName }} {{ user.lastName }}</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">
+          <a
+            href="mailto:{{
+              user.emailAddress
+            }}?subject=Citrus Book Club&body=Hello {{ user.firstName }},"
+            target="_blank"
+            >{{ user.emailAddress }}</a
+          >
+        </h6>
+      </div>
+      <div class="ms-auto d-flex flex-column gap-2 align-items-end">
+        <ng-container *ngIf="verified; else unverified">
+          <div class="badge bg-success d-flex flex-row gap-1">
+            <div>Verified</div>
+            <button class="remove" (click)="removeRole(user, 'Verified')">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="admin; else notAdmin">
+          <div class="badge bg-info d-flex flex-row gap-1">
+            <div>Admin</div>
+            <button class="remove" (click)="removeRole(user, 'Admin')">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+        </ng-container>
+        <ng-template #notAdmin>
+          <button
+            *ngIf="verified"
+            type="button"
+            class="btn btn-success btn-sm"
+            (click)="addRole(user, 'Admin')">
+            Make Admin
+          </button>
+        </ng-template>
+        <ng-template #unverified>
+          <div class="badge bg-danger">Unverified</div>
+          <button
+            type="button"
+            class="btn btn-success btn-sm"
+            (click)="addRole(user, 'Verified')">
+            Verify
+          </button>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
