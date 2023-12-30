@@ -9,7 +9,7 @@ updates:
     directory: "src/Client/" # Location of package manifests
     schedule:
       interval: "daily"
-    target-branch: "deps"
+    target-branch: "dev"
     groups:
       client-dependencies:
         patterns:
@@ -18,7 +18,7 @@ updates:
     directory: "src/Server/WebApi/" # Location of package manifests
     schedule:
       interval: "daily"
-    target-branch: "deps"
+    target-branch: "dev"
     groups:
       server-dependencies:
         patterns:
