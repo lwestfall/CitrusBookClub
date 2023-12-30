@@ -5,6 +5,8 @@ using AutoMapper;
 using Cbc.WebApi.Data;
 using Microsoft.AspNetCore.Mvc;
 
+[ApiController]
+[Route("api/[controller]")]
 public abstract class ApiControllerBase : ControllerBase
 {
     protected CbcDbContext CbcContext

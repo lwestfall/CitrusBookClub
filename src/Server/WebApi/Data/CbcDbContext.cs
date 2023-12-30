@@ -3,7 +3,7 @@ namespace Cbc.WebApi.Data;
 using Cbc.WebApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
-public class CbcDbContext(DbContextOptions<CbcDbContext> options) : DbContext(options)
+public class CbcDbContext(DbContextOptions options) : DbContext(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

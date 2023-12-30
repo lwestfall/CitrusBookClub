@@ -3,7 +3,6 @@ namespace Cbc.WebApi.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
 [Route("api/")]
 [Authorize(Roles = "Verified")]
 public class MiscController : ApiControllerBase

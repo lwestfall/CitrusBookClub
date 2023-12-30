@@ -1,32 +1,24 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import * as _ from 'lodash';
-import { firstValueFrom } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import { UserDto } from '../../api/models';
-import { UsersService } from '../../api/services';
-import { UserCardComponent } from '../user-card/user-card.component';
+import { AppState } from '../../app-state';
+import { getAllUsers } from '../state/users.actions';
+import { selectAllUsers } from '../state/users.selectors';
 
 @Component({
   selector: 'app-users-page',
   templateUrl: './users-page.component.html',
   styleUrls: ['./users-page.component.css'],
-  imports: [CommonModule, UserCardComponent],
-  standalone: true,
 })
 export class UsersPageComponent implements OnInit {
-  users: UserDto[] = [];
+  users$: Observable<UserDto[]>;
 
-  constructor(private usersService: UsersService) {}
-
-  ngOnInit() {
-    this.fetchAllUsers();
+  constructor(private store: Store<AppState>) {
+    this.users$ = this.store.select(selectAllUsers);
   }
 
-  async fetchAllUsers(): Promise<void> {
-    const users = await firstValueFrom(this.usersService.getUsers());
-
-    this.users = _.orderBy(users, ['firstName', 'lastName']);
-
-    console.log(this.users);
+  ngOnInit() {
+    this.store.dispatch(getAllUsers());
   }
 }

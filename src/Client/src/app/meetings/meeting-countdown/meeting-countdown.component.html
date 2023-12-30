@@ -1,1 +1,1 @@
-<div *ngIf="nextMeeting">{{ nextMeetingStr }}</div>
+<ng-container *ngIf="nextMeeting$ | async">{{ nextMeetingStr }}</ng-container>

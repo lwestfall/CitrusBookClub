@@ -6,16 +6,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-[ApiController]
-[Route("api/[controller]")]
 [Authorize(Roles = "Verified")]
 public class BooksController : ApiControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<BookDto>>> GetBooks()
+    public async Task<ActionResult<List<BookAnonymousDto>>> GetBooks()
     {
         var books = await this.CbcContext.Books.ToListAsync();
-        return this.Ok(this.Mapper.Map<List<BookDto>>(books));
+        return this.Ok(this.Mapper.Map<List<BookAnonymousDto>>(books));
+    }
+
+    [HttpGet("others")]
+    public async Task<ActionResult<List<BookAnonymousDto>>> GetOthersBooks()
+    {
+        var email = this.GetEmail();
+
+        var books = await this.CbcContext.Books
+            .Where(x => x.UserEmail != email)
+            .ToListAsync();
+
+        return this.Ok(this.Mapper.Map<List<BookAnonymousDto>>(books));
     }
 
     [HttpGet("mine")]
@@ -69,5 +79,26 @@ public class BooksController : ApiControllerBase
         this.CbcContext.Books.Add(book);
         await this.CbcContext.SaveChangesAsync();
         return this.CreatedAtAction(nameof(GetBook), new { id = book.Id }, this.Mapper.Map<BookDto>(book));
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteBook(Guid id)
+    {
+        var book = await this.CbcContext.Books.FindAsync(id);
+        if (book == null)
+        {
+            return this.NotFound();
+        }
+
+        var email = this.GetEmail();
+
+        if (book.UserEmail != email && !this.User.IsInRole("Admin"))
+        {
+            return this.Unauthorized();
+        }
+
+        this.CbcContext.Books.Remove(book);
+        await this.CbcContext.SaveChangesAsync();
+        return this.NoContent();
     }
 }

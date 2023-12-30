@@ -9,11 +9,14 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
+import { BookAnonymousDto } from '../models/book-anonymous-dto';
 import { BookDto } from '../models/book-dto';
 import { createBook } from '../fn/books/create-book';
 import { CreateBook$Params } from '../fn/books/create-book';
 import { createBook$Plain } from '../fn/books/create-book-plain';
 import { CreateBook$Plain$Params } from '../fn/books/create-book-plain';
+import { deleteBook } from '../fn/books/delete-book';
+import { DeleteBook$Params } from '../fn/books/delete-book';
 import { getBook } from '../fn/books/get-book';
 import { GetBook$Params } from '../fn/books/get-book';
 import { getBook$Plain } from '../fn/books/get-book-plain';
@@ -22,6 +25,10 @@ import { getBooks } from '../fn/books/get-books';
 import { GetBooks$Params } from '../fn/books/get-books';
 import { getBooks$Plain } from '../fn/books/get-books-plain';
 import { GetBooks$Plain$Params } from '../fn/books/get-books-plain';
+import { getOthersBooks } from '../fn/books/get-others-books';
+import { GetOthersBooks$Params } from '../fn/books/get-others-books';
+import { getOthersBooks$Plain } from '../fn/books/get-others-books-plain';
+import { GetOthersBooks$Plain$Params } from '../fn/books/get-others-books-plain';
 import { getUsersBooks } from '../fn/books/get-users-books';
 import { GetUsersBooks$Params } from '../fn/books/get-users-books';
 import { getUsersBooks$Plain } from '../fn/books/get-users-books-plain';
@@ -42,7 +49,7 @@ export class BooksService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBooks$Plain$Response(params?: GetBooks$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookDto>>> {
+  getBooks$Plain$Response(params?: GetBooks$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookAnonymousDto>>> {
     return getBooks$Plain(this.http, this.rootUrl, params, context);
   }
 
@@ -52,9 +59,9 @@ export class BooksService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBooks$Plain(params?: GetBooks$Plain$Params, context?: HttpContext): Observable<Array<BookDto>> {
+  getBooks$Plain(params?: GetBooks$Plain$Params, context?: HttpContext): Observable<Array<BookAnonymousDto>> {
     return this.getBooks$Plain$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<BookDto>>): Array<BookDto> => r.body)
+      map((r: StrictHttpResponse<Array<BookAnonymousDto>>): Array<BookAnonymousDto> => r.body)
     );
   }
 
@@ -64,7 +71,7 @@ export class BooksService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBooks$Response(params?: GetBooks$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookDto>>> {
+  getBooks$Response(params?: GetBooks$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookAnonymousDto>>> {
     return getBooks(this.http, this.rootUrl, params, context);
   }
 
@@ -74,9 +81,9 @@ export class BooksService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBooks(params?: GetBooks$Params, context?: HttpContext): Observable<Array<BookDto>> {
+  getBooks(params?: GetBooks$Params, context?: HttpContext): Observable<Array<BookAnonymousDto>> {
     return this.getBooks$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<BookDto>>): Array<BookDto> => r.body)
+      map((r: StrictHttpResponse<Array<BookAnonymousDto>>): Array<BookAnonymousDto> => r.body)
     );
   }
 
@@ -124,6 +131,53 @@ export class BooksService extends BaseService {
   createBook(params?: CreateBook$Params, context?: HttpContext): Observable<BookDto> {
     return this.createBook$Response(params, context).pipe(
       map((r: StrictHttpResponse<BookDto>): BookDto => r.body)
+    );
+  }
+
+  /** Path part for operation `getOthersBooks()` */
+  static readonly GetOthersBooksPath = '/api/Books/others';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getOthersBooks$Plain()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getOthersBooks$Plain$Response(params?: GetOthersBooks$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookAnonymousDto>>> {
+    return getOthersBooks$Plain(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getOthersBooks$Plain$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getOthersBooks$Plain(params?: GetOthersBooks$Plain$Params, context?: HttpContext): Observable<Array<BookAnonymousDto>> {
+    return this.getOthersBooks$Plain$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<BookAnonymousDto>>): Array<BookAnonymousDto> => r.body)
+    );
+  }
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getOthersBooks()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getOthersBooks$Response(params?: GetOthersBooks$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookAnonymousDto>>> {
+    return getOthersBooks(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getOthersBooks$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getOthersBooks(params?: GetOthersBooks$Params, context?: HttpContext): Observable<Array<BookAnonymousDto>> {
+    return this.getOthersBooks$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<BookAnonymousDto>>): Array<BookAnonymousDto> => r.body)
     );
   }
 
@@ -218,6 +272,31 @@ export class BooksService extends BaseService {
   getBook(params: GetBook$Params, context?: HttpContext): Observable<BookDto> {
     return this.getBook$Response(params, context).pipe(
       map((r: StrictHttpResponse<BookDto>): BookDto => r.body)
+    );
+  }
+
+  /** Path part for operation `deleteBook()` */
+  static readonly DeleteBookPath = '/api/Books/{id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `deleteBook()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteBook$Response(params: DeleteBook$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return deleteBook(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `deleteBook$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteBook(params: DeleteBook$Params, context?: HttpContext): Observable<void> {
+    return this.deleteBook$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 

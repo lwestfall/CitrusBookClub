@@ -11,9 +11,8 @@ describe('SnowFlakeComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SnowFlakeComponent ]
-    })
-    .compileComponents();
+      declarations: [SnowFlakeComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

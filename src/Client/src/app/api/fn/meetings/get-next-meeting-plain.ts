@@ -6,12 +6,12 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { MeetingSimpleDto } from '../../models/meeting-simple-dto';
+import { MeetingDto } from '../../models/meeting-dto';
 
 export interface GetNextMeeting$Plain$Params {
 }
 
-export function getNextMeeting$Plain(http: HttpClient, rootUrl: string, params?: GetNextMeeting$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingSimpleDto>> {
+export function getNextMeeting$Plain(http: HttpClient, rootUrl: string, params?: GetNextMeeting$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingDto>> {
   const rb = new RequestBuilder(rootUrl, getNextMeeting$Plain.PATH, 'get');
   if (params) {
   }
@@ -21,7 +21,7 @@ export function getNextMeeting$Plain(http: HttpClient, rootUrl: string, params?:
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<MeetingSimpleDto>;
+      return r as StrictHttpResponse<MeetingDto>;
     })
   );
 }

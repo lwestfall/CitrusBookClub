@@ -13,4 +13,6 @@ public class BookRecommendation
     public Book Book { get; set; } = null!;
 
     public User RecommendedBy { get; set; } = null!;
+
+    public Meeting Meeting { get; set; } = null!;
 }

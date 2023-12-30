@@ -10,7 +10,7 @@
   <p class="lead">A book club for the Lancaster, PA community</p>
   <div *ngIf="!signedIn">
     <div>We're currently closed to new members. Please check back later.</div>
-    <div>If you're a current member, sign in below.</div>
+    <div class="mb-2">If you're a current member, sign in below.</div>
     <app-login></app-login>
   </div>
   <div *ngIf="signedIn && !verified">
@@ -19,18 +19,20 @@
       back later.
     </div>
   </div>
-  <div *ngIf="verified">
+  <div *ngIf="verified" class="d-flex flex-column gap-3">
     <div class="d-flex flex-row justify-content-center gap-2 my-2">
       <a class="btn btn-primary btn-lg" routerLink="books" role="button"
         >Books</a
       >
-      <a
-        class="btn btn-primary btn-lg disabled"
-        routerLink="meetings"
-        role="button"
+      <a class="btn btn-primary btn-lg" routerLink="meetings" role="button"
         >Meetings</a
       >
     </div>
-    <app-meeting-countdown></app-meeting-countdown>
+    <div *ngIf="nextMeeting$ | async as meeting">
+      <h5 class="display-5">Next Meeting</h5>
+      <app-next-meeting-card
+        [meeting]="meeting"
+        class="text-start"></app-next-meeting-card>
+    </div>
   </div>
 </div>

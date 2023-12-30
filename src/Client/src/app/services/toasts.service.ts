@@ -19,4 +19,19 @@ export class ToastsService {
   remove(toast: ToastInfo) {
     this.toasts = this.toasts.filter(t => t != toast);
   }
+
+  showSuccess(
+    header: string,
+    body?: string,
+    autohide?: boolean,
+    delay?: number
+  ) {
+    this.show({
+      header,
+      body,
+      classname: 'bg-success text-light',
+      autohide,
+      delay,
+    });
+  }
 }

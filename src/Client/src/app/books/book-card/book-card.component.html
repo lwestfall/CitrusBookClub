@@ -1,4 +1,9 @@
-<div class="card w-100" style="max-width: 30rem">
+<div
+  class="card w-100"
+  style="max-width: 30rem"
+  [ngClass]="{
+    ripple: this.nextMeeting?.id === this.recommendedForMeeting?.id
+  }">
   <div class="card-body">
     <div class="d-flex flex-row gap-2 align-items-center">
       <div>
@@ -9,15 +14,32 @@
         <div>{{ book.pageCount }} pages</div>
       </div>
       <div class="ms-auto" *ngIf="book.thumbnailLink">
-        <img src="{{ book.thumbnailLink }}" width="40px" />
+        <img
+          src="{{ book.thumbnailLink }}"
+          width="40px"
+          alt="Thumbnail image of the book: {{ book.title }}" />
       </div>
     </div>
-    <div class="text-center">
-      <button class="btn btn-success my-2">Recommend for next meeting!</button>
+    <div class="text-center" *ngIf="mine">
+      <button
+        class="btn btn-outline-secondary my-2"
+        *ngIf="
+          this.nextMeeting?.id !== this.recommendedForMeeting?.id;
+          else recommendedForNext
+        "
+        [disabled]="!nextMeeting"
+        (click)="recommendForNext()">
+        Recommend for next meeting!
+      </button>
+      <ng-template #recommendedForNext>
+        <h6 class="text-success my-2">Recommended for next meeting!</h6>
+      </ng-template>
     </div>
     <div class="d-flex flex-row gap-2 align-items-center">
       <hr class="flex-grow-1" />
-      <button class="btn" (click)="this.expanded = !this.expanded">
+      <button
+        class="btn"
+        (click)="this.expanded = !this.expanded; $event.stopPropagation()">
         <i
           class="bi bi-chevron-double-down chevron-down"
           [ngClass]="expanded ? 'expanded' : null"></i>
@@ -28,7 +50,7 @@
       <div>
         {{ book.description }}
       </div>
-      <div class="my-2 text-center">
+      <div class="my-2 text-center" *ngIf="mine">
         <button
           type="button"
           class="btn btn-outline-danger"

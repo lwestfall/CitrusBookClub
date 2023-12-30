@@ -1,38 +1,41 @@
 import { GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import { UserDto } from '../../api/models';
+import { AppState } from '../../app-state';
 import { AuthService } from '../../services/auth.service';
+import { selectAuthenticatedUser } from '../../users/state/users.selectors';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, NgbDropdownModule, GoogleSigninButtonModule],
+  imports: [
+    CommonModule,
+    NgbDropdownModule,
+    RouterModule,
+    GoogleSigninButtonModule,
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
-export class LoginComponent implements OnInit {
-  user?: UserDto;
+export class LoginComponent {
+  user$: Observable<UserDto | null> | undefined;
 
-  constructor(private authService: AuthService) {
-    authService.apiUser$.subscribe(user => {
-      this.user = user;
-    });
-  }
-
-  ngOnInit(): void {
-    if (this.authService.isLoggedIn()) {
-      this.user = this.authService.authenticatedUser;
-    }
+  constructor(
+    store: Store<AppState>,
+    private authService: AuthService
+  ) {
+    this.user$ = store.select(selectAuthenticatedUser);
   }
 
   async signIn(): Promise<void> {}
 
   async signOut(): Promise<void> {
     await this.authService.signOut();
-    this.user = undefined;
-    // reload
     window.location.reload();
   }
 }
