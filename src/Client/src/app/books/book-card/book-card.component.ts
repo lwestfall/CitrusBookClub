@@ -24,7 +24,6 @@ export class BookCardComponent implements OnInit {
   @Input() mine = false;
 
   nextMeeting: MeetingDto | null = null;
-  recommendedForNext = false;
 
   expanded = false;
 
@@ -51,15 +50,7 @@ export class BookCardComponent implements OnInit {
 
       if (thisBookRecommendations.length > 0) {
         this.recommendedForMeeting = thisBookRecommendations[0].meeting;
-
-        if (this.nextMeeting) {
-          this.recommendedForNext =
-            this.nextMeeting.id === this.recommendedForMeeting.id;
-        } else {
-          this.recommendedForNext = false;
-        }
       } else {
-        this.recommendedForNext = false;
         this.recommendedForMeeting = null;
       }
     });
@@ -84,13 +75,5 @@ export class BookCardComponent implements OnInit {
         meetingId: this.nextMeeting.id!,
       })
     );
-
-    const recommendations$ = this.store.select(selectMyRecommendations);
-
-    recommendations$.subscribe(recommendations => {
-      this.recommendedForNext = recommendations.some(
-        r => r.book.id === this.book.id
-      );
-    });
   }
 }
