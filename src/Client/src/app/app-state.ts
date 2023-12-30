@@ -7,7 +7,6 @@ export interface AppState {
   books: BooksState;
   users: UsersState;
   meetings: MeetingsState;
-  initDataFetched: boolean;
 }
 
 export const fetchAppData = createAction('[App] Fetch App Data');

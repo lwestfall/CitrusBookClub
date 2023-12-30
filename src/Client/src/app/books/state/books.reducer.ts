@@ -2,6 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 
 import _ from 'lodash';
 import { BookDto, BookRecommendationDto } from '../../api/models';
+import { fetchAppData } from '../../app-state';
 import * as bookActions from './books.actions';
 
 export interface BooksState {
@@ -212,10 +213,6 @@ export const booksReducer = createReducer(
     bookActions.recommendBookForMeetingSuccess,
     (state): BooksState => ({
       ...state,
-      // myRecommendations: addBookRecommendation(
-      //   state.myRecommendations,
-      //   action.bookRecommendation
-      // ),
     })
   ),
   on(
@@ -223,20 +220,18 @@ export const booksReducer = createReducer(
     (state): BooksState => ({
       ...state,
     })
+  ),
+  on(
+    fetchAppData,
+    (state): BooksState => ({
+      ...state,
+      mine: {
+        ...state.mine,
+        isLoading: true,
+      },
+    })
   )
 );
-
-// function addBookRecommendation(
-//   recommendations: BookRecommendationDto[],
-//   newRecommendation: BookRecommendationDto
-// ): BookRecommendationDto[] {
-//   return [
-//     ...recommendations.filter(
-//       x => x.meeting.id !== newRecommendation.meeting.id
-//     ),
-//     newRecommendation,
-//   ];
-// }
 
 function sortBooksByTitle(books: BookDto[]) {
   return _.orderBy(books, b => b.title);

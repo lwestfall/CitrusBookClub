@@ -17,9 +17,14 @@
   <div *ngFor="let book of myBooks$ | async" style="max-width: 22rem">
     <app-book-card [book]="book" [mine]="true"></app-book-card>
   </div>
-  <div *ngIf="!(myBooks$ | async)?.length" class="text-center">
+  <div
+    *ngIf="!(myBooks$ | async)?.length && (isLoadingMyBooks$ | async) === false"
+    class="text-center">
     <h6 class="display-6">You haven't added any books yet!</h6>
     <h6 class="display-6">Add one using the button above!</h6>
+  </div>
+  <div class="spinner-border" role="status" *ngIf="isLoadingMyBooks$ | async">
+    <span class="visually-hidden">Loading...</span>
   </div>
 </div>
 <!-- <hr />
