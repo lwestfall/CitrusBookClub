@@ -13,25 +13,10 @@ using Serilog.Extensions.Logging;
 using Serilog.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
-
-var appSettings = "appsettings.Development.json";
-
-if (builder.Environment.IsProduction())
-{
-    appSettings = "appsettings.json";
-}
-else if (builder.Environment.IsStaging())
-{
-    appSettings = "appsettings.Staging.json";
-}
-
-var config = builder.Configuration
-    .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location!)!)
-    .AddJsonFile(appSettings, false, true)
-    .Build();
+var config = ApplyCbcConfiguration(builder.Configuration, builder.Environment.EnvironmentName).Build();
 
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
+    .ReadFrom.Configuration(config)
     .Filter.ByExcluding(
         Matching.WithProperty<string>("RequestMethod", v =>
             "OPTIONS".Equals(v, StringComparison.OrdinalIgnoreCase)))
@@ -48,17 +33,7 @@ builder.Services
     .AddSingleton<ILoggerFactory>(services => new SerilogLoggerFactory(Log.Logger, false))
     .AddSingleton(builder.Configuration);
 
-builder.Services.AddDbContext<CbcDbContext>(options =>
-{
-    var connStrBuilder = new NpgsqlConnectionStringBuilder(config.GetConnectionString("CbcDbContext"))
-    {
-        Password = builder.Configuration["DbPassword"],
-        Host = config["DbHost"],
-        Port = config.GetValue<int>("DbPort")
-    };
-
-    options.UseNpgsql(connStrBuilder.ConnectionString);
-});
+builder.Services.AddDbContext<CbcDbContext>(options => GetCbcDbContextOptions(config, options));
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -208,3 +183,41 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+public partial class Program
+{
+    public static DbContextOptionsBuilder GetCbcDbContextOptions(IConfiguration config, DbContextOptionsBuilder optionsBuilder)
+    {
+        var connStrBuilder = new NpgsqlConnectionStringBuilder(config.GetConnectionString("CbcDbContext"))
+        {
+            Password = config["DbPassword"],
+            Host = config["DbHost"],
+            Port = config.GetValue<int>("DbPort")
+        };
+
+        optionsBuilder.UseNpgsql(connStrBuilder.ConnectionString);
+
+        return optionsBuilder;
+    }
+
+    public static IConfigurationBuilder ApplyCbcConfiguration(IConfigurationBuilder configBuilder, string env)
+    {
+        var appSettings = "appsettings.Development.json";
+
+        if (env == "Production")
+        {
+            appSettings = "appsettings.json";
+        }
+        else if (env == "Staging")
+        {
+            appSettings = "appsettings.Staging.json";
+        }
+
+        return configBuilder
+            .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location!)!)
+            .AddUserSecrets<Program>()
+            .AddEnvironmentVariables()
+            .AddJsonFile(appSettings, false, true);
+    }
+}
