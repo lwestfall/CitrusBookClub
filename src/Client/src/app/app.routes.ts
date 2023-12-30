@@ -12,6 +12,7 @@ import { UserDto } from './api/models';
 import { AppState } from './app-state';
 import { BooksPageComponent } from './books/books-page/books-page.component';
 import { MeetingsPageComponent } from './meetings/meetings-page/meetings-page.component';
+import { ProfileComponent } from './profile/profile.component';
 import {
   getAuthenticatedUser,
   getAuthenticatedUserFailure,
@@ -25,6 +26,23 @@ const canActivateVerified: CanActivateFn = (_, state): Observable<boolean> =>
 
 const canActivateAdmin: CanActivateFn = (_, state): Observable<boolean> =>
   roleBasedCanActivate('Admin', state);
+
+const canActivateAuthenticated: CanActivateFn = (
+  _,
+  state
+): Observable<boolean> => {
+  const router = inject(Router);
+
+  return getAuthenticatedUserLocal().pipe(
+    switchMap(u => (u ? of(true) : of(false))),
+    catchError(() => of(false)),
+    tap(isAuthenticated => {
+      if (!isAuthenticated) {
+        router.navigate(['/'], { queryParams: { returnUrl: state.url } });
+      }
+    })
+  );
+};
 
 export const routes: Routes = [
   {
@@ -50,6 +68,12 @@ export const routes: Routes = [
     component: UsersPageComponent,
     canActivate: [canActivateAdmin],
     data: { animation: 'UsersPage' },
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
+    canActivate: [canActivateAuthenticated],
+    data: { animation: 'Profile' },
   },
   {
     path: '**',

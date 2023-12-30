@@ -1,6 +1,7 @@
 import { GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -12,7 +13,12 @@ import { selectAuthenticatedUser } from '../../users/state/users.selectors';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, NgbDropdownModule, GoogleSigninButtonModule],
+  imports: [
+    CommonModule,
+    NgbDropdownModule,
+    RouterModule,
+    GoogleSigninButtonModule,
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })

@@ -1,0 +1,96 @@
+<div
+  class="d-flex flex-column align-items-lg-start align-items-md-start align-items-center">
+  <h3 class="display-3 mb-4">My Profile</h3>
+  <div class="card" style="min-width: 18rem">
+    <div class="card-body">
+      <h5 class="card-title">Details</h5>
+      <form [formGroup]="form">
+        <div class="form-group mb-3">
+          <label for="firstName" class="form-label">First Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="firstName"
+            [formControl]="form.controls['firstName']"
+            placeholder="Enter your first name" />
+          <div
+            class="form-text"
+            [ngClass]="{
+              'text-danger':
+                form.controls['firstName'].value.length > 100 ||
+                form.controls['firstName'].value.length < 1
+            }">
+            ({{ form.controls['firstName'].value.length }} / 100)
+          </div>
+          <div
+            *ngIf="
+              form.get('firstName')?.errors && form.get('firstName')?.touched
+            "
+            class="alert alert-danger">
+            <div *ngIf="form.get('firstName')?.errors?.['required']">
+              Your first name is required.
+            </div>
+            <div *ngIf="form.get('firstName')?.errors?.['minlength'] ?? false">
+              Minimum length is 1.
+            </div>
+            <div *ngIf="form.get('firstName')?.errors?.['maxlength'] ?? false">
+              Maximum length is 100.
+            </div>
+          </div>
+        </div>
+        <div class="form-group mb-3">
+          <label for="lastName" class="form-label">Last Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="lastName"
+            [formControl]="form.controls['lastName']"
+            placeholder="Enter your last name" />
+          <div
+            class="form-text"
+            [ngClass]="{
+              'text-danger':
+                form.controls['lastName'].value.length > 100 ||
+                form.controls['lastName'].value.length < 1
+            }">
+            ({{ form.controls['lastName'].value.length }} / 100)
+          </div>
+          <div
+            *ngIf="
+              form.get('lastName')?.errors && form.get('lastName')?.touched
+            "
+            class="alert alert-danger">
+            <div *ngIf="form.get('lastName')?.errors?.['required']">
+              Your last name is required.
+            </div>
+            <div *ngIf="form.get('lastName')?.errors?.['minlength'] ?? false">
+              Minimum length is 1.
+            </div>
+            <div *ngIf="form.get('lastName')?.errors?.['maxlength'] ?? false">
+              Maximum length is 100.
+            </div>
+          </div>
+        </div>
+        <div class="form-group mb-3">
+          <label for="emailAddress" class="form-label">Email Address</label>
+          <input
+            type="text"
+            class="form-control"
+            id="emailAddress"
+            disabled="true"
+            ngbTooltip="You can't currently update your own email address. If you need to change it, let us know."
+            [value]="(user$ | async)?.emailAddress" />
+        </div>
+        <div class="text-end">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="form.invalid || form.pristine"
+            (click)="onSubmit()">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

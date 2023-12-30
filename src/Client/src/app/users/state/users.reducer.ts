@@ -10,7 +10,6 @@ export interface UsersState {
 
 interface SingleUserState {
   user: UserDto | null;
-  b64Email: string | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -24,7 +23,6 @@ interface AllUsersState {
 export const initialState: UsersState = {
   authenticatedUser: {
     user: null,
-    b64Email: null,
     isLoading: false,
     error: null,
   },
@@ -75,19 +73,23 @@ export const usersReducer = createReducer(
       ...state,
       authenticatedUser: {
         ...state.authenticatedUser,
-        isLoading: true,
-        error: null,
       },
     };
   }),
-  on(
-    usersActions.updateUserSuccess,
-    (state, action): UsersState => ({
+  on(usersActions.updateUserSuccess, (state, action): UsersState => {
+    let authenticatedUserDto = state.authenticatedUser.user;
+
+    if (
+      state.authenticatedUser.user?.emailAddress === action.userDto.emailAddress
+    ) {
+      authenticatedUserDto = action.userDto;
+    }
+
+    return {
       ...state,
       authenticatedUser: {
         ...state.authenticatedUser,
-        isLoading: false,
-        error: null,
+        user: authenticatedUserDto,
       },
       allUsers: {
         ...state.allUsers,
@@ -95,8 +97,8 @@ export const usersReducer = createReducer(
         isLoading: false,
         error: null,
       },
-    })
-  ),
+    };
+  }),
   on(
     usersActions.updateUserFailure,
     (state, action): UsersState => ({
