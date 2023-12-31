@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import {
   NonNullableFormBuilder,
   ReactiveFormsModule,
@@ -8,7 +8,7 @@ import {
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { UserDto } from '../api/models';
 import { AppState } from '../app-state';
 import { ToastsService } from '../services/toasts.service';
@@ -22,7 +22,7 @@ import { selectAuthenticatedUser } from '../users/state/users.selectors';
   imports: [CommonModule, ReactiveFormsModule, NgbTooltipModule],
   standalone: true,
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnDestroy {
   user$: Observable<UserDto | null>;
   form = this.fb.group({
     firstName: [
@@ -35,6 +35,8 @@ export class ProfileComponent {
     ],
     emailAddress: ['', [Validators.required]],
   });
+
+  subscriptions: Subscription[] = [];
 
   constructor(
     private store: Store<AppState>,
@@ -50,10 +52,16 @@ export class ProfileComponent {
       }
     });
 
-    this.actions$.pipe(ofType(updateUserSuccess)).subscribe(() => {
-      this.form.markAsPristine();
-      this.toastsService.showSuccess('Profile Updated!');
-    });
+    this.subscriptions.push(
+      this.actions$.pipe(ofType(updateUserSuccess)).subscribe(() => {
+        this.form.markAsPristine();
+        this.toastsService.showSuccess('Profile Updated!');
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   onSubmit() {
