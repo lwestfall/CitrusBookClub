@@ -51,7 +51,6 @@ export class GoogleBooksService {
     let queryStr = 'q=';
 
     if (title) {
-      // queryStr += `"${title}"`;
       queryStr += `"${title.replace(/\s+/g, '+')}"`;
     }
 
@@ -65,13 +64,21 @@ export class GoogleBooksService {
       )
     );
 
+    const searchTitleWords = title?.toLocaleLowerCase().split(' ') ?? [];
+
     let volumes = response.items
       .filter(
         i =>
           i.volumeInfo.pageCount < MAX_PAGE_COUNT &&
           i.volumeInfo.pageCount > MIN_PAGE_COUNT
       )
-      .filter(i => i.volumeInfo.language === 'en');
+      .filter(i => i.volumeInfo.language === 'en')
+      .filter(i =>
+        i.volumeInfo.title
+          .toLocaleLowerCase()
+          .split(' ')
+          .some(w => searchTitleWords.some(w2 => w2 === w) ?? false)
+      );
 
     volumes = GoogleBooksService.filterDuplicates(volumes);
 
@@ -154,7 +161,7 @@ export class GoogleBooksService {
     }
 
     if (!searchTitleTerm.includes('summary') && title.includes('summary')) {
-      score -= 100;
+      score -= 500;
     }
 
     if (
