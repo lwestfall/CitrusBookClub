@@ -71,6 +71,12 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
     {
         var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId);
 
+        if (meeting is null)
+        {
+            await this.Error($"Meeting with id {meetingId} not found.");
+            return;
+        }
+
         var meetingDto = mapper.Map<MeetingDto>(meeting);
 
         await this.Groups.AddToGroupAsync(this.Context.ConnectionId, meetingId.ToString());
