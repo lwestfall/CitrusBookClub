@@ -36,7 +36,7 @@
     </ng-template>
     <div
       class="d-flex flex-column align-items-center my-2"
-      *ngIf="(liveMeeting$ | async)?.started; else notStarted">
+      *ngIf="(liveMeeting$ | async)?.state !== null; else notStarted">
       <span>The meeting is live!</span>
       <button
         class="btn btn-success my-2"

@@ -23,6 +23,11 @@ export const liveMeetingUpdate = createAction(
   props<{ meeting: MeetingDto }>()
 );
 
+export const liveMeetingError = createAction(
+  '[Meetings] Live Meeting Error',
+  props<{ error: string }>()
+);
+
 export const leftMeeting = createAction(
   '[Meetings] Left Meeting',
   props<{ meetingId: string }>()

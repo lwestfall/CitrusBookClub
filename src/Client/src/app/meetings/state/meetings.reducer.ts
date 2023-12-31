@@ -6,14 +6,8 @@ export interface MeetingsState {
   nextMeeting: MeetingDto | null;
   isLoadingNextMeeting: boolean;
   nextMeetingError: string | null;
-  liveMeeting: LiveMeetingState | null;
+  liveMeeting: MeetingDto | null;
   liveMeetingError: string | null;
-}
-
-export interface LiveMeetingState {
-  meeting: MeetingDto | null;
-  started: boolean;
-  joined: boolean;
 }
 
 export const initialState: MeetingsState = {
@@ -53,22 +47,22 @@ export const meetingsReducer = createReducer(
     meetingsActions.meetingStarted,
     (state, action): MeetingsState => ({
       ...state,
-      liveMeeting: {
-        meeting: action.meeting,
-        started: true,
-        joined: false,
-      },
+      liveMeeting: action.meeting,
     })
   ),
   on(
     meetingsActions.liveMeetingUpdate,
     (state, action): MeetingsState => ({
       ...state,
-      liveMeeting: {
-        meeting: action.meeting,
-        started: true,
-        joined: true,
-      },
+      liveMeeting: action.meeting,
+      liveMeetingError: null,
+    })
+  ),
+  on(
+    meetingsActions.liveMeetingError,
+    (state, action): MeetingsState => ({
+      ...state,
+      liveMeetingError: action.error,
     })
   ),
   on(

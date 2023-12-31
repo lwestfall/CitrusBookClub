@@ -1,5 +1,18 @@
 <div class="d-flex flex-column align-items-center">
-  <ng-container [ngSwitch]="(meetingState$ | async)?.meeting?.state">
+  <ng-container [ngSwitch]="(meeting$ | async)?.state">
+    <div
+      *ngSwitchCase="null"
+      class="d-flex flex-column gap-2 align-items-center">
+      <h6 class="display-6 text-center text-dark-emphasis">
+        This meeting hasn't started yet.
+      </h6>
+      <button
+        class="btn btn-success my-2"
+        *ngIf="admin$ | async"
+        (click)="startMeeting()">
+        Start Meeting
+      </button>
+    </div>
     <div
       *ngSwitchCase="MeetingState.Started"
       class="d-flex flex-column gap-2 align-items-center">
@@ -8,15 +21,12 @@
         recommendation!
       </h6>
       <div
-        *ngIf="(meetingState$ | async)?.meeting?.bookRecommendations"
+        *ngIf="(meeting$ | async)?.bookRecommendations"
         class="d-flex flex-column align-items-center">
         <h4 class="display-4 text-center">Recommendations</h4>
         <div class="d-flex flex-wrap justify-content-center gap-4">
           <div
-            *ngFor="
-              let bookRec of (meetingState$ | async)?.meeting
-                ?.bookRecommendations
-            "
+            *ngFor="let bookRec of (meeting$ | async)?.bookRecommendations"
             style="min-width: 15rem; max-width: 18rem">
             <app-book-card [book]="bookRec.book"></app-book-card>
           </div>
@@ -54,4 +64,10 @@
       <app-book-card [book]="lastBook"></app-book-card>
     </div>
   </div>
+  <button
+    class="btn btn-outline-danger my-3"
+    *ngIf="admin$ | async"
+    (click)="resetMeeting()">
+    Reset Meeting
+  </button>
 </div>

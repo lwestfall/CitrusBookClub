@@ -2,12 +2,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { BookDto } from '../../api/models';
+import { BookDto, MeetingDto } from '../../api/models';
 import { AppState } from '../../app-state';
 import { LiveMeetingService } from '../../services/websockets/live-meeting.service';
 import { selectAuthenticatedUserIsAdmin } from '../../users/state/users.selectors';
 import { MeetingState } from '../meeting-state.enum';
-import { LiveMeetingState } from '../state/meetings.reducer';
 import { selectLiveMeeting } from '../state/meetings.selectors';
 
 @Component({
@@ -17,7 +16,7 @@ import { selectLiveMeeting } from '../state/meetings.selectors';
 })
 export class LiveMeetingComponent implements OnInit, OnDestroy {
   meetingId: string | null = null;
-  meetingState$: Observable<LiveMeetingState | null>;
+  meeting$: Observable<MeetingDto | null>;
   lastBook: BookDto | null = null;
   MeetingState = MeetingState;
   admin$: Observable<boolean> = new Observable<boolean>();
@@ -31,7 +30,7 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
       this.meetingId = params.get('id') ?? '';
     });
 
-    this.meetingState$ = this.store.select(selectLiveMeeting);
+    this.meeting$ = this.store.select(selectLiveMeeting);
 
     this.admin$ = this.store.select(selectAuthenticatedUserIsAdmin);
   }
@@ -44,8 +43,8 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
     await this.liveMeetingSvc.start();
     this.liveMeetingSvc.joinMeeting(this.meetingId);
 
-    this.meetingState$.subscribe(state => {
-      this.lastBook = state?.meeting?.previousMeeting?.winningBook ?? null;
+    this.meeting$.subscribe(meeting => {
+      this.lastBook = meeting?.previousMeeting?.winningBook ?? null;
     });
   }
 
@@ -55,6 +54,14 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
     }
 
     this.liveMeetingSvc.leaveMeeting(this.meetingId);
+  }
+
+  startMeeting() {
+    if (!this.meetingId) {
+      return;
+    }
+
+    this.liveMeetingSvc.startMeeting(this.meetingId);
   }
 
   lockInRecommendations() {
@@ -71,5 +78,13 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
     }
 
     this.liveMeetingSvc.closeMeeting(this.meetingId);
+  }
+
+  resetMeeting() {
+    if (!this.meetingId) {
+      return;
+    }
+
+    this.liveMeetingSvc.resetMeeting(this.meetingId);
   }
 }

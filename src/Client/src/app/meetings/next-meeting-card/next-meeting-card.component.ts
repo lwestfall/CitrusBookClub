@@ -6,8 +6,8 @@ import { AppState } from '../../app-state';
 import { selectMyRecommendations } from '../../books/state/books.selectors';
 import { LiveMeetingService } from '../../services/websockets/live-meeting.service';
 import { selectAuthenticatedUserIsAdmin } from '../../users/state/users.selectors';
+import { MeetingState } from '../meeting-state.enum';
 import { meetingStarted } from '../state/meetings.actions';
-import { LiveMeetingState } from '../state/meetings.reducer';
 import { selectLiveMeeting } from '../state/meetings.selectors';
 
 @Component({
@@ -18,8 +18,9 @@ import { selectLiveMeeting } from '../state/meetings.selectors';
 export class NextMeetingCardComponent implements OnInit {
   @Input({ required: true }) meeting!: MeetingDto;
   myRecommendation$!: Observable<BookRecommendationDto | undefined>;
-  liveMeeting$!: Observable<LiveMeetingState | null>;
+  liveMeeting$!: Observable<MeetingDto | null>;
   admin$: Observable<boolean>;
+  MeetingState = MeetingState;
 
   constructor(
     private store: Store<AppState>,

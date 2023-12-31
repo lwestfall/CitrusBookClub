@@ -15,12 +15,13 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
     [Authorize(Roles = "Admin")]
     public async Task StartMeeting(Guid meetingId)
     {
-        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId)
-            ?? throw new ArgumentException($"Meeting with id {meetingId} not found.");
+        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId, MeetingState.Started);
 
-        meeting.State = MeetingState.Started;
-
-        await dbContext.SaveChangesAsync();
+        if (meeting is null)
+        {
+            await this.Error($"Meeting with id {meetingId} not found.");
+            return;
+        }
 
         var hostUser = this.Context.UserIdentifier;
 
@@ -34,17 +35,13 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
     [Authorize(Roles = "Admin")]
     public async Task StartVoting(Guid meetingId)
     {
-        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId)
-            ?? throw new ArgumentException($"Meeting with id {meetingId} not found.");
+        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId, MeetingState.Voting);
 
-        if (meeting.State != MeetingState.Started)
+        if (meeting is null)
         {
-            throw new InvalidOperationException($"Meeting with id {meetingId} is not in started state.");
+            await this.Error($"Meeting with id {meetingId} not found.");
+            return;
         }
-
-        meeting.State = MeetingState.Voting;
-
-        await dbContext.SaveChangesAsync();
 
         var meetingDto = mapper.Map<MeetingDto>(meeting);
 
@@ -56,18 +53,13 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
     [Authorize(Roles = "Admin")]
     public async Task CloseMeeting(Guid meetingId)
     {
-        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId)
-            ?? throw new ArgumentException($"Meeting with id {meetingId} not found.");
+        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId, MeetingState.Closed);
 
-        if (meeting.State != MeetingState.Voting)
+        if (meeting is null)
         {
-            throw new InvalidOperationException($"Meeting with id {meetingId} is not in voting state.");
+            await this.Error($"Meeting with id {meetingId} not found.");
+            return;
         }
-
-        meeting.State = MeetingState.Closed;
-
-        await dbContext.SaveChangesAsync();
-
         var meetingDto = mapper.Map<MeetingDto>(meeting);
 
         await this.Clients
@@ -90,6 +82,29 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
     }
 
     public async Task LeaveMeeting(Guid meetingId) => await this.Groups.RemoveFromGroupAsync(this.Context.ConnectionId, meetingId.ToString());
+
+    public async Task ResetMeeting(Guid meetingId)
+    {
+        var meeting = dbContext.Meetings.Find(meetingId);
+
+        if (meeting is null)
+        {
+            await this.Error($"Meeting with id {meetingId} not found.");
+            return;
+        }
+
+        meeting.State = null;
+        await dbContext.SaveChangesAsync();
+
+        meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId);
+
+        var meetingDto = mapper.Map<MeetingDto>(meeting);
+        await this.Clients
+            .All
+            .SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
+    }
+
+    private Task Error(string message) => this.Clients.Caller.SendAsync("Error", message);
 
     public static class ClientMethods
     {
@@ -117,7 +132,7 @@ public static class LiveMeetingHubExtensions
             .SendAsync(LiveMeetingHub.ClientMethods.MeetingUpdate, meetingDto);
     }
 
-    public static async Task<Meeting?> GetMeeting(CbcDbContext dbContext, Guid meetingId)
+    public static async Task<Meeting?> GetMeeting(CbcDbContext dbContext, Guid meetingId, MeetingState? nextState = null)
     {
         var meeting = await dbContext.Meetings
             .Include(e => e.PreviousMeeting)
@@ -127,6 +142,12 @@ public static class LiveMeetingHubExtensions
         if (meeting is null)
         {
             return null;
+        }
+
+        if (nextState is not null && meeting.State != nextState)
+        {
+            meeting.State = nextState.Value;
+            await dbContext.SaveChangesAsync();
         }
 
         if (meeting.State is MeetingState.Started or MeetingState.Voting)

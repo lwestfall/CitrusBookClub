@@ -29,13 +29,16 @@ export class LiveMeetingService extends SignalRService {
     await super.start();
 
     this.connection.on('MeetingStarted', (meeting: MeetingDto) => {
-      console.log('Started meeting', meeting);
       this.store.dispatch(actions.meetingStarted({ meeting }));
     });
 
     this.connection.on('MeetingUpdate', (meeting: MeetingDto) => {
-      console.log('Meeting Update', meeting);
       this.store.dispatch(actions.liveMeetingUpdate({ meeting }));
+    });
+
+    this.connection.on('Error', (error: string) => {
+      console.error('SignalR Error', error);
+      this.store.dispatch(actions.liveMeetingError({ error }));
     });
   }
 
@@ -58,5 +61,9 @@ export class LiveMeetingService extends SignalRService {
   async leaveMeeting(meetingId: string): Promise<void> {
     await this.connection.invoke('LeaveMeeting', meetingId);
     this.store.dispatch(actions.leftMeeting({ meetingId }));
+  }
+
+  async resetMeeting(meetingId: string): Promise<void> {
+    await this.connection.invoke('ResetMeeting', meetingId);
   }
 }
