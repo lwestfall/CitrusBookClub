@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { MiscService } from '../api/services';
 
+const MIN_PAGE_COUNT = 120;
 const MAX_PAGE_COUNT = 600;
 
 @Injectable({
@@ -50,8 +51,8 @@ export class GoogleBooksService {
     let queryStr = 'q=';
 
     if (title) {
-      // queryStr += `intitle:${title}`;
-      queryStr += `"${title}"`;
+      // queryStr += `"${title}"`;
+      queryStr += `"${title.replace(/\s+/g, '+')}"`;
     }
 
     if (author) {
@@ -64,13 +65,38 @@ export class GoogleBooksService {
       )
     );
 
-    const volumes = GoogleBooksService.filterDuplicates(response.items ?? []);
+    let volumes = response.items
+      .filter(
+        i =>
+          i.volumeInfo.pageCount < MAX_PAGE_COUNT &&
+          i.volumeInfo.pageCount > MIN_PAGE_COUNT
+      )
+      .filter(i => i.volumeInfo.language === 'en');
 
-    return (
-      volumes
-        .filter(i => i.volumeInfo.pageCount < MAX_PAGE_COUNT)
-        ?.slice(0, maxResults) ?? []
-    );
+    volumes = GoogleBooksService.filterDuplicates(volumes);
+
+    return volumes?.slice(0, maxResults) ?? [];
+  }
+
+  private static filterEnglishOnly(
+    volumes: GoogleBookVolume[]
+  ): GoogleBookVolume[] {
+    const seen = new Map<string, GoogleBookVolume>();
+
+    volumes.forEach(volume => {
+      const id =
+        volume.volumeInfo.title + (volume.volumeInfo.authors?.join(',') || '');
+      const existingVolume = seen.get(id);
+
+      if (
+        !existingVolume ||
+        this.calculateScore(volume) > this.calculateScore(existingVolume)
+      ) {
+        seen.set(id, volume);
+      }
+    });
+
+    return Array.from(seen.values());
   }
 
   private static filterDuplicates(
@@ -122,4 +148,5 @@ export interface GoogleBookVolumeInfo {
   pageCount: number;
   industryIdentifiers: { type: string; identifier: string }[];
   imageLinks: { smallThumbnail: string; thumbnail: string };
+  language: string;
 }
