@@ -1,4 +1,4 @@
-name: Build and Push Server Docker Image
+name: Build and Push Server Docker Image (Test)
 
 on:
   workflow_dispatch:
@@ -20,5 +20,5 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           cd src/Server
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/cbc-api .
-          docker push ${{ secrets.DOCKER_USERNAME }}/cbc-api:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/cbc-api-test .
+          docker push ${{ secrets.DOCKER_USERNAME }}/cbc-api-test:latest
