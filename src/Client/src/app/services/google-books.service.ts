@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { MiscService } from '../api/services';
 
-const MIN_PAGE_COUNT = 120;
+const MIN_PAGE_COUNT = 75;
 const MAX_PAGE_COUNT = 600;
 
 @Injectable({
@@ -75,28 +75,15 @@ export class GoogleBooksService {
 
     volumes = GoogleBooksService.filterDuplicates(volumes);
 
-    return volumes?.slice(0, maxResults) ?? [];
-  }
-
-  private static filterEnglishOnly(
-    volumes: GoogleBookVolume[]
-  ): GoogleBookVolume[] {
-    const seen = new Map<string, GoogleBookVolume>();
-
-    volumes.forEach(volume => {
-      const id =
-        volume.volumeInfo.title + (volume.volumeInfo.authors?.join(',') || '');
-      const existingVolume = seen.get(id);
-
-      if (
-        !existingVolume ||
-        this.calculateScore(volume) > this.calculateScore(existingVolume)
-      ) {
-        seen.set(id, volume);
-      }
-    });
-
-    return Array.from(seen.values());
+    return (
+      volumes
+        .sort(
+          (a, b) =>
+            GoogleBooksService.calculateSortingScore(b, title, author) -
+            GoogleBooksService.calculateSortingScore(a, title, author)
+        )
+        .slice(0, maxResults) ?? []
+    );
   }
 
   private static filterDuplicates(
@@ -104,14 +91,24 @@ export class GoogleBooksService {
   ): GoogleBookVolume[] {
     const seen = new Map<string, GoogleBookVolume>();
 
+    const nonAlphas = /\W/g;
+
     volumes.forEach(volume => {
-      const id =
-        volume.volumeInfo.title + (volume.volumeInfo.authors?.join(',') || '');
+      const title = volume.volumeInfo.title
+        .replaceAll(nonAlphas, '')
+        .toLowerCase();
+      const authors = volume.volumeInfo.authors
+        .map(a => a.replaceAll(nonAlphas, ''))
+        .join(',')
+        .toLowerCase();
+
+      const id = title + authors;
       const existingVolume = seen.get(id);
 
       if (
         !existingVolume ||
-        this.calculateScore(volume) > this.calculateScore(existingVolume)
+        this.calculateDuplicateScore(volume) >
+          this.calculateDuplicateScore(existingVolume)
       ) {
         seen.set(id, volume);
       }
@@ -120,7 +117,63 @@ export class GoogleBooksService {
     return Array.from(seen.values());
   }
 
-  private static calculateScore(volume: GoogleBookVolume): number {
+  private static calculateSortingScore(
+    volume: GoogleBookVolume,
+    searchTitle: string | null | undefined,
+    searchAuthor: string | null | undefined
+  ): number {
+    if (!searchTitle && !searchAuthor) {
+      return 0;
+    }
+
+    if (!volume.volumeInfo.title) {
+      return -100;
+    }
+    if (!volume.volumeInfo.authors.length) {
+      return -100;
+    }
+
+    const searchTitleTerm =
+      searchTitle?.toLowerCase() ?? 'NO TITLE **** XXX YYY';
+    const searchAuthorTerm =
+      searchAuthor?.toLowerCase() ?? 'NO AUTHOR **** XXX YYY';
+
+    let score = 0;
+    const title = volume.volumeInfo.title?.toLowerCase() ?? '';
+
+    if (title.includes(searchTitleTerm)) {
+      score += 100;
+    }
+
+    if (title.startsWith(searchTitleTerm)) {
+      score += 50;
+    }
+
+    if (title === searchTitleTerm) {
+      score += 200;
+    }
+
+    if (!searchTitleTerm.includes('summary') && title.includes('summary')) {
+      score -= 100;
+    }
+
+    if (
+      volume.volumeInfo.authors.some(a =>
+        a.toLowerCase().includes(searchAuthorTerm)
+      )
+    ) {
+      score += 100;
+    }
+
+    if (
+      !volume.volumeInfo.industryIdentifiers.some(i => i.type.includes('ISBN'))
+    ) {
+      return -200;
+    }
+    return score;
+  }
+
+  private static calculateDuplicateScore(volume: GoogleBookVolume): number {
     let score = 0;
     score += volume.volumeInfo.title ? 1 : 0;
     score += volume.volumeInfo.authors ? 1 : 0;
