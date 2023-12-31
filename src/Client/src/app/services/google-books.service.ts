@@ -32,7 +32,7 @@ export class GoogleBooksService {
       )
     );
 
-    if (response.totalItems === 0) {
+    if (response.totalItems === 0 || !response.items) {
       return null;
     }
 
@@ -63,6 +63,10 @@ export class GoogleBooksService {
         `https://www.googleapis.com/books/v1/volumes?${queryStr}&printType=books&key=${this.token}`
       )
     );
+
+    if (response.totalItems === 0 || !response.items) {
+      return [];
+    }
 
     const searchTitleWords = title?.toLocaleLowerCase().split(' ') ?? [];
 
@@ -194,7 +198,7 @@ export class GoogleBooksService {
 
 interface GoogleBookVolumeResponse {
   totalItems: number;
-  items: GoogleBookVolume[];
+  items?: GoogleBookVolume[];
 }
 
 interface GoogleBookVolume {
