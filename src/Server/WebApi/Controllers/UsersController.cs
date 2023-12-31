@@ -41,33 +41,18 @@ public class UsersController : ApiControllerBase
         return this.Ok(this.Mapper.Map<UserDto>(user));
     }
 
-    [HttpPut("/me")]
-    [AllowAnonymous]
-    public async Task<ActionResult<UserDto>> UpdateAuthenticatedUser([FromBody] UpdateUserDto updateUserDto)
-    {
-        var email = this.User.FindFirstValue(ClaimTypes.Email);
-
-        if (email is null)
-        {
-            return this.Unauthorized();
-        }
-
-        var user = await this.CbcContext.Users.FindAsync(email);
-
-        if (user is null)
-        {
-            return this.NotFound();
-        }
-
-        this.Mapper.Map(updateUserDto, user);
-        await this.CbcContext.SaveChangesAsync();
-        return this.Ok(this.Mapper.Map<UserDto>(user));
-    }
-
     [HttpPut("{b64Email}")]
+    [AllowAnonymous]
     public async Task<ActionResult<UserDto>> UpdateUser(string b64Email, [FromBody] UpdateUserDto updateUserDto)
     {
         var email = Encoding.UTF8.GetString(Convert.FromBase64String(b64Email));
+
+        if (email is null ||
+            (this.HttpContext.User.FindFirstValue(ClaimTypes.Email) != email &&
+            !this.HttpContext.User.IsInRole("Admin")))
+        {
+            return this.Unauthorized();
+        }
 
         var user = await this.CbcContext.Users
             .SingleOrDefaultAsync(u => u.EmailAddress == email);
