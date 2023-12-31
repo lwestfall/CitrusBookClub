@@ -2,11 +2,13 @@ namespace Cbc.WebApi.Controllers;
 
 using AutoMapper.QueryableExtensions;
 using Cbc.WebApi.Dtos;
+using Cbc.WebApi.Hubs;
 using Cbc.WebApi.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
-public class BookRecommendationsController : ApiControllerBase
+public class BookRecommendationsController(IHubContext<LiveMeetingHub> liveMeetingHubContext) : ApiControllerBase
 {
     [HttpGet("mine")]
     public async Task<ActionResult<List<BookRecommendationDto>>> GetMyBookRecommendations()
@@ -68,6 +70,8 @@ public class BookRecommendationsController : ApiControllerBase
         this.CbcContext.BookRecommendations.Add(recommendation);
 
         await this.CbcContext.SaveChangesAsync();
+
+        await liveMeetingHubContext.RecommendationsChanged(this.CbcContext, this.Mapper, meetingId);
 
         return this.Ok(this.Mapper.Map<BookRecommendationDto>(recommendation));
     }

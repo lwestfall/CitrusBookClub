@@ -17,3 +17,8 @@ export const selectNextMeetingError = createSelector(
   selectFeature,
   state => state.nextMeetingError
 );
+
+export const selectLiveMeeting = createSelector(
+  selectFeature,
+  state => state.liveMeeting
+);

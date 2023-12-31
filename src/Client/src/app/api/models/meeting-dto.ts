@@ -6,6 +6,7 @@ export interface MeetingDto {
   dateTime: string;
   id: string;
   previousMeeting?: MeetingDto | null;
+  state?: string | null;
   votes: Array<BookVoteDto>;
   winningBook?: BookDto | null;
 }

@@ -12,7 +12,7 @@
     </p>
     <div
       class="card-text"
-      *ngIf="myRecommendation$ | async; else noReccomendation">
+      *ngIf="myRecommendation$ | async; else noRecommendation">
       You recommended <i>{{ (myRecommendation$ | async)!.book.title }}</i>
       <p class="my-0">
         <a
@@ -23,7 +23,7 @@
         >
       </p>
     </div>
-    <ng-template #noReccomendation>
+    <ng-template #noRecommendation>
       <p class="card-text my-0">
         You haven't recommended a book yet.
         <a
@@ -33,6 +33,25 @@
           >Recommend one now!</a
         >
       </p>
+    </ng-template>
+    <div
+      class="d-flex flex-column align-items-center my-2"
+      *ngIf="(liveMeeting$ | async)?.started; else notStarted">
+      <span>The meeting is live!</span>
+      <button class="btn btn-success my-2">Join Meeting!</button>
+      <button
+        *ngIf="admin$ | async"
+        class="btn btn-outline-danger my-2"
+        (click)="unstartMeetingDebug()">
+        Unstart Meeting (Debug)
+      </button>
+    </div>
+    <ng-template #notStarted>
+      <div class="text-center" *ngIf="admin$ | async">
+        <button class="btn btn-success my-2" (click)="startMeeting()">
+          Start Meeting
+        </button>
+      </div>
     </ng-template>
   </div>
 </div>

@@ -3,6 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, mergeMap, of } from 'rxjs';
 import { MeetingsService } from '../../api/services';
 import { fetchAppData } from '../../app-state';
+import { LiveMeetingService } from '../../services/websockets/live-meeting.service';
 import * as actions from './meetings.actions';
 
 @Injectable()
@@ -23,6 +24,7 @@ export class MeetingsEffects {
 
   constructor(
     private actions$: Actions,
-    private meetingsService: MeetingsService
+    private meetingsService: MeetingsService,
+    private liveMeetingService: LiveMeetingService
   ) {}
 }

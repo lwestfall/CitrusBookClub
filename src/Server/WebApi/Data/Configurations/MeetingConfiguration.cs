@@ -1,6 +1,7 @@
 namespace Cbc.WebApi.Data.Configurations;
 
 using Cbc.WebApi.Models.Entities;
+using Cbc.WebApi.Models.Misc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,6 +15,11 @@ public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
 
         builder.Property(e => e.DateTime)
             .IsRequired();
+
+        builder.Property(e => e.State)
+            .HasConversion(
+                v => v.ToString(),
+                v => (MeetingState)Enum.Parse(typeof(MeetingState), v!));
 
         builder.HasOne(e => e.WinningBook)
             .WithOne()

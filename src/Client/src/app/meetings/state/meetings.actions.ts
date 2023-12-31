@@ -12,3 +12,23 @@ export const getNextMeetingFailure = createAction(
   '[Meetings] Get Next Meeting Failure',
   props<{ error: string }>()
 );
+
+export const meetingStarted = createAction(
+  '[Meetings] Meeting Started',
+  props<{ meeting: MeetingDto }>()
+);
+
+export const joinedMeeting = createAction(
+  '[Meetings] Joined Meeting',
+  props<{ meeting: MeetingDto }>()
+);
+
+export const leftMeeting = createAction(
+  '[Meetings] Left Meeting',
+  props<{ meetingId: string }>()
+);
+
+export const meetingUnstarted = createAction(
+  '[Meetings] Meeting Unstarted',
+  props<{ meeting: string }>()
+);

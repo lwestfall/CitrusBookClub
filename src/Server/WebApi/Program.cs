@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Security.Claims;
 using Cbc.WebApi.Data;
 using Cbc.WebApi.Helpers;
+using Cbc.WebApi.Hubs;
 using Cbc.WebApi.Models.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -38,6 +39,7 @@ builder.Services.AddDbContext<CbcDbContext>(options => GetCbcDbContextOptions(co
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 
 if (builder.Environment.IsDevelopment())
@@ -105,6 +107,18 @@ builder.Services.AddAuthentication(options =>
     };
 
     options.Events = new JwtBearerEvents();
+
+    options.Events.OnMessageReceived += async (context) =>
+    {
+        var accessToken = context.Request.Query["access_token"];
+
+        if (!string.IsNullOrEmpty(accessToken))
+        {
+            context.Token = accessToken;
+        }
+
+        await Task.CompletedTask;
+    };
 
     options.Events.OnTokenValidated += async (context) =>
     {
@@ -181,6 +195,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<LiveMeetingHub>("/hubs/livemeeting");
 
 app.Run();
 
