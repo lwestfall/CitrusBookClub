@@ -18,17 +18,12 @@ export const meetingStarted = createAction(
   props<{ meeting: MeetingDto }>()
 );
 
-export const joinedMeeting = createAction(
-  '[Meetings] Joined Meeting',
+export const liveMeetingUpdate = createAction(
+  '[Meetings] Live Meeting Update',
   props<{ meeting: MeetingDto }>()
 );
 
 export const leftMeeting = createAction(
   '[Meetings] Left Meeting',
   props<{ meetingId: string }>()
-);
-
-export const meetingUnstarted = createAction(
-  '[Meetings] Meeting Unstarted',
-  props<{ meeting: string }>()
 );

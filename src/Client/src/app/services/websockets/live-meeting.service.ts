@@ -22,6 +22,10 @@ export class LiveMeetingService extends SignalRService {
   }
 
   override async start(): Promise<void> {
+    if (this.connected) {
+      return;
+    }
+
     await super.start();
 
     this.connection.on('MeetingStarted', (meeting: MeetingDto) => {
@@ -29,25 +33,22 @@ export class LiveMeetingService extends SignalRService {
       this.store.dispatch(actions.meetingStarted({ meeting }));
     });
 
-    this.connection.on('MeetingJoined', (meeting: MeetingDto) => {
-      console.log('Joined meeting', meeting);
-      this.store.dispatch(actions.joinedMeeting({ meeting }));
-    });
-
-    this.connection.on('MeetingLeft', (meetingId: string) => {
-      console.log(`Left meeting ${meetingId}`);
-      this.store.dispatch(actions.leftMeeting({ meetingId }));
-    });
-
-    this.connection.on('MeetingUnstarted', (meeting: string) => {
-      console.log(`Unstarted meeting`, meeting);
-      this.store.dispatch(actions.meetingUnstarted({ meeting }));
-      // this.store.dispatch(actions.leftMeeting({ meeting }));
+    this.connection.on('MeetingUpdate', (meeting: MeetingDto) => {
+      console.log('Meeting Update', meeting);
+      this.store.dispatch(actions.liveMeetingUpdate({ meeting }));
     });
   }
 
   async startMeeting(meetingId: string): Promise<void> {
     await this.connection.invoke('StartMeeting', meetingId);
+  }
+
+  async startVoting(meetingId: string): Promise<void> {
+    await this.connection.invoke('StartVoting', meetingId);
+  }
+
+  async closeMeeting(meetingId: string): Promise<void> {
+    await this.connection.invoke('CloseMeeting', meetingId);
   }
 
   async joinMeeting(meetingId: string): Promise<void> {
@@ -56,9 +57,6 @@ export class LiveMeetingService extends SignalRService {
 
   async leaveMeeting(meetingId: string): Promise<void> {
     await this.connection.invoke('LeaveMeeting', meetingId);
-  }
-
-  async unstartMeeting(meetingId: string): Promise<void> {
-    await this.connection.invoke('UnstartMeeting', meetingId);
+    this.store.dispatch(actions.leftMeeting({ meetingId }));
   }
 }

@@ -4,6 +4,7 @@ using AutoMapper.QueryableExtensions;
 using Cbc.WebApi.Dtos;
 using Cbc.WebApi.Hubs;
 using Cbc.WebApi.Models.Entities;
+using Cbc.WebApi.Models.Misc;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,11 @@ public class BookRecommendationsController(IHubContext<LiveMeetingHub> liveMeeti
             return this.NotFound($"No meeting found with Id: {meetingId}");
         }
 
+        if (meeting.State is not null and not MeetingState.Started)
+        {
+            return this.BadRequest($"This meeting can't accept new recommendations.");
+        }
+
         var book = await this.CbcContext.Books.FindAsync(bookId);
 
         if (book is null)
@@ -71,7 +77,7 @@ public class BookRecommendationsController(IHubContext<LiveMeetingHub> liveMeeti
 
         await this.CbcContext.SaveChangesAsync();
 
-        await liveMeetingHubContext.RecommendationsChanged(this.CbcContext, this.Mapper, meetingId);
+        await liveMeetingHubContext.MeetingChanged(this.CbcContext, this.Mapper, meetingId);
 
         return this.Ok(this.Mapper.Map<BookRecommendationDto>(recommendation));
     }

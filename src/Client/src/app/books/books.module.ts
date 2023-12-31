@@ -19,5 +19,6 @@ import { booksReducer } from './state/books.reducer';
     EffectsModule.forFeature([BooksEffects]),
   ],
   declarations: [BookCardComponent, BooksPageComponent, BookCreatorComponent],
+  exports: [BookCardComponent],
 })
 export class BooksModule {}

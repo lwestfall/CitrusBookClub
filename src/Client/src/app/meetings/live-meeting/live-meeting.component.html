@@ -1,0 +1,57 @@
+<div class="d-flex flex-column align-items-center">
+  <ng-container [ngSwitch]="(meetingState$ | async)?.meeting?.state">
+    <div
+      *ngSwitchCase="MeetingState.Started"
+      class="d-flex flex-column gap-2 align-items-center">
+      <h6 class="display-6 text-center">
+        The meeting has started! This is your last chance to lock in your
+        recommendation!
+      </h6>
+      <div
+        *ngIf="(meetingState$ | async)?.meeting?.bookRecommendations"
+        class="d-flex flex-column align-items-center">
+        <h4 class="display-4 text-center">Recommendations</h4>
+        <div class="d-flex flex-wrap justify-content-center gap-4">
+          <div
+            *ngFor="
+              let bookRec of (meetingState$ | async)?.meeting
+                ?.bookRecommendations
+            "
+            style="min-width: 15rem; max-width: 18rem">
+            <app-book-card [book]="bookRec.book"></app-book-card>
+          </div>
+        </div>
+      </div>
+      <button
+        class="btn btn-primary"
+        *ngIf="admin$ | async"
+        (click)="lockInRecommendations()">
+        Lock Recommendations & Start Vote
+      </button>
+    </div>
+    <div
+      *ngSwitchCase="MeetingState.Voting"
+      class="d-flex flex-column gap-2 align-items-center">
+      <h4 class="display-4">Voting is OPEN!</h4>
+      <!-- todo: rank recommendations -->
+      <button
+        class="btn btn-primary"
+        *ngIf="admin$ | async"
+        (click)="lockInVotes()">
+        Lock Votes & Get Winner
+      </button>
+    </div>
+    <div
+      *ngSwitchCase="MeetingState.Closed"
+      class="d-flex flex-column gap-2 align-items-center">
+      <h4 class="display-4">And the winner is...</h4>
+      <!-- todo: fancy winning book reveal -->
+    </div>
+  </ng-container>
+  <div *ngIf="lastBook" class="d-flex flex-column align-items-center my-4">
+    <h4 class="display-4">Last Winner</h4>
+    <div style="min-width: 15rem" *ngIf="lastBook">
+      <app-book-card [book]="lastBook"></app-book-card>
+    </div>
+  </div>
+</div>

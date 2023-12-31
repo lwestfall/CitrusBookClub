@@ -49,6 +49,11 @@ export class ProfileComponent {
         this.form.patchValue(user);
       }
     });
+
+    this.actions$.pipe(ofType(updateUserSuccess)).subscribe(() => {
+      this.form.markAsPristine();
+      this.toastsService.showSuccess('Profile Updated!');
+    });
   }
 
   onSubmit() {
@@ -67,10 +72,5 @@ export class ProfileComponent {
         userDto,
       })
     );
-
-    this.actions$.pipe(ofType(updateUserSuccess)).subscribe(() => {
-      this.form.markAsPristine();
-      this.toastsService.showSuccess('Profile Updated!');
-    });
   }
 }

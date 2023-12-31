@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { BookRecommendationDto, MeetingDto } from '../../api/models';
+import { MeetingDto } from '../../api/models';
 import * as meetingsActions from './meetings.actions';
 
 export interface MeetingsState {
@@ -14,7 +14,6 @@ export interface LiveMeetingState {
   meeting: MeetingDto | null;
   started: boolean;
   joined: boolean;
-  allRecommendations: BookRecommendationDto[];
 }
 
 export const initialState: MeetingsState = {
@@ -58,24 +57,22 @@ export const meetingsReducer = createReducer(
         meeting: action.meeting,
         started: true,
         joined: false,
-        allRecommendations: [],
       },
     })
   ),
   on(
-    meetingsActions.joinedMeeting,
+    meetingsActions.liveMeetingUpdate,
     (state, action): MeetingsState => ({
       ...state,
       liveMeeting: {
         meeting: action.meeting,
         started: true,
         joined: true,
-        allRecommendations: [],
       },
     })
   ),
   on(
-    meetingsActions.meetingUnstarted,
+    meetingsActions.leftMeeting,
     (state): MeetingsState => ({
       ...state,
       liveMeeting: null,

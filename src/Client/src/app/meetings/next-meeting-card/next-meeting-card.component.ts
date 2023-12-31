@@ -50,8 +50,4 @@ export class NextMeetingCardComponent implements OnInit {
   startMeeting() {
     this.liveMeetingSvc.startMeeting(this.meeting.id);
   }
-
-  unstartMeetingDebug() {
-    this.liveMeetingSvc.unstartMeeting(this.meeting.id);
-  }
 }
