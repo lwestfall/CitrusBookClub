@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { MiscService } from '../api/services';
 
 const MIN_PAGE_COUNT = 75;
-const MAX_PAGE_COUNT = 600;
+const MAX_PAGE_COUNT = 800;
 
 @Injectable({
   providedIn: 'root',
@@ -68,7 +68,11 @@ export class GoogleBooksService {
       return [];
     }
 
-    const searchTitleWords = title?.toLocaleLowerCase().split(' ') ?? [];
+    const searchTitleWords =
+      title
+        ?.toLocaleLowerCase()
+        .split(' ')
+        .filter(w => w) ?? [];
 
     let volumes = response.items
       .filter(
@@ -76,13 +80,16 @@ export class GoogleBooksService {
           i.volumeInfo.pageCount < MAX_PAGE_COUNT &&
           i.volumeInfo.pageCount > MIN_PAGE_COUNT
       )
-      .filter(i => i.volumeInfo.language === 'en')
-      .filter(i =>
+      .filter(i => i.volumeInfo.language === 'en');
+
+    if (searchTitleWords.length > 0) {
+      volumes = volumes.filter(i =>
         i.volumeInfo.title
           .toLocaleLowerCase()
           .split(' ')
           .some(w => searchTitleWords.some(w2 => w2 === w) ?? false)
       );
+    }
 
     volumes = GoogleBooksService.filterDuplicates(volumes);
 
@@ -108,10 +115,12 @@ export class GoogleBooksService {
       const title = volume.volumeInfo.title
         .replaceAll(nonAlphas, '')
         .toLowerCase();
-      const authors = volume.volumeInfo.authors
-        .map(a => a.replaceAll(nonAlphas, ''))
-        .join(',')
-        .toLowerCase();
+
+      const authors =
+        volume.volumeInfo.authors
+          ?.map(a => a.replaceAll(nonAlphas, ''))
+          .join(',')
+          .toLowerCase() ?? '';
 
       const id = title + authors;
       const existingVolume = seen.get(id);
@@ -140,7 +149,7 @@ export class GoogleBooksService {
     if (!volume.volumeInfo.title) {
       return -100;
     }
-    if (!volume.volumeInfo.authors.length) {
+    if (!volume.volumeInfo.authors?.length) {
       return -100;
     }
 
@@ -207,7 +216,7 @@ interface GoogleBookVolume {
 
 export interface GoogleBookVolumeInfo {
   title: string;
-  authors: string[];
+  authors?: string[];
   description: string;
   pageCount: number;
   industryIdentifiers: { type: string; identifier: string }[];

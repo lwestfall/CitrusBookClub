@@ -126,7 +126,7 @@ export class BookCreatorComponent implements OnInit {
       this.bookForm.patchValue({
         isbn: isbn,
         title: volume.volumeInfo.title,
-        author: volume.volumeInfo.authors.join(', '),
+        author: volume.volumeInfo.authors?.join(', '),
         description: volume.volumeInfo.description,
         pageCount: volume.volumeInfo.pageCount,
         thumbnailLink: volume.volumeInfo.imageLinks?.smallThumbnail,
@@ -208,7 +208,7 @@ export class BookCreatorComponent implements OnInit {
   volumeInfoToDto(volume: GoogleBookVolumeInfo): BookDto {
     return {
       title: volume.title,
-      author: volume.authors?.join(', '),
+      author: volume.authors?.join(', ') ?? '',
       isbn: this.getBestIsbn(volume),
       description: volume.description,
       pageCount: volume.pageCount,
