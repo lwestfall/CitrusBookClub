@@ -1,8 +1,5 @@
 <div class="card w-100" style="max-width: 30rem">
-  <div
-    class="ripple"
-    *ngIf="this.nextMeeting?.id === this.recommendedForMeeting?.id"></div>
-
+  <div class="ripple" *ngIf="nextMeetingId === recommendedForMeeting?.id"></div>
   <div class="card-body">
     <div class="d-flex flex-row gap-2 align-items-center">
       <div>
@@ -23,10 +20,10 @@
       <button
         class="btn btn-outline-secondary my-2"
         *ngIf="
-          this.nextMeeting?.id !== this.recommendedForMeeting?.id;
+          nextMeetingId !== recommendedForMeeting?.id;
           else recommendedForNext
         "
-        [disabled]="!nextMeeting"
+        [disabled]="!nextMeetingId"
         (click)="recommendForNext()">
         Recommend for next meeting!
       </button>
@@ -38,7 +35,7 @@
       <hr class="flex-grow-1" />
       <button
         class="btn"
-        (click)="this.expanded = !this.expanded; $event.stopPropagation()">
+        (click)="expanded = !expanded; $event.stopPropagation()">
         <i
           class="bi bi-chevron-double-down chevron-down"
           [ngClass]="expanded ? 'expanded' : null"></i>

@@ -24,7 +24,7 @@ export class BookCardComponent implements OnInit, OnDestroy {
   recommendedForMeeting: MeetingDto | null = null;
   @Input() mine = false;
 
-  nextMeeting: MeetingDto | null = null;
+  nextMeetingId: string | null = null;
 
   expanded = false;
 
@@ -37,9 +37,11 @@ export class BookCardComponent implements OnInit, OnDestroy {
   ) {
     const nextMeeting$ = this.store.select(selectNextMeeting);
 
-    nextMeeting$.subscribe(meeting => {
-      this.nextMeeting = meeting;
-    });
+    this.subscriptions.push(
+      nextMeeting$.subscribe(meeting => {
+        this.nextMeetingId = meeting?.id ?? null;
+      })
+    );
 
     this.subscriptions.push(
       this.actions$.pipe(ofType(deleteBookSuccess)).subscribe(action => {
@@ -53,18 +55,20 @@ export class BookCardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const recommendations$ = this.store.select(selectMyRecommendations);
 
-    recommendations$.subscribe(recommendations => {
-      const thisBookRecommendations = orderBy(
-        recommendations.filter(r => r.book.id === this.book.id),
-        r => r.meeting.dateTime
-      );
+    this.subscriptions.push(
+      recommendations$.subscribe(recommendations => {
+        const thisBookRecommendations = orderBy(
+          recommendations.filter(r => r.book.id === this.book.id),
+          r => r.meeting.dateTime
+        );
 
-      if (thisBookRecommendations.length > 0) {
-        this.recommendedForMeeting = thisBookRecommendations[0].meeting;
-      } else {
-        this.recommendedForMeeting = null;
-      }
-    });
+        if (thisBookRecommendations.length > 0) {
+          this.recommendedForMeeting = thisBookRecommendations[0].meeting;
+        } else {
+          this.recommendedForMeeting = null;
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -76,14 +80,14 @@ export class BookCardComponent implements OnInit, OnDestroy {
   }
 
   recommendForNext(): void {
-    if (!this.nextMeeting) {
+    if (!this.nextMeetingId) {
       return;
     }
 
     this.store.dispatch(
       recommendBookForMeeting({
         bookId: this.book.id!,
-        meetingId: this.nextMeeting.id!,
+        meetingId: this.nextMeetingId,
       })
     );
   }
