@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import _ from 'lodash';
+import { orderBy } from 'lodash-es';
 import { Subscription } from 'rxjs';
 import { BookDto, MeetingDto } from '../../api/models';
 import { AppState } from '../../app-state';
@@ -54,7 +54,7 @@ export class BookCardComponent implements OnInit, OnDestroy {
     const recommendations$ = this.store.select(selectMyRecommendations);
 
     recommendations$.subscribe(recommendations => {
-      const thisBookRecommendations = _.orderBy(
+      const thisBookRecommendations = orderBy(
         recommendations.filter(r => r.book.id === this.book.id),
         r => r.meeting.dateTime
       );

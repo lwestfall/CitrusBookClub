@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as signalR from '@microsoft/signalr';
-import { HubConnection } from '@microsoft/signalr';
+import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { WebsocketConfiguration } from './websocket-configuration';
 
@@ -12,7 +11,7 @@ export abstract class SignalRService {
   constructor(config: WebsocketConfiguration, hubRoute: string) {
     const url = new URL(`hubs/${hubRoute}`, config.rootUrl);
 
-    this.connection = new signalR.HubConnectionBuilder()
+    this.connection = new HubConnectionBuilder()
       .withUrl(url.toString(), {
         accessTokenFactory: () => {
           return localStorage.getItem('id_token') ?? '';
