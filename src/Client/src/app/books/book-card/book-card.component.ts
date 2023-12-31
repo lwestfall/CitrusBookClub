@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import _ from 'lodash';
+import { Subscription } from 'rxjs';
 import { BookDto, MeetingDto } from '../../api/models';
 import { AppState } from '../../app-state';
 import { selectNextMeeting } from '../../meetings/state/meetings.selectors';
@@ -18,7 +19,7 @@ import { selectMyRecommendations } from '../state/books.selectors';
   templateUrl: './book-card.component.html',
   styleUrls: ['./book-card.component.css'],
 })
-export class BookCardComponent implements OnInit {
+export class BookCardComponent implements OnInit, OnDestroy {
   @Input({ required: true }) book!: BookDto;
   recommendedForMeeting: MeetingDto | null = null;
   @Input() mine = false;
@@ -26,6 +27,8 @@ export class BookCardComponent implements OnInit {
   nextMeeting: MeetingDto | null = null;
 
   expanded = false;
+
+  subscriptions: Subscription[] = [];
 
   constructor(
     private store: Store<AppState>,
@@ -37,6 +40,14 @@ export class BookCardComponent implements OnInit {
     nextMeeting$.subscribe(meeting => {
       this.nextMeeting = meeting;
     });
+
+    this.subscriptions.push(
+      this.actions$.pipe(ofType(deleteBookSuccess)).subscribe(action => {
+        if (action.bookId === this.book.id) {
+          this.toastService.showSuccess('Book deleted');
+        }
+      })
+    );
   }
 
   ngOnInit(): void {
@@ -56,12 +67,12 @@ export class BookCardComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   deleteBook(): void {
     this.store.dispatch(deleteBook({ bookId: this.book.id! }));
-
-    this.actions$.pipe(ofType(deleteBookSuccess)).subscribe(() => {
-      this.toastService.showSuccess('Book deleted');
-    });
   }
 
   recommendForNext(): void {
