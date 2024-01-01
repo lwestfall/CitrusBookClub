@@ -43,7 +43,9 @@ export class NextMeetingCardComponent implements OnInit {
       await this.liveMeetingSvc.start();
     }
 
-    if (this.meeting.state === 'Started') {
+    console.log(this.meeting);
+
+    if (this.meeting.state) {
       this.store.dispatch(meetingStarted({ meeting: this.meeting }));
     }
   }

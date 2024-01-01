@@ -53,7 +53,7 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.liveMeetingSvc.leaveMeeting(this.meetingId);
+    // this.liveMeetingSvc.leaveMeeting(this.meetingId);
   }
 
   startMeeting() {
