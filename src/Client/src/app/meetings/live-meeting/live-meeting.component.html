@@ -44,6 +44,12 @@
       class="d-flex flex-column gap-2 align-items-center">
       <h4 class="display-4">Voting is OPEN!</h4>
       <!-- todo: rank recommendations -->
+      <div>
+        <app-live-voting
+          *ngIf="(meeting$ | async)?.bookRecommendations"
+          [recommendations]="(meeting$ | async)?.bookRecommendations!">
+        </app-live-voting>
+      </div>
       <button
         class="btn btn-primary"
         *ngIf="admin$ | async"

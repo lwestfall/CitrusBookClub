@@ -1,0 +1,22 @@
+<div class="d-flex flex-row gap-3">
+  <div>
+    <ul
+      class="list-group"
+      dndEffectAllowed="move"
+      (dndDrop)="onDrop($event, rankedRecommendations)"
+      dndDropzone>
+      <li
+        class="list-group-item list-group-item-info dndPlaceholder"
+        dndPlaceholderRef></li>
+      <li
+        *ngFor="let rec of rankedRecommendations"
+        class="list-group-item"
+        [ngClass]="{ 'list-group-item-success': rec.isMine }"
+        [dndDraggable]="rec"
+        (dndMoved)="onDragged(rec, rankedRecommendations)"
+        dndEffectAllowed="move">
+        {{ rec.rank }}: {{ rec.book.title }} - {{ rec.recommendedBy.firstName }}
+      </li>
+    </ul>
+  </div>
+</div>
