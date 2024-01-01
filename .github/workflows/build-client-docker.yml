@@ -1,4 +1,4 @@
-name: Angular Client CI
+name: Angular Client Docker CI
 
 on:
   pull_request:
@@ -16,12 +16,7 @@ jobs:
         with:
           node-version: "*"
 
-      - name: Install dependencies
+      - name: Docker Build
         run: |
           cd src/Client
-          npm install
-
-      - name: Angular Build
-        run: |
-          cd src/Client
-          npm run build
+          docker build --build-arg PROFILE=prod -t ${{ secrets.DOCKER_USERNAME }}/cbc-app .
