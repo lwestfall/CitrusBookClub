@@ -1,69 +1,17 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { shuffle } from 'lodash-es';
 import { DndDropEvent } from 'ngx-drag-drop';
 import { Subscription } from 'rxjs';
 import {
   BookDto,
   BookRecommendationForMeetingDto,
+  CreateBookVoteDto,
   UserSimpleDto,
 } from '../../../api/models';
 import { AppState } from '../../../app-state';
+import { LiveMeetingService } from '../../../services/websockets/live-meeting.service';
 import { selectAuthenticatedUser } from '../../../users/state/users.selectors';
-
-export const testData: RankedBook[] = [
-  {
-    book: {
-      title: 'The Hobbit',
-      author: 'J.R.R. Tolkien',
-      id: '1',
-    },
-    recommendedBy: {
-      firstName: 'Luke',
-      lastName: 'Doe',
-    },
-    rank: 1,
-    isMine: true,
-  },
-  {
-    book: {
-      title: 'The Fellowship of the Ring',
-      author: 'J.R.R. Tolkien',
-      id: '2',
-    },
-    recommendedBy: {
-      firstName: 'Jane',
-      lastName: 'Doe',
-    },
-    rank: 2,
-    isMine: false,
-  },
-  {
-    book: {
-      title: 'The Two Towers',
-      author: 'J.R.R. Tolkien',
-      id: '3',
-    },
-    recommendedBy: {
-      firstName: 'Mike',
-      lastName: 'Smith',
-    },
-    rank: 3,
-    isMine: false,
-  },
-  {
-    book: {
-      title: 'The Return of the King',
-      author: 'J.R.R. Tolkien',
-      id: '4',
-    },
-    recommendedBy: {
-      firstName: 'Bill',
-      lastName: 'Jones',
-    },
-    rank: 4,
-    isMine: false,
-  },
-];
 
 @Component({
   selector: 'app-live-voting',
@@ -73,12 +21,17 @@ export const testData: RankedBook[] = [
 export class LiveVotingComponent implements OnInit, OnDestroy {
   @Input({ required: true })
   recommendations!: BookRecommendationForMeetingDto[];
+  @Input({ required: true }) meetingId!: string;
 
   rankedRecommendations: RankedBook[] = [];
+  votesConfirmed: boolean = false;
 
   userSubscription?: Subscription;
 
-  constructor(private store: Store<AppState>) {}
+  constructor(
+    private store: Store<AppState>,
+    private liveMeetingSvc: LiveMeetingService
+  ) {}
 
   ngOnInit() {
     const userObs$ = this.store.select(selectAuthenticatedUser);
@@ -88,35 +41,33 @@ export class LiveVotingComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.rankedRecommendations = testData;
+      // todo: "get my votes" and restore them in order if they exist otherwise default behavior
+      const myRec = this.recommendations.find(
+        // todo: improve this check
+        r =>
+          r.recommendedBy.firstName === user.firstName &&
+          r.recommendedBy.lastName === user.lastName
+      );
 
-      // todo: reenable this
-      // const myRec = this.recommendations.find(
-      //   // todo: improve this check
-      //   r =>
-      //     r.recommendedBy.firstName === user.firstName &&
-      //     r.recommendedBy.lastName === user.lastName
-      // );
+      if (myRec) {
+        this.rankedRecommendations.push({
+          book: myRec?.book,
+          recommendedBy: myRec?.recommendedBy,
+          rank: 1,
+          isMine: true,
+        });
+      }
 
-      // if (myRec) {
-      //   this.rankedRecommendations.push({
-      //     book: myRec?.book,
-      //     recommendedBy: myRec?.recommendedBy,
-      //     rank: 1,
-      //     isMine: true,
-      //   });
-      // }
+      const shuffled = shuffle(this.recommendations.filter(r => r !== myRec));
 
-      // this.recommendations
-      //   .filter(r => r !== myRec)
-      //   .forEach(r => {
-      //     this.rankedRecommendations.push({
-      //       book: r.book,
-      //       recommendedBy: r.recommendedBy,
-      //       rank: this.rankedRecommendations.length + 1,
-      //       isMine: false,
-      //     });
-      //   });
+      shuffled.forEach(r => {
+        this.rankedRecommendations.push({
+          book: r.book,
+          recommendedBy: r.recommendedBy,
+          rank: this.rankedRecommendations.length + 1,
+          isMine: false,
+        });
+      });
     });
   }
 
@@ -145,7 +96,28 @@ export class LiveVotingComponent implements OnInit, OnDestroy {
       r.rank = i + 1;
     });
 
-    // todo: update votes via signalr
+    this.liveMeetingSvc.changeVote(
+      this.meetingId,
+      this.rankedRecommendationsToVotes(),
+      false
+    );
+  }
+
+  confirmVotes() {
+    this.liveMeetingSvc.changeVote(
+      this.meetingId,
+      this.rankedRecommendationsToVotes(),
+      true
+    );
+
+    // todo use live meeting state to determine if vote was confirmed on backend via meeting user state
+  }
+
+  rankedRecommendationsToVotes(): CreateBookVoteDto[] {
+    return this.rankedRecommendations.map(r => ({
+      bookId: r.book.id,
+      rank: r.rank,
+    }));
   }
 }
 

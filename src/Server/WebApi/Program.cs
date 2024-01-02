@@ -51,6 +51,8 @@ if (builder.Environment.IsDevelopment())
         options.UseAllOfToExtendReferenceSchemas();
         options.SchemaFilter<RequiredNotNullableSchemaFilter>();
 
+        options.DocumentFilter<AdditionalSchemaDefinitionsDocumentFilter>();
+
         // options.AddSecurityDefinition("Bearer,", new OpenApiSecurityScheme
         // {
         //     Description = "Please insert your JWT Token into field",
@@ -183,7 +185,7 @@ app.UseCors("AllowSpecificOrigin");
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    // app.UseSwaggerUI();
+    app.UseSwaggerUI();
 
     app.UseDeveloperExceptionPage();
 }

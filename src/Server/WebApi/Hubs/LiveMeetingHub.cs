@@ -1,5 +1,6 @@
 namespace Cbc.WebApi.Hubs;
 
+using System.Security.Claims;
 using AutoMapper;
 using Cbc.WebApi.Data;
 using Cbc.WebApi.Dtos;
@@ -77,17 +78,103 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
             return;
         }
 
+        var user = await this.GetUser();
+
+        if (user is null)
+        {
+            return;
+        }
+
+        if (!meeting.UserStates.Any(e => e.UserEmailAddress == user.EmailAddress))
+        {
+            meeting.UserStates.Add(new MeetingUserState
+            {
+                Status = MeetingUserStatus.Joined,
+                User = user
+            });
+        }
+
+        await dbContext.SaveChangesAsync();
+
         var meetingDto = mapper.Map<MeetingDto>(meeting);
 
         await this.Groups.AddToGroupAsync(this.Context.ConnectionId, meetingId.ToString());
         await this.Clients
             .Group(meetingId.ToString())
-            .SendAsync(ClientMethods.UserJoined, this.Context.ConnectionId);
+            .SendAsync(ClientMethods.MeetingUpdate, this.Context.ConnectionId);
 
         await this.Clients.Caller.SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
     }
 
-    public async Task LeaveMeeting(Guid meetingId) => await this.Groups.RemoveFromGroupAsync(this.Context.ConnectionId, meetingId.ToString());
+    public async Task ChangeVote(Guid meetingId, CreateBookVoteDto[] votes, bool confirm)
+    {
+        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId);
+
+        if (meeting is null)
+        {
+            await this.Error($"Meeting with id {meetingId} not found.");
+            return;
+        }
+
+        var user = await this.GetUser();
+
+        if (user is null)
+        {
+            return;
+        }
+
+        if (meeting.State != MeetingState.Voting)
+        {
+            await this.Error($"Meeting with id {meetingId} is not in voting state.");
+            return;
+        }
+
+        var voteEntities = votes.Select(v => new BookVote
+        {
+            BookId = v.BookId,
+            MeetingId = meetingId,
+            MemberEmail = user.EmailAddress,
+            Rank = v.Rank
+        }).ToList();
+
+        var existingVotes = await dbContext.BookVotes
+            .Where(v => v.MeetingId == meetingId && v.MemberEmail == user.EmailAddress)
+            .ToListAsync();
+
+        // todo: compare existing votes with new votes and only update if there are changes
+
+        dbContext.BookVotes.RemoveRange(existingVotes);
+        dbContext.BookVotes.AddRange(voteEntities);
+
+        if (confirm)
+        {
+            var userState = meeting.UserStates.SingleOrDefault(e => e.UserEmailAddress == user.EmailAddress);
+
+            if (userState is null)
+            {
+                await this.Error($"User {user.EmailAddress} not found in meeting {meetingId}.");
+                return;
+            }
+
+            userState.Status = MeetingUserStatus.Voted;
+        }
+
+        await dbContext.SaveChangesAsync();
+
+        var meetingDto = mapper.Map<MeetingDto>(meeting);
+
+        await this.Clients
+            .Caller
+            .SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
+
+        if (confirm)
+        {
+            meetingDto.Votes.Clear();
+            await this.Clients
+                .Group(meetingId.ToString())
+                .SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
+        }
+    }
 
     public async Task ResetMeeting(Guid meetingId)
     {
@@ -100,6 +187,7 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
         }
 
         meeting.State = null;
+        meeting.UserStates.Clear();
         await dbContext.SaveChangesAsync();
 
         meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId);
@@ -112,12 +200,31 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
 
     private Task Error(string message) => this.Clients.Caller.SendAsync("Error", message);
 
+    private async Task<User?> GetUser()
+    {
+        var email = this.Context.User?.FindFirst(ClaimTypes.Email)?.Value;
+
+        if (email is null)
+        {
+            await this.Error("Email claim not found.");
+            return null;
+        }
+
+        var user = await dbContext.Users.FindAsync(email);
+
+        if (user is null)
+        {
+            await this.Error($"User not found with email {email}");
+            return null;
+        }
+
+        return user;
+    }
+
     public static class ClientMethods
     {
         public static string MeetingStarted => nameof(MeetingStarted);
-        public static string ReceiveRecommendations => nameof(ReceiveRecommendations);
         public static string MeetingUpdate => nameof(MeetingUpdate);
-        public static string UserJoined => nameof(UserJoined);
     }
 }
 
@@ -148,6 +255,15 @@ public static class LiveMeetingHubExtensions
         if (meeting is null)
         {
             return null;
+        }
+
+        if (meeting.State is not null)
+        {
+            await dbContext.Entry(meeting)
+                .Collection(e => e.UserStates)
+                .Query()
+                    .Include(e => e.User)
+                .LoadAsync();
         }
 
         if (nextState is not null && meeting.State != nextState)

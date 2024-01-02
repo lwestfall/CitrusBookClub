@@ -40,5 +40,10 @@ public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
             .WithOne(e => e.Meeting)
             .HasForeignKey(e => e.MeetingId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(e => e.UserStates)
+            .WithOne()
+            .HasForeignKey(e => e.MeetingId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

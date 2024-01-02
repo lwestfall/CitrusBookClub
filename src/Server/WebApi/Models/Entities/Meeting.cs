@@ -21,4 +21,6 @@ public class Meeting
     public MeetingState? State { get; set; }
 
     public List<BookRecommendation> BookRecommendations { get; set; } = [];
+
+    public List<MeetingUserState> UserStates { get; set; } = [];
 }

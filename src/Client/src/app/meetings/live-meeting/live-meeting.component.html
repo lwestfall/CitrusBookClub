@@ -47,7 +47,8 @@
       <div>
         <app-live-voting
           *ngIf="(meeting$ | async)?.bookRecommendations"
-          [recommendations]="(meeting$ | async)?.bookRecommendations!">
+          [recommendations]="(meeting$ | async)?.bookRecommendations!"
+          [meetingId]="(meeting$ | async)?.id!">
         </app-live-voting>
       </div>
       <button

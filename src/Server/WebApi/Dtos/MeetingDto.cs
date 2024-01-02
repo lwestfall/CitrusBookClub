@@ -20,6 +20,8 @@ public class MeetingDto : IMapFrom<Meeting>
 
     public List<BookRecommendationForMeetingDto> BookRecommendations { get; set; } = [];
 
+    public List<MeetingUserStateDto> UserStates { get; set; } = [];
+
     public void Mapping(Profile profile)
     {
         profile.CreateMap<Meeting, MeetingDto>()
