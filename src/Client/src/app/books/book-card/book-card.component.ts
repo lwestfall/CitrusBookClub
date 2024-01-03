@@ -28,6 +28,7 @@ export class BookCardComponent implements OnInit, OnDestroy {
   nextMeetingId: string | null = null;
 
   expanded = false;
+  recommendedForNext = false;
 
   subscriptions: Subscription[] = [];
 
@@ -41,6 +42,7 @@ export class BookCardComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       nextMeeting$.subscribe(meeting => {
         this.nextMeetingId = meeting?.id ?? null;
+        this.setRecommendedForNext();
       })
     );
 
@@ -68,8 +70,17 @@ export class BookCardComponent implements OnInit, OnDestroy {
         } else {
           this.recommendedForMeeting = null;
         }
+
+        this.setRecommendedForNext();
       })
     );
+  }
+
+  setRecommendedForNext(): void {
+    this.recommendedForNext =
+      (!!this.nextMeetingId &&
+        this.recommendedForMeeting?.id === this.nextMeetingId) ??
+      false;
   }
 
   ngOnDestroy(): void {

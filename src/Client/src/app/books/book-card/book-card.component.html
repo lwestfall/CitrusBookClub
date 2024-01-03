@@ -1,7 +1,5 @@
 <div class="card w-100" style="max-width: 30rem">
-  <div
-    class="ripple"
-    *ngIf="!noRipple && nextMeetingId === recommendedForMeeting?.id"></div>
+  <div class="ripple" *ngIf="!noRipple && recommendedForNext"></div>
   <div class="card-body">
     <div class="d-flex flex-row gap-2 align-items-center">
       <div>
@@ -19,23 +17,29 @@
       </div>
     </div>
     <div class="text-center" *ngIf="mine">
-      <button
-        class="btn btn-outline-secondary my-2"
-        *ngIf="
-          nextMeetingId !== recommendedForMeeting?.id;
-          else recommendedForNext
-        "
-        [disabled]="!nextMeetingId"
-        (click)="recommendForNext()">
-        Recommend for next meeting!
-      </button>
-      <ng-template #recommendedForNext>
+      @if (recommendedForNext) {
+        <div
+          [ngbTooltip]="
+            !nextMeetingId ? 'Next meeting hasn\'t been scheduled yet!' : null
+          "
+          placement="bottom">
+          <button
+            type="button"
+            class="btn btn-outline-secondary my-2"
+            [disabled]="!nextMeetingId"
+            (click)="recommendForNext()">
+            Recommend for next meeting!
+          </button>
+        </div>
+      } @else {
         <h6 class="text-success my-2">Recommended for next meeting!</h6>
-      </ng-template>
+      }
+      <ng-template #recommendedForNext> </ng-template>
     </div>
     <div class="d-flex flex-row gap-2 align-items-center">
       <hr class="flex-grow-1" />
       <button
+        type="button"
         class="btn"
         (click)="expanded = !expanded; $event.stopPropagation()">
         <i
