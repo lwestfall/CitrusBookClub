@@ -101,7 +101,7 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
         await this.Groups.AddToGroupAsync(this.Context.ConnectionId, meetingId.ToString());
         await this.Clients
             .Group(meetingId.ToString())
-            .SendAsync(ClientMethods.MeetingUpdate, this.Context.ConnectionId);
+            .SendAsync(ClientMethods.MeetingUpdate, meetingDto);
 
         await this.Clients.Caller.SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
     }
@@ -257,14 +257,11 @@ public static class LiveMeetingHubExtensions
             return null;
         }
 
-        if (meeting.State is not null)
-        {
-            await dbContext.Entry(meeting)
-                .Collection(e => e.UserStates)
-                .Query()
-                    .Include(e => e.User)
-                .LoadAsync();
-        }
+        await dbContext.Entry(meeting)
+            .Collection(e => e.UserStates)
+            .Query()
+                .Include(e => e.User)
+            .LoadAsync();
 
         if (nextState is not null && meeting.State != nextState)
         {

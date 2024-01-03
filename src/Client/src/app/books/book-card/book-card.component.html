@@ -1,5 +1,7 @@
 <div class="card w-100" style="max-width: 30rem">
-  <div class="ripple" *ngIf="nextMeetingId === recommendedForMeeting?.id"></div>
+  <div
+    class="ripple"
+    *ngIf="!noRipple && nextMeetingId === recommendedForMeeting?.id"></div>
   <div class="card-body">
     <div class="d-flex flex-row gap-2 align-items-center">
       <div>

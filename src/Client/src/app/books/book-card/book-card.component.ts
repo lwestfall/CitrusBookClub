@@ -23,6 +23,7 @@ export class BookCardComponent implements OnInit, OnDestroy {
   @Input({ required: true }) book!: BookDto;
   recommendedForMeeting: MeetingDto | null = null;
   @Input() mine = false;
+  @Input() noRipple = true;
 
   nextMeetingId: string | null = null;
 

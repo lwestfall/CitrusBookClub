@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { BookDto, MeetingDto } from '../../api/models';
 import { AppState } from '../../app-state';
 import { LiveMeetingService } from '../../services/websockets/live-meeting.service';
@@ -19,20 +19,32 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
   meeting$: Observable<MeetingDto | null>;
   lastBook: BookDto | null = null;
   MeetingState = MeetingState;
-  admin$: Observable<boolean> = new Observable<boolean>();
+
+  isAdmin: boolean = false;
+  presenterMode: boolean = false;
+  subscriptions: Subscription[] = [];
 
   constructor(
     private liveMeetingSvc: LiveMeetingService,
     private store: Store<AppState>,
     private route: ActivatedRoute
   ) {
-    this.route.paramMap.subscribe(params => {
-      this.meetingId = params.get('id') ?? '';
-    });
+    this.subscriptions.push(
+      this.route.paramMap.subscribe(params => {
+        this.meetingId = params.get('id') ?? '';
+        this.presenterMode = params.get('presenterMode') === 'true';
+      })
+    );
 
     this.meeting$ = this.store.select(selectLiveMeeting);
 
-    this.admin$ = this.store.select(selectAuthenticatedUserIsAdmin);
+    const admin$ = this.store.select(selectAuthenticatedUserIsAdmin);
+
+    this.subscriptions.push(
+      admin$.subscribe(isAdmin => {
+        this.isAdmin = isAdmin;
+      })
+    );
   }
 
   async ngOnInit() {
@@ -42,18 +54,10 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
 
     await this.liveMeetingSvc.start();
     this.liveMeetingSvc.joinMeeting(this.meetingId);
-
-    this.meeting$.subscribe(meeting => {
-      this.lastBook = meeting?.previousMeeting?.winningBook ?? null;
-    });
   }
 
   ngOnDestroy(): void {
-    if (!this.meetingId) {
-      return;
-    }
-
-    // this.liveMeetingSvc.leaveMeeting(this.meetingId);
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 
   startMeeting() {
@@ -86,5 +90,9 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
     }
 
     this.liveMeetingSvc.resetMeeting(this.meetingId);
+  }
+
+  togglePresenterMode() {
+    this.presenterMode = !this.presenterMode;
   }
 }
