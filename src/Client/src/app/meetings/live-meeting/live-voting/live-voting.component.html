@@ -3,6 +3,7 @@
     class="list-group"
     dndEffectAllowed="move"
     (dndDrop)="onDrop($event, rankedRecommendations)"
+    [dndDisableIf]="votesConfirmed"
     dndDropzone>
     <li
       class="list-group-item list-group-item-info dndPlaceholder"
@@ -10,14 +11,23 @@
     <li
       *ngFor="let rec of rankedRecommendations"
       class="list-group-item"
-      [ngClass]="{ 'list-group-item-success': rec.isMine }"
+      [ngClass]="{
+        'list-group-item-success': rec.isMine,
+        'list-group-item-dark': votesConfirmed
+      }"
       [dndDraggable]="rec"
+      [dndDisableDragIf]="votesConfirmed"
       (dndMoved)="onDragged(rec, rankedRecommendations)"
       dndEffectAllowed="move">
       {{ rec.rank }}: {{ rec.book.title }} - {{ rec.recommendedBy.firstName }}
     </li>
   </ul>
-  <button class="btn btn-success" (click)="confirmVotes()">
-    Confirm My Votes
+  <button
+    class="btn"
+    (click)="toggleVotesConfirmed()"
+    [ngClass]="votesConfirmed ? 'btn-outline-warning' : 'btn-success'">
+    {{
+      votesConfirmed ? 'Wait, I need to change something' : 'Confirm My Votes'
+    }}
   </button>
 </div>

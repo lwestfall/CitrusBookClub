@@ -24,12 +24,12 @@
               recommendation!
             </h6>
             <div
-              *ngIf="meeting?.bookRecommendations"
+              *ngIf="meeting.bookRecommendations"
               class="d-flex flex-column align-items-center">
               <h4 class="display-4 text-center">Recommendations</h4>
               <div class="d-flex flex-wrap justify-content-center gap-4">
                 <div
-                  *ngFor="let bookRec of meeting?.bookRecommendations"
+                  *ngFor="let bookRec of meeting.bookRecommendations"
                   style="min-width: 15rem; max-width: 18rem">
                   <app-book-card
                     [book]="bookRec.book"
@@ -48,18 +48,17 @@
         @case (MeetingState.Voting) {
           <div class="d-flex flex-column gap-2 align-items-center">
             <h4 class="display-4">Voting is OPEN!</h4>
-            <!-- todo: rank recommendations -->
             <div *ngIf="!presenterMode">
               <app-live-voting
-                *ngIf="meeting?.bookRecommendations"
-                [recommendations]="meeting?.bookRecommendations!"
-                [meetingId]="meeting?.id!">
+                *ngIf="meeting.bookRecommendations?.length"
+                [recommendations]="meeting.bookRecommendations!"
+                [meetingId]="meeting.id!">
               </app-live-voting>
             </div>
             <button
               class="btn btn-primary"
               *ngIf="presenterMode && isAdmin"
-              [disabled]="!meeting?.userStates"
+              [disabled]="!meeting.userStates"
               (click)="lockInVotes()">
               Lock Votes & Get Winner
             </button>
@@ -93,7 +92,7 @@
         <div>
           <ul class="list-group">
             <li
-              *ngFor="let userState of meeting?.userStates"
+              *ngFor="let userState of meeting.userStates"
               class="list-group-item"
               [ngClass]="
                 userState.status === 'Voted'

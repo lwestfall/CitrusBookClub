@@ -7,6 +7,7 @@ import { AppState } from '../../app-state';
 import { LiveMeetingService } from '../../services/websockets/live-meeting.service';
 import { selectAuthenticatedUserIsAdmin } from '../../users/state/users.selectors';
 import { MeetingState } from '../meeting-state.enum';
+import { liveMeetingUpdate } from '../state/meetings.actions';
 import { selectLiveMeeting } from '../state/meetings.selectors';
 
 @Component({
@@ -53,7 +54,15 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
     }
 
     await this.liveMeetingSvc.start();
-    this.liveMeetingSvc.joinMeeting(this.meetingId);
+
+    if (this.presenterMode && this.meetingId) {
+      this.liveMeetingSvc.registerAsPresenter(
+        this.meetingId,
+        (meeting: MeetingDto) => this.announceWinner(meeting)
+      );
+    } else {
+      this.liveMeetingSvc.joinMeeting(this.meetingId);
+    }
   }
 
   ngOnDestroy(): void {
@@ -94,5 +103,10 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
 
   togglePresenterMode() {
     this.presenterMode = !this.presenterMode;
+  }
+
+  announceWinner(meeting: MeetingDto) {
+    console.log('Winner announced', meeting.winningBook?.title);
+    this.store.dispatch(liveMeetingUpdate({ meeting }));
   }
 }

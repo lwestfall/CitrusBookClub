@@ -23,4 +23,20 @@ public class Meeting
     public List<BookRecommendation> BookRecommendations { get; set; } = [];
 
     public List<MeetingUserState> UserStates { get; set; } = [];
+
+    public Book? CalculateWinningBook()
+    {
+        var bookGroups = this.Votes
+            .GroupBy(v => v.BookId)
+            .Select(g => new
+            {
+                g.First().Book,
+                RankSum = g.Sum(v => v.Rank)
+            })
+            .OrderByDescending(g => g.RankSum)
+            .Select(x => x.Book)
+            .ToList();
+
+        return bookGroups.FirstOrDefault();
+    }
 }

@@ -61,11 +61,41 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
             await this.Error($"Meeting with id {meetingId} not found.");
             return;
         }
+
+        var winningBook = meeting.CalculateWinningBook();
+
+        meeting.WinningBook = winningBook;
+        await dbContext.SaveChangesAsync();
         var meetingDto = mapper.Map<MeetingDto>(meeting);
+
+        await this.Clients
+            .Group(meetingId.ToString() + "-presenter")
+            .SendAsync(ClientMethods.AnnounceWinner, meetingDto, this.Context.ConnectionId);
+
+        await Task.Delay(TimeSpan.FromSeconds(5));
 
         await this.Clients
             .Group(meetingId.ToString())
             .SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
+    }
+
+    [Authorize(Roles = "Admin")]
+    public async Task JoinMeetingAsPresenter(Guid meetingId)
+    {
+        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId);
+
+        if (meeting is null)
+        {
+            await this.Error($"Meeting with id {meetingId} not found.");
+            return;
+        }
+
+        var meetingDto = mapper.Map<MeetingDto>(meeting);
+
+        await this.Groups.AddToGroupAsync(this.Context.ConnectionId, meetingId.ToString());
+        await this.Groups.AddToGroupAsync(this.Context.ConnectionId, meetingId.ToString() + "-presenter");
+
+        await this.Clients.Caller.SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
     }
 
     public async Task JoinMeeting(Guid meetingId)
@@ -146,18 +176,16 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
         dbContext.BookVotes.RemoveRange(existingVotes);
         dbContext.BookVotes.AddRange(voteEntities);
 
-        if (confirm)
+
+        var userState = meeting.UserStates.SingleOrDefault(e => e.UserEmailAddress == user.EmailAddress);
+
+        if (userState is null)
         {
-            var userState = meeting.UserStates.SingleOrDefault(e => e.UserEmailAddress == user.EmailAddress);
-
-            if (userState is null)
-            {
-                await this.Error($"User {user.EmailAddress} not found in meeting {meetingId}.");
-                return;
-            }
-
-            userState.Status = MeetingUserStatus.Voted;
+            await this.Error($"User {user.EmailAddress} not found in meeting {meetingId}.");
+            return;
         }
+
+        userState.Status = confirm ? MeetingUserStatus.Voted : MeetingUserStatus.Joined;
 
         await dbContext.SaveChangesAsync();
 
@@ -178,7 +206,9 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
 
     public async Task ResetMeeting(Guid meetingId)
     {
-        var meeting = dbContext.Meetings.Find(meetingId);
+        var meeting = await dbContext.Meetings
+            .Include(m => m.UserStates)
+            .SingleOrDefaultAsync(m => m.Id == meetingId);
 
         if (meeting is null)
         {
@@ -188,6 +218,7 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
 
         meeting.State = null;
         meeting.UserStates.Clear();
+
         await dbContext.SaveChangesAsync();
 
         meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId);
@@ -225,6 +256,7 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
     {
         public static string MeetingStarted => nameof(MeetingStarted);
         public static string MeetingUpdate => nameof(MeetingUpdate);
+        public static string AnnounceWinner => nameof(AnnounceWinner);
     }
 }
 

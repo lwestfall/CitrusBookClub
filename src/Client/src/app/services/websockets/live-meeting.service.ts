@@ -58,6 +58,15 @@ export class LiveMeetingService extends SignalRService {
     await this.connection.invoke('JoinMeeting', meetingId);
   }
 
+  async registerAsPresenter(
+    meetingId: string,
+    winnerAnnouncementCallback: (meeting: MeetingDto) => void
+  ): Promise<void> {
+    await this.connection.invoke('JoinMeetingAsPresenter', meetingId);
+
+    this.connection.on('AnnounceWinner', winnerAnnouncementCallback);
+  }
+
   async changeVote(
     meetingId: string,
     votes: CreateBookVoteDto[],
