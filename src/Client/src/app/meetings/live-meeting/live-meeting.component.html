@@ -1,5 +1,9 @@
 <div class="d-flex flex-row justify-content-center align-items-start gap-4">
-  <ng-container *ngIf="(meetingState$ | async)?.meeting as meeting">
+  <ng-container
+    *ngIf="
+      (liveMeetingConnected$ | async) &&
+      (meetingState$ | async)?.meeting as meeting
+    ">
     <div
       class="d-flex flex-column align-items-center"
       [ngClass]="presenterMode ? ' me-auto w-75' : ''">
@@ -88,20 +92,26 @@
     </div>
     <ng-container *ngIf="presenterMode && isAdmin">
       <div class="justify-content-end">
-        <h4 class="display-4">Roll Call!</h4>
+        <h4 class="display-4 text-center">Roll Call!</h4>
         <div>
-          <ul class="list-group">
-            <li
-              *ngFor="let userState of meeting.userStates"
-              class="list-group-item"
-              [ngClass]="
-                userState.status === 'Voted'
-                  ? 'list-group-item-success'
-                  : 'list-group-item-warning'
-              ">
-              {{ userState.user.firstName }} {{ userState.user.lastName[0] }}.
-            </li>
-          </ul>
+          @if (meeting.userStates.length) {
+            <ul class="list-group">
+              <li
+                *ngFor="let userState of meeting.userStates"
+                class="list-group-item"
+                [ngClass]="
+                  userState.status === 'Voted'
+                    ? 'list-group-item-success'
+                    : 'list-group-item-warning'
+                ">
+                {{ userState.user.firstName }} {{ userState.user.lastName[0] }}.
+              </li>
+            </ul>
+          } @else {
+            <div class="text-center">
+              <h6 class="display-6">No one has joined yet!</h6>
+            </div>
+          }
         </div>
       </div>
     </ng-container>

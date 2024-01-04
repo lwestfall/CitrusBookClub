@@ -9,7 +9,10 @@ import { selectAuthenticatedUserIsAdmin } from '../../users/state/users.selector
 import { MeetingStatus } from '../meeting-status.enum';
 import { handleMeetingUpdate } from '../state/meetings.actions';
 import { MeetingState } from '../state/meetings.reducer';
-import { selectMeetingState } from '../state/meetings.selectors';
+import {
+  selectLiveMeetingConnected,
+  selectMeetingState,
+} from '../state/meetings.selectors';
 
 @Component({
   selector: 'app-live-meeting',
@@ -19,6 +22,9 @@ import { selectMeetingState } from '../state/meetings.selectors';
 export class LiveMeetingComponent implements OnInit, OnDestroy {
   meetingId: string | null = null;
   meetingState$: Observable<MeetingState | null> | null = null;
+  liveMeetingConnected$: Observable<boolean> = this.store.select(
+    selectLiveMeetingConnected
+  );
   lastBook: BookDto | null = null;
   MeetingState = MeetingStatus;
 
@@ -51,21 +57,27 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
     );
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     if (!this.meetingId) {
       throw new Error('No meeting ID provided');
     }
 
-    await this.liveMeetingSvc.start();
+    this.subscriptions.push(
+      this.liveMeetingConnected$.subscribe(connected => {
+        if (!connected || !this.meetingId) {
+          return;
+        }
 
-    if (this.presenterMode && this.meetingId) {
-      this.liveMeetingSvc.registerAsPresenter(
-        this.meetingId,
-        (meeting: MeetingDto) => this.announceWinner(meeting)
-      );
-    } else {
-      this.liveMeetingSvc.joinMeeting(this.meetingId);
-    }
+        if (this.presenterMode) {
+          this.liveMeetingSvc.registerAsPresenter(
+            this.meetingId,
+            (meeting: MeetingDto) => this.announceWinner(meeting)
+          );
+        } else {
+          this.liveMeetingSvc.joinMeeting(this.meetingId);
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {

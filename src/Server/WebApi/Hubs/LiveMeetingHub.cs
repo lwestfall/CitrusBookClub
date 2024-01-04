@@ -65,18 +65,28 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
         var winningBook = meeting.CalculateWinningBook();
 
         meeting.WinningBook = winningBook;
-        await dbContext.SaveChangesAsync();
         var meetingDto = mapper.Map<MeetingDto>(meeting);
 
-        await this.Clients
-            .Group(meetingId.ToString() + "-presenter")
-            .SendAsync(ClientMethods.AnnounceWinner, meetingDto, this.Context.ConnectionId);
+        try
+        {
+            await this.Clients
+                .Group(meetingId.ToString() + "-presenter")
+                .SendAsync(ClientMethods.AnnounceWinner, meetingDto, this.Context.ConnectionId);
 
-        await Task.Delay(TimeSpan.FromSeconds(5));
+            await Task.Delay(TimeSpan.FromSeconds(5));
 
-        await this.Clients
-            .All
-            .SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
+            await this.Clients
+                .All
+                .SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
+        }
+        catch (Exception)
+        {
+            // todo: log
+        }
+        finally
+        {
+            await dbContext.SaveChangesAsync();
+        }
     }
 
     [Authorize(Roles = "Admin")]
@@ -164,8 +174,6 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
         await this.Clients
             .All
             .SendAsync(ClientMethods.MeetingUpdate, meetingDto);
-
-        await this.Clients.Caller.SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
     }
 
     public async Task ChangeVote(Guid meetingId, CreateBookVoteDto[] votes, bool confirm)

@@ -48,9 +48,7 @@
         }
         @if (admin$ | async) {
           @for (link of adminLinks; track link) {
-            <li
-              [ngbNavItem]="link.route"
-              [disabled]="(admin$ | async) === false">
+            <li [ngbNavItem]="link.route">
               <a
                 ngbNavLink
                 [routerLink]="link.route"
@@ -62,14 +60,16 @@
           }
         }
       </ul>
-      <div
-        *ngIf="(verified$ | async) && (nextMeeting$ | async)"
-        class="ms-auto me-auto">
-        <span
-          >Next meeting in
-          <app-meeting-countdown></app-meeting-countdown>!</span
-        >
-      </div>
+      @if ((verified$ | async) && (nextMeeting$ | async); as nextMeeting) {
+        <div *ngIf="!nextMeeting.status" class="ms-auto me-auto">
+          <span
+            >Next meeting in
+            <app-meeting-countdown
+              [meeting]="nextMeeting"></app-meeting-countdown
+            >!</span
+          >
+        </div>
+      }
       <div class="ms-auto mb-2 mb-lg-0">
         <app-login></app-login>
       </div>

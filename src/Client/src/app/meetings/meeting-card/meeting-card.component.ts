@@ -20,7 +20,7 @@ export class MeetingCardComponent {
   MeetingState = MeetingStatus;
 
   constructor(
-    private store: Store<AppState>,
+    store: Store<AppState>,
     private liveMeetingSvc: LiveMeetingService
   ) {
     this.myRecommendation$ = store.select(selectMyRecommendations).pipe(
@@ -32,16 +32,6 @@ export class MeetingCardComponent {
 
     this.admin$ = store.select(selectAuthenticatedUserIsAdmin);
   }
-
-  // async ngOnInit() {
-  //   // if (!this.liveMeetingSvc.connected) {
-  //   //   await this.liveMeetingSvc.start();
-  //   // }
-
-  //   // if (this.meeting.state) {
-  //   //   this.store.dispatch(meetingStarted({ meeting: this.meeting }));
-  //   // }
-  // }
 
   startMeeting() {
     this.liveMeetingSvc.startMeeting(this.meeting.id);

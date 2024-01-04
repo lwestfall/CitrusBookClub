@@ -22,3 +22,11 @@ export const handleMeetingError = createAction(
   '[Meetings] Handle Meeting Update',
   props<{ meetingId: string; error: string }>()
 );
+
+export const connectToLiveMeetingHub = createAction(
+  '[Meetings] Connect to Live Meeting Hub'
+);
+
+export const connectToLiveMeetingHubSuccess = createAction(
+  '[Meetings] Connect to Live Meeting Hub Success'
+);

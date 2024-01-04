@@ -16,6 +16,8 @@ public class MeetingSimpleDto : IMapFrom<Meeting>
 
     public BookDto? WinningBook { get; set; }
 
+    public MeetingSimpleDto? PreviousMeeting { get; set; }
+
     public void Mapping(Profile profile)
     {
         profile.CreateMap<Meeting, MeetingSimpleDto>()

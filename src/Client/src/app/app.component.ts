@@ -7,6 +7,7 @@ import { AppState, fetchAppData } from './app-state';
 import { BooksModule } from './books/books.module';
 import { MeetingsModule } from './meetings/meetings.module';
 import { NavbarComponent } from './navbar/navbar.component';
+import { LiveMeetingService } from './services/websockets/live-meeting.service';
 import { SnowGeneratorComponent } from './special/snow/snow-generator/snow-generator.component';
 import { ToastsContainerComponent } from './toasts-container/toasts-container.component';
 import { selectAuthenticatedUserIsVerified } from './users/state/users.selectors';
@@ -37,6 +38,7 @@ export class AppComponent {
 
   constructor(
     store: Store<AppState>,
+    liveMeetingSvc: LiveMeetingService,
     private contexts: ChildrenOutletContexts,
     private elementRef: ElementRef
   ) {

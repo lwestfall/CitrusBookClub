@@ -6,6 +6,7 @@ export interface MeetingsState {
   allMeetingStates: MeetingState[];
   isLoadingAllMeetings: boolean;
   allMeetingsError: string | null;
+  liveMeetingConnected: boolean;
 }
 
 export interface MeetingState {
@@ -17,6 +18,7 @@ export const initialState: MeetingsState = {
   allMeetingStates: [],
   isLoadingAllMeetings: false,
   allMeetingsError: null,
+  liveMeetingConnected: false,
 };
 
 export const meetingsReducer = createReducer(
@@ -35,7 +37,6 @@ export const meetingsReducer = createReducer(
       ...state,
       allMeetingStates: action.meetings.map(meeting => ({
         meeting,
-        isLoading: false,
         error: null,
       })),
       isLoadingAllMeetings: false,
@@ -69,6 +70,13 @@ export const meetingsReducer = createReducer(
           ? { meeting: meetingState.meeting, error: action.error }
           : meetingState
       ),
+    })
+  ),
+  on(
+    meetingsActions.connectToLiveMeetingHubSuccess,
+    (state): MeetingsState => ({
+      ...state,
+      liveMeetingConnected: true,
     })
   )
 );

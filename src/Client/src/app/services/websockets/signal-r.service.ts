@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import { Subject } from 'rxjs';
+import {
+  HubConnection,
+  HubConnectionBuilder,
+  HubConnectionState,
+} from '@microsoft/signalr';
 import { WebsocketConfiguration } from './websocket-configuration';
 
 @Injectable()
 export abstract class SignalRService {
   connection: HubConnection;
-  connected$: Subject<boolean> = new Subject<boolean>();
 
   constructor(config: WebsocketConfiguration, hubRoute: string) {
     const url = new URL(`hubs/${hubRoute}`, config.rootUrl);
@@ -20,9 +22,19 @@ export abstract class SignalRService {
       .build();
   }
 
+  get connected(): boolean {
+    return this.connection.state === HubConnectionState.Connected;
+  }
+
   async start(): Promise<void> {
-    await this.connection.start();
-    this.connected$.next(true);
+    switch (this.connection.state) {
+      case HubConnectionState.Connected:
+      case HubConnectionState.Connecting:
+      case HubConnectionState.Reconnecting:
+        return;
+    }
+
+    return this.connection.start();
   }
 
   async stop(): Promise<void> {

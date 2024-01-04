@@ -17,15 +17,7 @@ export class LiveMeetingService extends SignalRService {
     super(config, 'livemeeting');
   }
 
-  get connected(): boolean {
-    return this.connection.state === 'Connected';
-  }
-
   override async start(): Promise<void> {
-    if (this.connected) {
-      return;
-    }
-
     await super.start();
 
     this.connection.on('MeetingStarted', (meeting: MeetingDto) => {

@@ -7,4 +7,20 @@
     <h4>No upcoming meetings have been set</h4>
   </ng-template>
 </div>
-<!-- <h4 class="display-4 text-center">Past Meetings</h4> -->
+<h4 class="display-4 my-4 text-lg-start text-center">Past Meetings</h4>
+<div
+  *ngIf="pastMeetings$ | async as pastMeetings"
+  class="d-flex flex-wrap align-items-stretch gap-2 justify-content-lg-start justify-content-center">
+  <div *ngFor="let pastMeeting of pastMeetings" style="max-width: 22rem">
+    <app-meeting-card [meeting]="pastMeeting"></app-meeting-card>
+  </div>
+  @if (isLoadingMeetings$ | async) {
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  } @else if (!pastMeetings.length) {
+    <div class="text-center">
+      <h4>No meetings!</h4>
+    </div>
+  }
+</div>
