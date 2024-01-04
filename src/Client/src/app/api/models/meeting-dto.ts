@@ -9,7 +9,7 @@ export interface MeetingDto {
   dateTime: string;
   id: string;
   previousMeeting?: MeetingDto | null;
-  state?: string | null;
+  status?: string | null;
   userStates: Array<MeetingUserStateDto>;
   votes: Array<BookVoteDto>;
   winningBook?: BookDto | null;

@@ -3,73 +3,72 @@ import { MeetingDto } from '../../api/models';
 import * as meetingsActions from './meetings.actions';
 
 export interface MeetingsState {
-  nextMeeting: MeetingDto | null;
-  isLoadingNextMeeting: boolean;
-  nextMeetingError: string | null;
-  liveMeeting: MeetingDto | null;
-  liveMeetingError: string | null;
+  allMeetingStates: MeetingState[];
+  isLoadingAllMeetings: boolean;
+  allMeetingsError: string | null;
+}
+
+export interface MeetingState {
+  meeting: MeetingDto;
+  error: string | null;
 }
 
 export const initialState: MeetingsState = {
-  nextMeeting: null,
-  isLoadingNextMeeting: false,
-  nextMeetingError: null,
-  liveMeeting: null,
-  liveMeetingError: null,
+  allMeetingStates: [],
+  isLoadingAllMeetings: false,
+  allMeetingsError: null,
 };
 
 export const meetingsReducer = createReducer(
   initialState,
   on(
-    meetingsActions.getNextMeeting,
+    meetingsActions.getAllMeetings,
     (state): MeetingsState => ({
       ...state,
-      isLoadingNextMeeting: true,
+      isLoadingAllMeetings: true,
+      allMeetingsError: null,
     })
   ),
   on(
-    meetingsActions.getNextMeetingSuccess,
+    meetingsActions.getAllMeetingsSuccess,
     (state, action): MeetingsState => ({
       ...state,
-      isLoadingNextMeeting: false,
-      nextMeeting: action.nextMeeting,
+      allMeetingStates: action.meetings.map(meeting => ({
+        meeting,
+        isLoading: false,
+        error: null,
+      })),
+      isLoadingAllMeetings: false,
     })
   ),
   on(
-    meetingsActions.getNextMeetingFailure,
+    meetingsActions.getAllMeetingsFailure,
     (state, action): MeetingsState => ({
       ...state,
-      isLoadingNextMeeting: false,
-      nextMeetingError: action.error,
+      isLoadingAllMeetings: false,
+      allMeetingsError: action.error,
     })
   ),
   on(
-    meetingsActions.meetingStarted,
+    meetingsActions.handleMeetingUpdate,
     (state, action): MeetingsState => ({
       ...state,
-      liveMeeting: action.meeting,
+      allMeetingStates: state.allMeetingStates.map(meetingState =>
+        meetingState.meeting.id === action.meeting.id
+          ? { meeting: action.meeting, error: null }
+          : meetingState
+      ),
     })
   ),
   on(
-    meetingsActions.liveMeetingUpdate,
+    meetingsActions.handleMeetingError,
     (state, action): MeetingsState => ({
       ...state,
-      liveMeeting: action.meeting,
-      liveMeetingError: null,
-    })
-  ),
-  on(
-    meetingsActions.liveMeetingError,
-    (state, action): MeetingsState => ({
-      ...state,
-      liveMeetingError: action.error,
-    })
-  ),
-  on(
-    meetingsActions.leftMeeting,
-    (state): MeetingsState => ({
-      ...state,
-      liveMeeting: null,
+      allMeetingStates: state.allMeetingStates.map(meetingState =>
+        meetingState.meeting.id === action.meetingId
+          ? { meeting: meetingState.meeting, error: action.error }
+          : meetingState
+      ),
     })
   )
 );

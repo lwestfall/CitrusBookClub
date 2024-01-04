@@ -8,22 +8,22 @@ import { RequestBuilder } from '../../request-builder';
 
 import { MeetingDto } from '../../models/meeting-dto';
 
-export interface GetNextMeeting$Params {
+export interface GetMeetings$Plain$Params {
 }
 
-export function getNextMeeting(http: HttpClient, rootUrl: string, params?: GetNextMeeting$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingDto>> {
-  const rb = new RequestBuilder(rootUrl, getNextMeeting.PATH, 'get');
+export function getMeetings$Plain(http: HttpClient, rootUrl: string, params?: GetMeetings$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<MeetingDto>>> {
+  const rb = new RequestBuilder(rootUrl, getMeetings$Plain.PATH, 'get');
   if (params) {
   }
 
   return http.request(
-    rb.build({ responseType: 'json', accept: 'text/json', context })
+    rb.build({ responseType: 'text', accept: 'text/plain', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<MeetingDto>;
+      return r as StrictHttpResponse<Array<MeetingDto>>;
     })
   );
 }
 
-getNextMeeting.PATH = '/api/Meetings/next';
+getMeetings$Plain.PATH = '/api/Meetings';

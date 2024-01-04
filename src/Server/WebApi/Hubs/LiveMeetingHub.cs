@@ -16,7 +16,7 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
     [Authorize(Roles = "Admin")]
     public async Task StartMeeting(Guid meetingId)
     {
-        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId, MeetingState.Started);
+        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId, MeetingStatus.Started);
 
         if (meeting is null)
         {
@@ -36,7 +36,7 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
     [Authorize(Roles = "Admin")]
     public async Task StartVoting(Guid meetingId)
     {
-        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId, MeetingState.Voting);
+        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId, MeetingStatus.Voting);
 
         if (meeting is null)
         {
@@ -47,14 +47,14 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
         var meetingDto = mapper.Map<MeetingDto>(meeting);
 
         await this.Clients
-            .Group(meetingId.ToString())
+            .All
             .SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
     }
 
     [Authorize(Roles = "Admin")]
     public async Task CloseMeeting(Guid meetingId)
     {
-        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId, MeetingState.Closed);
+        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId, MeetingStatus.Closed);
 
         if (meeting is null)
         {
@@ -75,8 +75,39 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
         await Task.Delay(TimeSpan.FromSeconds(5));
 
         await this.Clients
-            .Group(meetingId.ToString())
+            .All
             .SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
+    }
+
+    [Authorize(Roles = "Admin")]
+    public async Task CreateNextMeeting(CreateMeetingDto meetingDto)
+    {
+        var previousMeeting = await dbContext.Meetings.FindAsync(meetingDto.PreviousMeetingId);
+
+        if (previousMeeting is null)
+        {
+            await this.Error($"Previous meeting with id {meetingDto.PreviousMeetingId} not found.");
+            return;
+        }
+
+        var meeting = new Meeting
+        {
+            DateTime = meetingDto.DateTime,
+            PreviousMeeting = previousMeeting
+        };
+
+        dbContext.Meetings.Add(meeting);
+        await dbContext.SaveChangesAsync();
+
+        var meetingResponseDto = mapper.Map<MeetingDto>(meeting);
+
+        await this.Clients
+            .All
+            .SendAsync(ClientMethods.MeetingUpdate, previousMeeting, this.Context.ConnectionId);
+
+        await this.Clients
+            .All
+            .SendAsync(ClientMethods.MeetingUpdate, meetingResponseDto, this.Context.ConnectionId);
     }
 
     [Authorize(Roles = "Admin")]
@@ -92,10 +123,12 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
 
         var meetingDto = mapper.Map<MeetingDto>(meeting);
 
-        await this.Groups.AddToGroupAsync(this.Context.ConnectionId, meetingId.ToString());
-        await this.Groups.AddToGroupAsync(this.Context.ConnectionId, meetingId.ToString() + "-presenter");
+        await this.Groups
+            .AddToGroupAsync(this.Context.ConnectionId, meetingId.ToString() + "-presenter");
 
-        await this.Clients.Caller.SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
+        await this.Clients
+            .Caller
+            .SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
     }
 
     public async Task JoinMeeting(Guid meetingId)
@@ -128,9 +161,8 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
 
         var meetingDto = mapper.Map<MeetingDto>(meeting);
 
-        await this.Groups.AddToGroupAsync(this.Context.ConnectionId, meetingId.ToString());
         await this.Clients
-            .Group(meetingId.ToString())
+            .All
             .SendAsync(ClientMethods.MeetingUpdate, meetingDto);
 
         await this.Clients.Caller.SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
@@ -153,7 +185,7 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
             return;
         }
 
-        if (meeting.State != MeetingState.Voting)
+        if (meeting.Status != MeetingStatus.Voting)
         {
             await this.Error($"Meeting with id {meetingId} is not in voting state.");
             return;
@@ -175,7 +207,6 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
 
         dbContext.BookVotes.RemoveRange(existingVotes);
         dbContext.BookVotes.AddRange(voteEntities);
-
 
         var userState = meeting.UserStates.SingleOrDefault(e => e.UserEmailAddress == user.EmailAddress);
 
@@ -199,7 +230,7 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
         {
             meetingDto.Votes.Clear();
             await this.Clients
-                .Group(meetingId.ToString())
+                .All
                 .SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
         }
     }
@@ -216,8 +247,9 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
             return;
         }
 
-        meeting.State = null;
+        meeting.Status = null;
         meeting.UserStates.Clear();
+        meeting.WinningBookId = null;
 
         await dbContext.SaveChangesAsync();
 
@@ -273,15 +305,16 @@ public static class LiveMeetingHubExtensions
         var meetingDto = mapper.Map<MeetingDto>(meeting);
 
         await hubContext.Clients
-            .Group(meetingId.ToString())
+            .All
             .SendAsync(LiveMeetingHub.ClientMethods.MeetingUpdate, meetingDto);
     }
 
-    public static async Task<Meeting?> GetMeeting(CbcDbContext dbContext, Guid meetingId, MeetingState? nextState = null)
+    public static async Task<Meeting?> GetMeeting(CbcDbContext dbContext, Guid meetingId, MeetingStatus? nextState = null)
     {
         var meeting = await dbContext.Meetings
-            .Include(e => e.PreviousMeeting)
-                .ThenInclude(e => e!.WinningBook)
+            .Include(e => e.PreviousMeeting!.WinningBook)
+            .Include(e => e.UserStates)
+                .ThenInclude(e => e.User)
             .SingleOrDefaultAsync(m => m.Id == meetingId);
 
         if (meeting is null)
@@ -295,13 +328,13 @@ public static class LiveMeetingHubExtensions
                 .Include(e => e.User)
             .LoadAsync();
 
-        if (nextState is not null && meeting.State != nextState)
+        if (nextState is not null && meeting.Status != nextState)
         {
-            meeting.State = nextState.Value;
+            meeting.Status = nextState.Value;
             await dbContext.SaveChangesAsync();
         }
 
-        if (meeting.State is MeetingState.Started or MeetingState.Voting)
+        if (meeting.Status is MeetingStatus.Started or MeetingStatus.Voting)
         {
             await dbContext.Entry(meeting)
                 .Collection(e => e.BookRecommendations)
@@ -311,7 +344,7 @@ public static class LiveMeetingHubExtensions
                 .LoadAsync();
         }
 
-        if (meeting.State == MeetingState.Closed)
+        if (meeting.Status == MeetingStatus.Closed)
         {
             await dbContext.Entry(meeting)
                 .Reference(e => e.WinningBook)

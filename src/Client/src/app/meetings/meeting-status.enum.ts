@@ -1,4 +1,4 @@
-export enum MeetingState {
+export enum MeetingStatus {
   Started = 'Started',
   Voting = 'Voting',
   Closed = 'Closed',

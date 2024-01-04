@@ -1,8 +1,8 @@
 <h2 class="display-2 text-center">Next Meeting</h2>
 <div class="d-flex flex-column align-items-center mb-4">
-  <app-next-meeting-card
+  <app-meeting-card
     *ngIf="nextMeeting$ | async as meeting; else noNextMeeting"
-    [meeting]="meeting"></app-next-meeting-card>
+    [meeting]="meeting"></app-meeting-card>
   <ng-template #noNextMeeting>
     <h4>No upcoming meetings have been set</h4>
   </ng-template>

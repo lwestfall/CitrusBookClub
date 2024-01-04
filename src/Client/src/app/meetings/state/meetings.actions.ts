@@ -1,34 +1,24 @@
 import { createAction, props } from '@ngrx/store';
 import { MeetingDto } from '../../api/models';
 
-export const getNextMeeting = createAction('[Meetings] Get Next Meeting');
+export const getAllMeetings = createAction('[Meetings] Get All Meetings');
 
-export const getNextMeetingSuccess = createAction(
-  '[Meetings] Get Next Meeting Success',
-  props<{ nextMeeting: MeetingDto }>()
+export const getAllMeetingsSuccess = createAction(
+  '[Meetings] Get All Meetings Success',
+  props<{ meetings: MeetingDto[] }>()
 );
 
-export const getNextMeetingFailure = createAction(
-  '[Meetings] Get Next Meeting Failure',
+export const getAllMeetingsFailure = createAction(
+  '[Meetings] Get All Meetings Failure',
   props<{ error: string }>()
 );
 
-export const meetingStarted = createAction(
-  '[Meetings] Meeting Started',
+export const handleMeetingUpdate = createAction(
+  '[Meetings] Handle Meeting Update',
   props<{ meeting: MeetingDto }>()
 );
 
-export const liveMeetingUpdate = createAction(
-  '[Meetings] Live Meeting Update',
-  props<{ meeting: MeetingDto }>()
-);
-
-export const liveMeetingError = createAction(
-  '[Meetings] Live Meeting Error',
-  props<{ error: string }>()
-);
-
-export const leftMeeting = createAction(
-  '[Meetings] Left Meeting',
-  props<{ meetingId: string }>()
+export const handleMeetingError = createAction(
+  '[Meetings] Handle Meeting Update',
+  props<{ meetingId: string; error: string }>()
 );

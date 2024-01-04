@@ -1,6 +1,6 @@
 namespace Cbc.WebApi.Models.Misc;
 
-public enum MeetingState
+public enum MeetingStatus
 {
     Started,
     Voting,

@@ -46,7 +46,7 @@ public class BookRecommendationsController(IHubContext<LiveMeetingHub> liveMeeti
             return this.NotFound($"No meeting found with Id: {meetingId}");
         }
 
-        if (meeting.State is not null and not MeetingState.Started)
+        if (meeting.Status is not null and not MeetingStatus.Started)
         {
             return this.BadRequest($"This meeting can't accept new recommendations.");
         }

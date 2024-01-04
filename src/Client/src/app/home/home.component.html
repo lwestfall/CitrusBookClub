@@ -30,9 +30,9 @@
     </div>
     <div *ngIf="nextMeeting$ | async as meeting">
       <h5 class="display-5">Next Meeting</h5>
-      <app-next-meeting-card
+      <app-meeting-card
         [meeting]="meeting"
-        class="text-start"></app-next-meeting-card>
+        class="text-start"></app-meeting-card>
     </div>
   </div>
 </div>

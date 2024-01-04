@@ -18,7 +18,7 @@ public class Meeting
 
     public List<BookVote> Votes { get; set; } = [];
 
-    public MeetingState? State { get; set; }
+    public MeetingStatus? Status { get; set; }
 
     public List<BookRecommendation> BookRecommendations { get; set; } = [];
 

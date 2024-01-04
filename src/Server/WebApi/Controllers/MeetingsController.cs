@@ -2,6 +2,7 @@ namespace Cbc.WebApi.Controllers;
 
 using AutoMapper.QueryableExtensions;
 using Cbc.WebApi.Dtos;
+using Cbc.WebApi.Hubs;
 using Cbc.WebApi.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,38 +11,21 @@ using Microsoft.EntityFrameworkCore;
 [Authorize(Roles = "Verified")]
 public class MeetingsController : ApiControllerBase
 {
-    [HttpGet("next")]
-    public async Task<ActionResult<MeetingDto>> GetNextMeeting()
+    [HttpGet]
+    public async Task<ActionResult<List<MeetingDto>>> GetMeetings()
     {
-        var email = this.GetEmail();
+        var meetings = await this.CbcContext.Meetings
+            .ProjectTo<MeetingSimpleDto>(this.Mapper.ConfigurationProvider)
+            .ToListAsync();
 
-        if (email is null)
-        {
-            return this.Unauthorized();
-        }
-
-        var meeting = await this.CbcContext.Meetings
-            .Where(m => m.WinningBookId == null)
-            .OrderBy(m => m.DateTime)
-            .Include(m => m.PreviousMeeting)
-                .ThenInclude(m => m!.WinningBook)
-            .FirstOrDefaultAsync();
-        // note: avoid projection here because of the recursive relationship to last meeting
-
-        if (meeting is null)
-        {
-            return this.NotFound();
-        }
-
-        return this.Ok(this.Mapper.Map<MeetingDto>(meeting));
+        return this.Ok(meetings);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<MeetingDto>> GetMeeting(Guid id)
     {
-        var meeting = await this.CbcContext.Meetings
-            .ProjectTo<MeetingDto>(this.Mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var meeting = await LiveMeetingHubExtensions
+            .GetMeeting(this.CbcContext, id);
 
         if (meeting is null)
         {

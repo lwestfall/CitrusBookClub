@@ -14,7 +14,7 @@ public class MeetingDto : IMapFrom<Meeting>
 
     public MeetingDto? PreviousMeeting { get; set; }
 
-    public string? State { get; set; }
+    public string? Status { get; set; }
 
     public List<BookVoteDto> Votes { get; set; } = [];
 
@@ -25,6 +25,6 @@ public class MeetingDto : IMapFrom<Meeting>
     public void Mapping(Profile profile)
     {
         profile.CreateMap<Meeting, MeetingDto>()
-            .ForMember(d => d.State, opt => opt.MapFrom(s => s.State.ToString()));
+            .ForMember(d => d.Status, opt => opt.MapFrom(s => s.Status.ToString()));
     }
 }

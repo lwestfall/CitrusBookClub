@@ -16,10 +16,10 @@ public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
         builder.Property(e => e.DateTime)
             .IsRequired();
 
-        builder.Property(e => e.State)
+        builder.Property(e => e.Status)
             .HasConversion(
                 v => v.ToString(),
-                v => (MeetingState)Enum.Parse(typeof(MeetingState), v!));
+                v => (MeetingStatus)Enum.Parse(typeof(MeetingStatus), v!));
 
         builder.HasOne(e => e.WinningBook)
             .WithOne()

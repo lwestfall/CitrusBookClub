@@ -1,9 +1,9 @@
 <div class="d-flex flex-row justify-content-center align-items-start gap-4">
-  <ng-container *ngIf="meeting$ | async as meeting">
+  <ng-container *ngIf="(meetingState$ | async)?.meeting as meeting">
     <div
       class="d-flex flex-column align-items-center"
       [ngClass]="presenterMode ? ' me-auto w-75' : ''">
-      @switch (meeting.state) {
+      @switch (meeting.status) {
         @case (null) {
           <div class="d-flex flex-column gap-2 align-items-center">
             <h6 class="display-6 text-center text-dark-emphasis">

@@ -17,10 +17,10 @@ import { getMeeting } from '../fn/meetings/get-meeting';
 import { GetMeeting$Params } from '../fn/meetings/get-meeting';
 import { getMeeting$Plain } from '../fn/meetings/get-meeting-plain';
 import { GetMeeting$Plain$Params } from '../fn/meetings/get-meeting-plain';
-import { getNextMeeting } from '../fn/meetings/get-next-meeting';
-import { GetNextMeeting$Params } from '../fn/meetings/get-next-meeting';
-import { getNextMeeting$Plain } from '../fn/meetings/get-next-meeting-plain';
-import { GetNextMeeting$Plain$Params } from '../fn/meetings/get-next-meeting-plain';
+import { getMeetings } from '../fn/meetings/get-meetings';
+import { GetMeetings$Params } from '../fn/meetings/get-meetings';
+import { getMeetings$Plain } from '../fn/meetings/get-meetings-plain';
+import { GetMeetings$Plain$Params } from '../fn/meetings/get-meetings-plain';
 import { MeetingDto } from '../models/meeting-dto';
 import { updateMeeting } from '../fn/meetings/update-meeting';
 import { UpdateMeeting$Params } from '../fn/meetings/update-meeting';
@@ -33,49 +33,96 @@ export class MeetingsService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `getNextMeeting()` */
-  static readonly GetNextMeetingPath = '/api/Meetings/next';
+  /** Path part for operation `getMeetings()` */
+  static readonly GetMeetingsPath = '/api/Meetings';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getNextMeeting$Plain()` instead.
+   * To access only the response body, use `getMeetings$Plain()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getNextMeeting$Plain$Response(params?: GetNextMeeting$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingDto>> {
-    return getNextMeeting$Plain(this.http, this.rootUrl, params, context);
+  getMeetings$Plain$Response(params?: GetMeetings$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<MeetingDto>>> {
+    return getMeetings$Plain(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getNextMeeting$Plain$Response()` instead.
+   * To access the full response (for headers, for example), `getMeetings$Plain$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getNextMeeting$Plain(params?: GetNextMeeting$Plain$Params, context?: HttpContext): Observable<MeetingDto> {
-    return this.getNextMeeting$Plain$Response(params, context).pipe(
+  getMeetings$Plain(params?: GetMeetings$Plain$Params, context?: HttpContext): Observable<Array<MeetingDto>> {
+    return this.getMeetings$Plain$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<MeetingDto>>): Array<MeetingDto> => r.body)
+    );
+  }
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getMeetings()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getMeetings$Response(params?: GetMeetings$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<MeetingDto>>> {
+    return getMeetings(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getMeetings$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getMeetings(params?: GetMeetings$Params, context?: HttpContext): Observable<Array<MeetingDto>> {
+    return this.getMeetings$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<MeetingDto>>): Array<MeetingDto> => r.body)
+    );
+  }
+
+  /** Path part for operation `createMeeting()` */
+  static readonly CreateMeetingPath = '/api/Meetings';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `createMeeting$Plain()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  createMeeting$Plain$Response(params?: CreateMeeting$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingDto>> {
+    return createMeeting$Plain(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `createMeeting$Plain$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  createMeeting$Plain(params?: CreateMeeting$Plain$Params, context?: HttpContext): Observable<MeetingDto> {
+    return this.createMeeting$Plain$Response(params, context).pipe(
       map((r: StrictHttpResponse<MeetingDto>): MeetingDto => r.body)
     );
   }
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getNextMeeting()` instead.
+   * To access only the response body, use `createMeeting()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getNextMeeting$Response(params?: GetNextMeeting$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingDto>> {
-    return getNextMeeting(this.http, this.rootUrl, params, context);
+  createMeeting$Response(params?: CreateMeeting$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingDto>> {
+    return createMeeting(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getNextMeeting$Response()` instead.
+   * To access the full response (for headers, for example), `createMeeting$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getNextMeeting(params?: GetNextMeeting$Params, context?: HttpContext): Observable<MeetingDto> {
-    return this.getNextMeeting$Response(params, context).pipe(
+  createMeeting(params?: CreateMeeting$Params, context?: HttpContext): Observable<MeetingDto> {
+    return this.createMeeting$Response(params, context).pipe(
       map((r: StrictHttpResponse<MeetingDto>): MeetingDto => r.body)
     );
   }
@@ -170,53 +217,6 @@ export class MeetingsService extends BaseService {
    */
   updateMeeting(params: UpdateMeeting$Params, context?: HttpContext): Observable<MeetingDto> {
     return this.updateMeeting$Response(params, context).pipe(
-      map((r: StrictHttpResponse<MeetingDto>): MeetingDto => r.body)
-    );
-  }
-
-  /** Path part for operation `createMeeting()` */
-  static readonly CreateMeetingPath = '/api/Meetings';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `createMeeting$Plain()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  createMeeting$Plain$Response(params?: CreateMeeting$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingDto>> {
-    return createMeeting$Plain(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `createMeeting$Plain$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  createMeeting$Plain(params?: CreateMeeting$Plain$Params, context?: HttpContext): Observable<MeetingDto> {
-    return this.createMeeting$Plain$Response(params, context).pipe(
-      map((r: StrictHttpResponse<MeetingDto>): MeetingDto => r.body)
-    );
-  }
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `createMeeting()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  createMeeting$Response(params?: CreateMeeting$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingDto>> {
-    return createMeeting(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `createMeeting$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  createMeeting(params?: CreateMeeting$Params, context?: HttpContext): Observable<MeetingDto> {
-    return this.createMeeting$Response(params, context).pipe(
       map((r: StrictHttpResponse<MeetingDto>): MeetingDto => r.body)
     );
   }

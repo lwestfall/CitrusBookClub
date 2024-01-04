@@ -29,16 +29,16 @@ export class LiveMeetingService extends SignalRService {
     await super.start();
 
     this.connection.on('MeetingStarted', (meeting: MeetingDto) => {
-      this.store.dispatch(actions.meetingStarted({ meeting }));
+      this.store.dispatch(actions.handleMeetingUpdate({ meeting }));
     });
 
     this.connection.on('MeetingUpdate', (meeting: MeetingDto) => {
-      this.store.dispatch(actions.liveMeetingUpdate({ meeting }));
+      this.store.dispatch(actions.handleMeetingUpdate({ meeting }));
     });
 
-    this.connection.on('Error', (error: string) => {
+    this.connection.on('Error', (meetingId: string, error: string) => {
       console.error('SignalR Error', error);
-      this.store.dispatch(actions.liveMeetingError({ error }));
+      this.store.dispatch(actions.handleMeetingError({ meetingId, error }));
     });
   }
 
@@ -75,10 +75,10 @@ export class LiveMeetingService extends SignalRService {
     await this.connection.invoke('ChangeVote', meetingId, votes, confirm);
   }
 
-  async leaveMeeting(meetingId: string): Promise<void> {
-    await this.connection.invoke('LeaveMeeting', meetingId);
-    this.store.dispatch(actions.leftMeeting({ meetingId }));
-  }
+  // async leaveMeeting(meetingId: string): Promise<void> {
+  //   await this.connection.invoke('LeaveMeeting', meetingId);
+  //   this.store.dispatch(actions.leftMeeting({ meetingId }));
+  // }
 
   async resetMeeting(meetingId: string): Promise<void> {
     await this.connection.invoke('ResetMeeting', meetingId);

@@ -3,7 +3,7 @@ import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { orderBy } from 'lodash-es';
 import { Subscription } from 'rxjs';
-import { BookDto, MeetingDto } from '../../api/models';
+import { BookDto, MeetingSimpleDto } from '../../api/models';
 import { AppState } from '../../app-state';
 import { selectNextMeeting } from '../../meetings/state/meetings.selectors';
 import { ToastsService } from '../../services/toasts.service';
@@ -21,7 +21,7 @@ import { selectMyRecommendations } from '../state/books.selectors';
 })
 export class BookCardComponent implements OnInit, OnDestroy {
   @Input({ required: true }) book!: BookDto;
-  recommendedForMeeting: MeetingDto | null = null;
+  recommendedForMeeting: MeetingSimpleDto | null = null;
   @Input() mine = false;
   @Input() noRipple = true;
 
@@ -40,8 +40,8 @@ export class BookCardComponent implements OnInit, OnDestroy {
     const nextMeeting$ = this.store.select(selectNextMeeting);
 
     this.subscriptions.push(
-      nextMeeting$.subscribe(meeting => {
-        this.nextMeetingId = meeting?.id ?? null;
+      nextMeeting$.subscribe(m => {
+        this.nextMeetingId = m?.id ?? null;
         this.setRecommendedForNext();
       })
     );

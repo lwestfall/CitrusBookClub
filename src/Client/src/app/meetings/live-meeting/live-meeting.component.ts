@@ -6,9 +6,10 @@ import { BookDto, MeetingDto } from '../../api/models';
 import { AppState } from '../../app-state';
 import { LiveMeetingService } from '../../services/websockets/live-meeting.service';
 import { selectAuthenticatedUserIsAdmin } from '../../users/state/users.selectors';
-import { MeetingState } from '../meeting-state.enum';
-import { liveMeetingUpdate } from '../state/meetings.actions';
-import { selectLiveMeeting } from '../state/meetings.selectors';
+import { MeetingStatus } from '../meeting-status.enum';
+import { handleMeetingUpdate } from '../state/meetings.actions';
+import { MeetingState } from '../state/meetings.reducer';
+import { selectMeetingState } from '../state/meetings.selectors';
 
 @Component({
   selector: 'app-live-meeting',
@@ -17,9 +18,9 @@ import { selectLiveMeeting } from '../state/meetings.selectors';
 })
 export class LiveMeetingComponent implements OnInit, OnDestroy {
   meetingId: string | null = null;
-  meeting$: Observable<MeetingDto | null>;
+  meetingState$: Observable<MeetingState | null> | null = null;
   lastBook: BookDto | null = null;
-  MeetingState = MeetingState;
+  MeetingState = MeetingStatus;
 
   isAdmin: boolean = false;
   presenterMode: boolean = false;
@@ -34,10 +35,12 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
       this.route.paramMap.subscribe(params => {
         this.meetingId = params.get('id') ?? '';
         this.presenterMode = params.get('presenterMode') === 'true';
+
+        this.meetingState$ = this.store.select(
+          selectMeetingState({ meetingId: this.meetingId })
+        );
       })
     );
-
-    this.meeting$ = this.store.select(selectLiveMeeting);
 
     const admin$ = this.store.select(selectAuthenticatedUserIsAdmin);
 
@@ -107,6 +110,6 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
 
   announceWinner(meeting: MeetingDto) {
     console.log('Winner announced', meeting.winningBook?.title);
-    this.store.dispatch(liveMeetingUpdate({ meeting }));
+    this.store.dispatch(handleMeetingUpdate({ meeting }));
   }
 }

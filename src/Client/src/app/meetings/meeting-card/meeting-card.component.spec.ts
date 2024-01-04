@@ -1,22 +1,20 @@
 /* tslint:disable:no-unused-variable */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
 
-import { NextMeetingCardComponent } from './next-meeting-card.component';
+import { MeetingCardComponent } from './meeting-card.component';
 
 describe('NextMeetingCardComponent', () => {
-  let component: NextMeetingCardComponent;
-  let fixture: ComponentFixture<NextMeetingCardComponent>;
+  let component: MeetingCardComponent;
+  let fixture: ComponentFixture<MeetingCardComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [NextMeetingCardComponent],
+      declarations: [MeetingCardComponent],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NextMeetingCardComponent);
+    fixture = TestBed.createComponent(MeetingCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

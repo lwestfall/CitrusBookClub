@@ -7,9 +7,9 @@ import { DndModule } from 'ngx-drag-drop';
 import { BooksModule } from '../books/books.module';
 import { LiveMeetingComponent } from './live-meeting/live-meeting.component';
 import { LiveVotingComponent } from './live-meeting/live-voting/live-voting.component';
+import { MeetingCardComponent } from './meeting-card/meeting-card.component';
 import { MeetingCountdownComponent } from './meeting-countdown/meeting-countdown.component';
 import { MeetingsPageComponent } from './meetings-page/meetings-page.component';
-import { NextMeetingCardComponent } from './next-meeting-card/next-meeting-card.component';
 import { MeetingsEffects } from './state/meetings.effects';
 import { meetingsReducer } from './state/meetings.reducer';
 
@@ -25,10 +25,10 @@ import { meetingsReducer } from './state/meetings.reducer';
   declarations: [
     MeetingCountdownComponent,
     MeetingsPageComponent,
-    NextMeetingCardComponent,
+    MeetingCardComponent,
     LiveMeetingComponent,
     LiveVotingComponent,
   ],
-  exports: [MeetingCountdownComponent, NextMeetingCardComponent],
+  exports: [MeetingCountdownComponent, MeetingCardComponent],
 })
 export class MeetingsModule {}
