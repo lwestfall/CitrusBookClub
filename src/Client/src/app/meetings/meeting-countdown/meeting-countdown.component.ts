@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import moment from 'moment';
 import { MeetingDto } from '../../api/models';
 
@@ -7,12 +7,16 @@ import { MeetingDto } from '../../api/models';
   templateUrl: './meeting-countdown.component.html',
   styleUrls: ['./meeting-countdown.component.css'],
 })
-export class MeetingCountdownComponent implements OnDestroy {
+export class MeetingCountdownComponent implements OnInit, OnDestroy {
   @Input({ required: true }) meeting!: MeetingDto;
   nextMeetingStr?: string;
-  timeUntilMeetingInterval: NodeJS.Timeout;
+  timeUntilMeetingInterval?: NodeJS.Timeout;
 
-  constructor() {
+  constructor() {}
+
+  ngOnInit(): void {
+    this.nextMeetingStr = this.timeUntilMeeting();
+
     this.timeUntilMeetingInterval = setInterval(() => {
       this.nextMeetingStr = this.timeUntilMeeting();
     }, 1000);
