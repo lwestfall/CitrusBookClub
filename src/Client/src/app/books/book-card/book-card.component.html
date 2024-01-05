@@ -1,5 +1,5 @@
 <div class="card w-100" style="max-width: 30rem">
-  <div class="ripple" *ngIf="!noRipple && recommendedForNext"></div>
+  <div class="ripple" *ngIf="ripple"></div>
   <div class="card-body">
     <div class="d-flex flex-row gap-2 align-items-center">
       <div>
@@ -18,6 +18,8 @@
     </div>
     <div class="text-center" *ngIf="mine">
       @if (recommendedForNext) {
+        <h6 class="text-success my-2">Recommended for next meeting!</h6>
+      } @else {
         <div
           [ngbTooltip]="
             !nextMeetingId ? 'Next meeting hasn\'t been scheduled yet!' : null
@@ -31,10 +33,7 @@
             Recommend for next meeting!
           </button>
         </div>
-      } @else {
-        <h6 class="text-success my-2">Recommended for next meeting!</h6>
       }
-      <ng-template #recommendedForNext> </ng-template>
     </div>
     <div class="d-flex flex-row gap-2 align-items-center">
       <hr class="flex-grow-1" />

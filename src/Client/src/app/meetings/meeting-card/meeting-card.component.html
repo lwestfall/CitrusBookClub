@@ -65,7 +65,8 @@
           <button
             *ngIf="admin$ | async"
             class="btn btn-info my-2"
-            [routerLink]="['/meetings', meeting.id, { presenterMode: true }]">
+            [routerLink]="['/meetings', meeting.id]"
+            [queryParams]="{ presenterMode: true }">
             Present Meeting!
           </button>
         </div>
@@ -83,7 +84,7 @@
     } @else {
       <div class="d-flex flex-column align-items-center my-2">
         <button
-          class="btn btn-success my-2"
+          class="btn btn-outline-info my-2"
           [routerLink]="['/meetings', meeting.id]">
           See Results!
         </button>

@@ -27,19 +27,14 @@
               The meeting has started! This is your last chance to lock in your
               recommendation!
             </h6>
-            <div
-              *ngIf="meeting.bookRecommendations"
-              class="d-flex flex-column align-items-center">
+            <div class="d-flex flex-column align-items-center">
               <h4 class="display-4 text-center">Recommendations</h4>
-              <div class="d-flex flex-wrap justify-content-center gap-4">
-                <div
-                  *ngFor="let bookRec of meeting.bookRecommendations"
-                  style="min-width: 15rem; max-width: 18rem">
-                  <app-book-card
-                    [book]="bookRec.book"
-                    [noRipple]="presenterMode"></app-book-card>
-                </div>
-              </div>
+              <app-meeting-recommendations
+                [bookRecommendations]="meeting.bookRecommendations"
+                [presenterMode]="presenterMode"
+                [myRecommendedBookId]="
+                  myRecommendedBookId
+                "></app-meeting-recommendations>
             </div>
             <button
               class="btn btn-primary"
@@ -69,31 +64,40 @@
           </div>
         }
         @case (MeetingState.Closed) {
-          <div class="d-flex flex-column gap-2 align-items-center">
-            <h4 class="display-4">And the winner is...</h4>
-            <!-- todo: fancy winning book reveal -->
-          </div>
+          @if (meeting.winningBook) {
+            <div class="d-flex flex-column gap-2 align-items-center">
+              <h4 class="display-4">And the winner is...</h4>
+              <app-book-card
+                [book]="meeting.winningBook"
+                [ripple]="true"></app-book-card>
+            </div>
+            <div class="d-flex flex-column align-items-center">
+              <h6 class="display-6 text-center">Recommendations</h6>
+              <app-meeting-recommendations
+                [bookRecommendations]="meeting.bookRecommendations"
+                [presenterMode]="presenterMode"
+                [myRecommendedBookId]="
+                  myRecommendedBookId
+                "></app-meeting-recommendations>
+            </div>
+          }
         }
       }
-      <div
-        *ngIf="meeting.previousMeeting?.winningBook as winningBook"
-        class="d-flex flex-column align-items-center my-4">
-        <h4 class="display-4">Last Winner</h4>
-        <div style="min-width: 15rem">
-          <app-book-card [book]="winningBook"></app-book-card>
-        </div>
-      </div>
-      <button
-        class="btn btn-outline-danger my-3"
-        *ngIf="isAdmin && presenterMode"
-        (click)="resetMeeting()">
-        Reset Meeting
-      </button>
     </div>
-    <ng-container *ngIf="presenterMode && isAdmin">
-      <div class="justify-content-end">
-        <h4 class="display-4 text-center">Roll Call!</h4>
-        <div>
+    <div class="justify-content-end" *ngIf="presenterMode && isAdmin">
+      <div class="d-flex flex-column align-items-center gap-2">
+        <div class="d-flex flex-column align-items-center">
+          <h5 class="display-5">Join!</h5>
+          <qrcode
+            [qrdata]="routeUrl.toString()"
+            imageSrc="./assets/lemon.png"
+            [imageHeight]="60"
+            [imageWidth]="60"
+            [width]="200"
+            lightColor="var(--bg-color)"></qrcode>
+        </div>
+        <div class="text-center">
+          <h4 class="display-5">Roll Call!</h4>
           @if (meeting.userStates.length) {
             <ul class="list-group">
               <li
@@ -104,16 +108,29 @@
                     ? 'list-group-item-success'
                     : 'list-group-item-warning'
                 ">
-                {{ userState.user.firstName }} {{ userState.user.lastName[0] }}.
+                {{ userState.user.firstName }}
+                {{ userState.user.lastName[0] }}.
               </li>
             </ul>
           } @else {
-            <div class="text-center">
-              <h6 class="display-6">No one has joined yet!</h6>
-            </div>
+            <span>No one has joined yet!</span>
           }
         </div>
+        <div
+          *ngIf="meeting.previousMeeting?.winningBook as winningBook"
+          class="d-flex flex-column align-items-center my-4">
+          <h5 class="display-5">Last Winner</h5>
+          <div style="min-width: 15rem">
+            <app-book-card [book]="winningBook"></app-book-card>
+          </div>
+        </div>
+        <button
+          class="btn btn-outline-danger"
+          *ngIf="isAdmin && presenterMode"
+          (click)="resetMeeting()">
+          Reset Meeting
+        </button>
       </div>
-    </ng-container>
+    </div>
   </ng-container>
 </div>

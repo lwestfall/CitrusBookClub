@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { BookDto, MeetingDto } from '../../api/models';
 import { AppState } from '../../app-state';
+import { selectMyRecommendations } from '../../books/state/books.selectors';
 import { LiveMeetingService } from '../../services/websockets/live-meeting.service';
 import { selectAuthenticatedUserIsAdmin } from '../../users/state/users.selectors';
 import { MeetingStatus } from '../meeting-status.enum';
@@ -32,15 +33,24 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
   presenterMode: boolean = false;
   subscriptions: Subscription[] = [];
 
+  myRecommendedBookId?: string;
+  routeUrl: URL;
+
   constructor(
     private liveMeetingSvc: LiveMeetingService,
     private store: Store<AppState>,
     private route: ActivatedRoute
   ) {
+    this.routeUrl = new URL(window.location.href);
+    this.routeUrl.searchParams.delete('presenterMode');
+
+    route.queryParams.subscribe(params => {
+      this.presenterMode = params['presenterMode'] === 'true';
+    });
+
     this.subscriptions.push(
       this.route.paramMap.subscribe(params => {
         this.meetingId = params.get('id') ?? '';
-        this.presenterMode = params.get('presenterMode') === 'true';
 
         this.meetingState$ = this.store.select(
           selectMeetingState({ meetingId: this.meetingId })
@@ -53,6 +63,18 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       admin$.subscribe(isAdmin => {
         this.isAdmin = isAdmin;
+      })
+    );
+
+    const myRecommendations$ = this.store.select(selectMyRecommendations);
+
+    this.subscriptions.push(
+      myRecommendations$.subscribe(recommendations => {
+        const myRecommendation = recommendations.find(
+          r => r.meeting.id === this.meetingId
+        );
+
+        this.myRecommendedBookId = myRecommendation?.book.id;
       })
     );
   }

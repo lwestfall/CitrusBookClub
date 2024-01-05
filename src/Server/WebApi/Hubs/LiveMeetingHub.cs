@@ -342,7 +342,7 @@ public static class LiveMeetingHubExtensions
             await dbContext.SaveChangesAsync();
         }
 
-        if (meeting.Status is MeetingStatus.Started or MeetingStatus.Voting)
+        if (meeting.Status >= MeetingStatus.Started)
         {
             await dbContext.Entry(meeting)
                 .Collection(e => e.BookRecommendations)

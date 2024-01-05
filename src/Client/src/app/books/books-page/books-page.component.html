@@ -18,7 +18,9 @@
     <app-book-card
       [book]="book"
       [mine]="true"
-      [noRipple]="false"></app-book-card>
+      [nextMeetingId]="(nextMeeting$ | async)?.id ?? null"
+      [recommendedForNext]="nextRecommendedBookId === book.id"
+      [ripple]="nextRecommendedBookId === book.id"></app-book-card>
   </div>
   <div
     *ngIf="!myBooks.length && (isLoadingMyBooks$ | async) === false"
