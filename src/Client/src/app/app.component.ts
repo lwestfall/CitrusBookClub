@@ -1,7 +1,13 @@
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { Component, ElementRef } from '@angular/core';
-import { ChildrenOutletContexts, RouterOutlet } from '@angular/router';
+import {
+  ActivatedRoute,
+  ChildrenOutletContexts,
+  Router,
+  RouterOutlet,
+} from '@angular/router';
 import { Store } from '@ngrx/store';
+import { of, switchMap } from 'rxjs';
 import { slideInAnimation } from './animations';
 import { AppState, fetchAppData } from './app-state';
 import { BooksModule } from './books/books.module';
@@ -40,7 +46,9 @@ export class AppComponent {
     store: Store<AppState>,
     liveMeetingSvc: LiveMeetingService,
     private contexts: ChildrenOutletContexts,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    route: ActivatedRoute,
+    router: Router
   ) {
     if (localStorage.getItem('snow') === 'false') {
       this.snowEnabled = false;
@@ -48,11 +56,22 @@ export class AppComponent {
 
     const obs = store.select(selectAuthenticatedUserIsVerified);
 
-    obs.subscribe(verified => {
-      if (verified) {
-        store.dispatch(fetchAppData());
-      }
-    });
+    obs
+      .pipe(
+        switchMap(verified => {
+          if (verified) {
+            store.dispatch(fetchAppData());
+            return route.queryParams;
+          }
+          return of();
+        })
+      )
+      .subscribe(params => {
+        if (params['returnUrl']) {
+          console.log('returning to', params['returnUrl']);
+          router.navigateByUrl(params['returnUrl']);
+        }
+      });
   }
 
   getRouteAnimationData() {
