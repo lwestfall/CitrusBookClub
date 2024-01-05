@@ -92,7 +92,13 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
     [Authorize(Roles = "Admin")]
     public async Task CreateNextMeeting(CreateMeetingDto meetingDto)
     {
-        var previousMeeting = await dbContext.Meetings.FindAsync(meetingDto.PreviousMeetingId);
+        if (!meetingDto.PreviousMeetingId.HasValue)
+        {
+            await this.Error($"Previous meeting id is required.");
+            return;
+        }
+
+        var previousMeeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingDto.PreviousMeetingId.Value);
 
         if (previousMeeting is null)
         {
@@ -109,15 +115,16 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
         dbContext.Meetings.Add(meeting);
         await dbContext.SaveChangesAsync();
 
-        var meetingResponseDto = mapper.Map<MeetingDto>(meeting);
+        var previousMeetingDto = mapper.Map<MeetingDto>(previousMeeting);
+        var newMeetingDto = mapper.Map<MeetingDto>(meeting);
 
         await this.Clients
             .All
-            .SendAsync(ClientMethods.MeetingUpdate, previousMeeting, this.Context.ConnectionId);
+            .SendAsync(ClientMethods.MeetingUpdate, previousMeetingDto, this.Context.ConnectionId);
 
         await this.Clients
             .All
-            .SendAsync(ClientMethods.MeetingUpdate, meetingResponseDto, this.Context.ConnectionId);
+            .SendAsync(ClientMethods.MeetingUpdate, newMeetingDto, this.Context.ConnectionId);
     }
 
     [Authorize(Roles = "Admin")]

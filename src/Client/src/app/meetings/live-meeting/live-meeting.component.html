@@ -71,31 +71,48 @@
                 [book]="meeting.winningBook"
                 [ripple]="true"></app-book-card>
             </div>
-            <div class="d-flex flex-column align-items-center">
-              <h6 class="display-6 text-center">Recommendations</h6>
-              <app-meeting-recommendations
-                [bookRecommendations]="meeting.bookRecommendations"
-                [presenterMode]="presenterMode"
-                [noRipple]="true"
-                [myRecommendedBookId]="
-                  myRecommendedBookId
-                "></app-meeting-recommendations>
-            </div>
           }
+          <div class="d-flex flex-column align-items-center">
+            <h6 class="display-6 text-center">Recommendations</h6>
+            <app-meeting-recommendations
+              [bookRecommendations]="meeting.bookRecommendations"
+              [presenterMode]="presenterMode"
+              [noRipple]="true"
+              [myRecommendedBookId]="
+                myRecommendedBookId
+              "></app-meeting-recommendations>
+          </div>
         }
       }
     </div>
     <div class="justify-content-end" *ngIf="presenterMode && isAdmin">
       <div class="d-flex flex-column align-items-center gap-2">
         <div class="d-flex flex-column align-items-center">
-          <h5 class="display-5">Join!</h5>
-          <qrcode
-            [qrdata]="routeUrl.toString()"
-            imageSrc="./assets/lemon.png"
-            [imageHeight]="60"
-            [imageWidth]="60"
-            [width]="200"
-            lightColor="var(--bg-color)"></qrcode>
+          @if (meeting.status !== MeetingState.Closed) {
+            <h5 class="display-5 text-center">Join!</h5>
+            <qrcode
+              [qrdata]="routeUrl.toString()"
+              imageSrc="./assets/lemon.png"
+              [imageHeight]="60"
+              [imageWidth]="60"
+              [width]="200"
+              lightColor="var(--bg-color)"></qrcode>
+          } @else {
+            @if (nextMeeting$ | async; as nextMeeting) {
+              <h6 class="display-6 text-center">Next Meeting</h6>
+              <app-meeting-card [meeting]="nextMeeting"></app-meeting-card>
+            } @else {
+              <h6 class="display-6 text-center">Let's do it again!</h6>
+              <ngb-datepicker [(ngModel)]="nextMeetingDate"></ngb-datepicker>
+              <ngb-timepicker [(ngModel)]="nextMeetingTime" [meridian]="true" />
+              <button
+                type="button"
+                class="btn btn-success"
+                (click)="scheduleNextMeeting()">
+                Schedule Next Meeting
+              </button>
+            }
+          }
         </div>
         <div class="text-center">
           <h4 class="display-5">Roll Call!</h4>

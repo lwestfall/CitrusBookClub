@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import {
+  NgbDatepickerModule,
+  NgbModule,
+  NgbTimepickerModule,
+} from '@ng-bootstrap/ng-bootstrap';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { QRCodeModule } from 'angularx-qrcode';
@@ -24,6 +30,10 @@ import { meetingsReducer } from './state/meetings.reducer';
     BooksModule,
     DndModule,
     QRCodeModule,
+    NgbModule,
+    NgbTimepickerModule,
+    NgbDatepickerModule,
+    FormsModule,
   ],
   declarations: [
     MeetingCountdownComponent,

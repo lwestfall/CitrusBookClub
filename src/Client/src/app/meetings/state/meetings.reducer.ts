@@ -54,11 +54,7 @@ export const meetingsReducer = createReducer(
     meetingsActions.handleMeetingUpdate,
     (state, action): MeetingsState => ({
       ...state,
-      allMeetingStates: state.allMeetingStates.map(meetingState =>
-        meetingState.meeting.id === action.meeting.id
-          ? { meeting: action.meeting, error: null }
-          : meetingState
-      ),
+      allMeetingStates: handleMeetingUpdate(state, action),
     })
   ),
   on(
@@ -80,3 +76,30 @@ export const meetingsReducer = createReducer(
     })
   )
 );
+
+function handleMeetingUpdate(
+  state: MeetingsState,
+  action: {
+    meeting: MeetingDto;
+  }
+): MeetingState[] {
+  const existingMeetingState = state.allMeetingStates.find(
+    ms => ms.meeting.id === action.meeting.id
+  );
+
+  if (!existingMeetingState) {
+    return [
+      ...state.allMeetingStates,
+      {
+        meeting: action.meeting,
+        error: null,
+      },
+    ];
+  }
+
+  return state.allMeetingStates.map(meetingState =>
+    meetingState.meeting.id === action.meeting.id
+      ? { meeting: action.meeting, error: null }
+      : meetingState
+  );
+}

@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { CreateBookVoteDto, MeetingDto } from '../../api/models';
+import {
+  CreateBookVoteDto,
+  CreateMeetingDto,
+  MeetingDto,
+} from '../../api/models';
 import { AppState } from '../../app-state';
 import * as actions from '../../meetings/state/meetings.actions';
 import { SignalRService } from './signal-r.service';
@@ -78,5 +82,9 @@ export class LiveMeetingService extends SignalRService {
 
   async resetMeeting(meetingId: string): Promise<void> {
     await this.connection.invoke('ResetMeeting', meetingId);
+  }
+
+  async createNextMeeting(meeting: CreateMeetingDto): Promise<void> {
+    await this.connection.invoke('CreateNextMeeting', meeting);
   }
 }

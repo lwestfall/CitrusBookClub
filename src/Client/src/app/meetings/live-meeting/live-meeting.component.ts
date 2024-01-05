@@ -1,8 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { NgbDateStruct, NgbTimeStruct } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
+import moment from 'moment';
 import { Observable, Subscription } from 'rxjs';
-import { BookDto, MeetingDto } from '../../api/models';
+import { BookDto, CreateMeetingDto, MeetingDto } from '../../api/models';
 import { AppState } from '../../app-state';
 import { selectMyRecommendations } from '../../books/state/books.selectors';
 import { LiveMeetingService } from '../../services/websockets/live-meeting.service';
@@ -13,6 +15,7 @@ import { MeetingState } from '../state/meetings.reducer';
 import {
   selectLiveMeetingConnected,
   selectMeetingState,
+  selectNextMeeting,
 } from '../state/meetings.selectors';
 
 @Component({
@@ -26,6 +29,8 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
   liveMeetingConnected$: Observable<boolean> = this.store.select(
     selectLiveMeetingConnected
   );
+  nextMeeting$: Observable<MeetingDto | null> =
+    this.store.select(selectNextMeeting);
   lastBook: BookDto | null = null;
   MeetingState = MeetingStatus;
 
@@ -35,6 +40,9 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
 
   myRecommendedBookId?: string;
   routeUrl: URL;
+
+  nextMeetingDate: NgbDateStruct;
+  nextMeetingTime: NgbTimeStruct = { hour: 18, minute: 0, second: 0 };
 
   constructor(
     private liveMeetingSvc: LiveMeetingService,
@@ -77,6 +85,13 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
         this.myRecommendedBookId = myRecommendation?.book.id;
       })
     );
+
+    const nextDate = moment().add(5, 'weeks');
+    this.nextMeetingDate = {
+      year: nextDate.year(),
+      month: nextDate.month() + 1,
+      day: nextDate.date(),
+    };
   }
 
   ngOnInit() {
@@ -145,5 +160,22 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
   announceWinner(meeting: MeetingDto) {
     console.log('Winner announced', meeting.winningBook?.title);
     this.store.dispatch(handleMeetingUpdate({ meeting }));
+  }
+
+  scheduleNextMeeting() {
+    if (!this.meetingId) {
+      return;
+    }
+
+    const nextMeetingDateTime = moment(
+      `${this.nextMeetingDate.year}-${this.nextMeetingDate.month}-${this.nextMeetingDate.day} ${this.nextMeetingTime.hour}:${this.nextMeetingTime.minute}`
+    );
+
+    const newMeeting: CreateMeetingDto = {
+      dateTime: nextMeetingDateTime.toISOString(),
+      previousMeetingId: this.meetingId,
+    };
+
+    this.liveMeetingSvc.createNextMeeting(newMeeting);
   }
 }

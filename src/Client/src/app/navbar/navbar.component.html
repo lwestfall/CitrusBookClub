@@ -62,11 +62,11 @@
       </ul>
       @if ((verified$ | async) && (nextMeeting$ | async); as nextMeeting) {
         <div *ngIf="!nextMeeting.status" class="ms-auto me-auto">
-          <span
+          <small
             >Next meeting in
             <app-meeting-countdown
               [meeting]="nextMeeting"></app-meeting-countdown
-            >!</span
+            >!</small
           >
         </div>
       }
