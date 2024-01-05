@@ -385,6 +385,7 @@ public static class LiveMeetingHubExtensions
                 .Query()
                     .Include(e => e.Book)
                     .Include(e => e.RecommendedBy)
+                    .OrderBy(e => e.Book.Title) // this doesn't work?
                 .LoadAsync();
         }
 
@@ -400,6 +401,12 @@ public static class LiveMeetingHubExtensions
                     .Include(e => e.Book)
                 .LoadAsync();
         }
+
+        // reorder book recommendations by title
+        meeting.BookRecommendations =
+        [
+            .. meeting.BookRecommendations.OrderBy(e => e.Book.Title)
+        ];
 
         return meeting;
     }
