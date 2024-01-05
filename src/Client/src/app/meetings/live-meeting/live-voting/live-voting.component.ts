@@ -41,8 +41,6 @@ export class LiveVotingComponent implements OnInit, OnDestroy {
         return;
       }
 
-      console.log('user', this.recommendations);
-
       // todo: "get my votes" and restore them in order if they exist otherwise default behavior
       const myRec = this.recommendations.find(
         // todo: improve this check
@@ -108,11 +106,15 @@ export class LiveVotingComponent implements OnInit, OnDestroy {
   toggleVotesConfirmed() {
     this.votesConfirmed = !this.votesConfirmed;
 
-    this.liveMeetingSvc.changeVote(
-      this.meetingId,
-      this.rankedRecommendationsToVotes(),
-      this.votesConfirmed
-    );
+    if (this.votesConfirmed) {
+      this.liveMeetingSvc.changeVote(
+        this.meetingId,
+        this.rankedRecommendationsToVotes(),
+        this.votesConfirmed
+      );
+    } else {
+      this.liveMeetingSvc.unconfirmVote(this.meetingId);
+    }
 
     // todo use live meeting state to determine if vote was confirmed on backend via meeting user state
   }

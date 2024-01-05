@@ -67,6 +67,10 @@ export class LiveMeetingService extends SignalRService {
     await this.connection.invoke('ChangeVote', meetingId, votes, confirm);
   }
 
+  async unconfirmVote(meetingId: string): Promise<void> {
+    await this.connection.invoke('UnconfirmVote', meetingId);
+  }
+
   // async leaveMeeting(meetingId: string): Promise<void> {
   //   await this.connection.invoke('LeaveMeeting', meetingId);
   //   this.store.dispatch(actions.leftMeeting({ meetingId }));

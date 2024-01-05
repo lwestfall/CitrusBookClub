@@ -243,6 +243,42 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
         }
     }
 
+    public async Task UnconfirmVote(Guid meetingId)
+    {
+        var meeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingId);
+
+        if (meeting is null)
+        {
+            await this.Error($"Meeting with id {meetingId} not found.");
+            return;
+        }
+
+        var user = await this.GetUser();
+
+        if (user is null)
+        {
+            return;
+        }
+
+        var userState = meeting.UserStates.SingleOrDefault(e => e.UserEmailAddress == user.EmailAddress);
+
+        if (userState is null)
+        {
+            await this.Error($"User {user.EmailAddress} not found in meeting {meetingId}.");
+            return;
+        }
+
+        userState.Status = MeetingUserStatus.Joined;
+
+        await dbContext.SaveChangesAsync();
+
+        var meetingDto = mapper.Map<MeetingDto>(meeting);
+
+        await this.Clients
+            .All
+            .SendAsync(ClientMethods.MeetingUpdate, meetingDto, this.Context.ConnectionId);
+    }
+
     public async Task ResetMeeting(Guid meetingId)
     {
         var meeting = await dbContext.Meetings
