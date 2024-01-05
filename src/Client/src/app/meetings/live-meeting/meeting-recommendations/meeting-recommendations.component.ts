@@ -11,6 +11,7 @@ export class MeetingRecommendationsComponent {
   bookRecommendations!: BookRecommendationForMeetingDto[];
   @Input() presenterMode: boolean = false;
   @Input() myRecommendedBookId: string | undefined;
+  @Input() noRipple: boolean = false;
 
   constructor() {}
 }

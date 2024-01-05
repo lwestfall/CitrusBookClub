@@ -5,7 +5,7 @@
     <app-book-card
       [book]="bookRec.book"
       [ripple]="
-        !presenterMode && myRecommendedBookId === bookRec.book.id
+        !noRipple && !presenterMode && myRecommendedBookId === bookRec.book.id
       "></app-book-card>
   </div>
 </div>
