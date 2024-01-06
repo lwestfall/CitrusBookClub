@@ -31,6 +31,34 @@ export class MeetingsEffects {
     );
   });
 
+  deleteMeeting$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(actions.deleteMeeting),
+      mergeMap(action =>
+        this.meetingsService
+          .deleteMeeting({ meetingId: action.meetingId })
+          .pipe(
+            map(() =>
+              actions.deleteMeetingSuccess({ meetingId: action.meetingId })
+            ),
+            catchError(error => of(actions.deleteMeetingFailure({ error })))
+          )
+      )
+    );
+  });
+
+  updateMeeting$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(actions.updateMeeting),
+      mergeMap(action =>
+        this.meetingsService.updateMeeting({ ...action }).pipe(
+          map(meeting => actions.updateMeetingSuccess({ meeting })),
+          catchError(error => of(actions.updateMeetingFailure({ error })))
+        )
+      )
+    );
+  });
+
   constructor(
     private actions$: Actions,
     private meetingsService: MeetingsService,

@@ -13,6 +13,8 @@ import { createMeeting } from '../fn/meetings/create-meeting';
 import { CreateMeeting$Params } from '../fn/meetings/create-meeting';
 import { createMeeting$Plain } from '../fn/meetings/create-meeting-plain';
 import { CreateMeeting$Plain$Params } from '../fn/meetings/create-meeting-plain';
+import { deleteMeeting } from '../fn/meetings/delete-meeting';
+import { DeleteMeeting$Params } from '../fn/meetings/delete-meeting';
 import { getMeeting } from '../fn/meetings/get-meeting';
 import { GetMeeting$Params } from '../fn/meetings/get-meeting';
 import { getMeeting$Plain } from '../fn/meetings/get-meeting-plain';
@@ -175,7 +177,7 @@ export class MeetingsService extends BaseService {
   }
 
   /** Path part for operation `updateMeeting()` */
-  static readonly UpdateMeetingPath = '/api/Meetings/{id}';
+  static readonly UpdateMeetingPath = '/api/Meetings/{meetingId}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -218,6 +220,31 @@ export class MeetingsService extends BaseService {
   updateMeeting(params: UpdateMeeting$Params, context?: HttpContext): Observable<MeetingDto> {
     return this.updateMeeting$Response(params, context).pipe(
       map((r: StrictHttpResponse<MeetingDto>): MeetingDto => r.body)
+    );
+  }
+
+  /** Path part for operation `deleteMeeting()` */
+  static readonly DeleteMeetingPath = '/api/Meetings/{meetingId}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `deleteMeeting()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteMeeting$Response(params: DeleteMeeting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return deleteMeeting(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `deleteMeeting$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteMeeting(params: DeleteMeeting$Params, context?: HttpContext): Observable<void> {
+    return this.deleteMeeting$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 

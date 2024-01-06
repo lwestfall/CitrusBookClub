@@ -21,6 +21,18 @@ export const selectAllMeetingsError = createSelector(
   state => state.allMeetingsError
 );
 
+export const selectLastMeeting = createSelector(
+  selectFeature,
+  state =>
+    orderBy(
+      state.allMeetingStates.filter(
+        m => m.meeting?.status === MeetingStatus.Closed
+      ),
+      m => m.meeting.dateTime,
+      'desc'
+    ).find(m => m)?.meeting ?? null
+);
+
 export const selectNextMeeting = createSelector(
   selectFeature,
   state =>

@@ -20,6 +20,7 @@ import {
   withInterceptors,
 } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
@@ -78,5 +79,7 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(EffectsModule.forRoot()),
     // provideStore({ books: booksReducer }),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
+    importProvidersFrom(NgbModal),
+    importProvidersFrom(NgbModalConfig),
   ],
 };

@@ -17,6 +17,7 @@ import { LiveVotingComponent } from './live-meeting/live-voting/live-voting.comp
 import { MeetingRecommendationsComponent } from './live-meeting/meeting-recommendations/meeting-recommendations.component';
 import { MeetingCardComponent } from './meeting-card/meeting-card.component';
 import { MeetingCountdownComponent } from './meeting-countdown/meeting-countdown.component';
+import { MeetingDatetimeEditorComponent } from './meeting-datetime-editor/meeting-datetime-editor.component';
 import { MeetingsPageComponent } from './meetings-page/meetings-page.component';
 import { MeetingsEffects } from './state/meetings.effects';
 import { meetingsReducer } from './state/meetings.reducer';
@@ -42,6 +43,7 @@ import { meetingsReducer } from './state/meetings.reducer';
     MeetingRecommendationsComponent,
     LiveMeetingComponent,
     LiveVotingComponent,
+    MeetingDatetimeEditorComponent,
   ],
   exports: [MeetingCountdownComponent, MeetingCardComponent],
 })

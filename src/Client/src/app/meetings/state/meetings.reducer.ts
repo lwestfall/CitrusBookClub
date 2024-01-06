@@ -74,6 +74,22 @@ export const meetingsReducer = createReducer(
       ...state,
       liveMeetingConnected: true,
     })
+  ),
+  on(
+    meetingsActions.deleteMeetingSuccess,
+    (state, action): MeetingsState => ({
+      ...state,
+      allMeetingStates: state.allMeetingStates.filter(
+        ms => ms.meeting.id !== action.meetingId
+      ),
+    })
+  ),
+  on(
+    meetingsActions.updateMeetingSuccess,
+    (state, action): MeetingsState => ({
+      ...state,
+      allMeetingStates: handleMeetingUpdate(state, action),
+    })
   )
 );
 

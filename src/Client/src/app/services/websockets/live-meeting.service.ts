@@ -32,6 +32,10 @@ export class LiveMeetingService extends SignalRService {
       this.store.dispatch(actions.handleMeetingUpdate({ meeting }));
     });
 
+    this.connection.on('MeetingDeleted', (meetingId: string) => {
+      this.store.dispatch(actions.deleteMeetingSuccess({ meetingId }));
+    });
+
     this.connection.on('Error', (meetingId: string, error: string) => {
       console.error('SignalR Error', error);
       this.store.dispatch(actions.handleMeetingError({ meetingId, error }));

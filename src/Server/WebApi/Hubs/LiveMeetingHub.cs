@@ -92,35 +92,33 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
     [Authorize(Roles = "Admin")]
     public async Task CreateNextMeeting(CreateMeetingDto meetingDto)
     {
-        if (!meetingDto.PreviousMeetingId.HasValue)
-        {
-            await this.Error($"Previous meeting id is required.");
-            return;
-        }
-
-        var previousMeeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingDto.PreviousMeetingId.Value);
-
-        if (previousMeeting is null)
-        {
-            await this.Error($"Previous meeting with id {meetingDto.PreviousMeetingId} not found.");
-            return;
-        }
-
         var meeting = new Meeting
         {
-            DateTime = meetingDto.DateTime,
-            PreviousMeeting = previousMeeting
+            DateTime = meetingDto.DateTime
         };
+
+        if (meetingDto.PreviousMeetingId is not null)
+        {
+            var previousMeeting = await LiveMeetingHubExtensions.GetMeeting(dbContext, meetingDto.PreviousMeetingId.Value);
+
+            if (previousMeeting is null)
+            {
+                await this.Error($"Previous meeting with id {meetingDto.PreviousMeetingId} not found.");
+                return;
+            }
+
+            meeting.PreviousMeeting = previousMeeting;
+        }
 
         dbContext.Meetings.Add(meeting);
         await dbContext.SaveChangesAsync();
 
-        var previousMeetingDto = mapper.Map<MeetingDto>(previousMeeting);
         var newMeetingDto = mapper.Map<MeetingDto>(meeting);
 
-        await this.Clients
-            .All
-            .SendAsync(ClientMethods.MeetingUpdate, previousMeetingDto, this.Context.ConnectionId);
+        // var previousMeetingDto = mapper.Map<MeetingDto>(previousMeeting);
+        // await this.Clients
+        //     .All
+        //     .SendAsync(ClientMethods.MeetingUpdate, previousMeetingDto, this.Context.ConnectionId);
 
         await this.Clients
             .All
@@ -339,6 +337,7 @@ public class LiveMeetingHub(CbcDbContext dbContext, IMapper mapper/*, ILogger<Li
     {
         public static string MeetingStarted => nameof(MeetingStarted);
         public static string MeetingUpdate => nameof(MeetingUpdate);
+        public static string MeetingDeleted => nameof(MeetingDeleted);
         public static string AnnounceWinner => nameof(AnnounceWinner);
     }
 }
@@ -358,6 +357,13 @@ public static class LiveMeetingHubExtensions
         await hubContext.Clients
             .All
             .SendAsync(LiveMeetingHub.ClientMethods.MeetingUpdate, meetingDto);
+    }
+
+    public static async Task MeetingDeleted(this IHubContext<LiveMeetingHub> hubContext, Guid meetingId)
+    {
+        await hubContext.Clients
+            .All
+            .SendAsync(LiveMeetingHub.ClientMethods.MeetingDeleted, meetingId);
     }
 
     public static async Task<Meeting?> GetMeeting(CbcDbContext dbContext, Guid meetingId, MeetingStatus? nextState = null)

@@ -6,10 +6,9 @@ using Cbc.WebApi.Hubs;
 using Cbc.WebApi.Models.Entities;
 using Cbc.WebApi.Models.Misc;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
-public class BookRecommendationsController(IHubContext<LiveMeetingHub> liveMeetingHubContext) : ApiControllerBase
+public class BookRecommendationsController : ApiControllerBase
 {
     [HttpGet("mine")]
     public async Task<ActionResult<List<BookRecommendationDto>>> GetMyBookRecommendations()
@@ -77,7 +76,7 @@ public class BookRecommendationsController(IHubContext<LiveMeetingHub> liveMeeti
 
         await this.CbcContext.SaveChangesAsync();
 
-        await liveMeetingHubContext.MeetingChanged(this.CbcContext, this.Mapper, meetingId);
+        await this.LiveMeetingHubContext.MeetingChanged(this.CbcContext, this.Mapper, meetingId);
 
         return this.Ok(this.Mapper.Map<BookRecommendationDto>(recommendation));
     }

@@ -46,11 +46,11 @@ public class MeetingsController : ApiControllerBase
         return this.CreatedAtAction(nameof(GetMeeting), new { id = meeting.Id }, this.Mapper.Map<MeetingDto>(meeting));
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{meetingId}")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<MeetingDto>> UpdateMeeting(Guid id, DateTime dateTime)
+    public async Task<ActionResult<MeetingDto>> UpdateMeeting(Guid meetingId, DateTime dateTime)
     {
-        var meeting = await this.CbcContext.Meetings.FindAsync(id);
+        var meeting = await this.CbcContext.Meetings.FindAsync(meetingId);
 
         if (meeting is null)
         {
@@ -59,6 +59,29 @@ public class MeetingsController : ApiControllerBase
 
         meeting.DateTime = dateTime;
         await this.CbcContext.SaveChangesAsync();
+        await this.LiveMeetingHubContext.MeetingChanged(this.CbcContext, this.Mapper, meetingId);
         return this.Ok(this.Mapper.Map<MeetingDto>(meeting));
+    }
+
+    [HttpDelete("{meetingId}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> DeleteMeeting(Guid meetingId)
+    {
+        var meeting = await this.CbcContext.Meetings.FindAsync(meetingId);
+
+        if (meeting is null)
+        {
+            return this.NotFound();
+        }
+
+        if (meeting.Status != null)
+        {
+            return this.BadRequest("Cannot delete a meeting that has already started.");
+        }
+
+        this.CbcContext.Meetings.Remove(meeting);
+        await this.CbcContext.SaveChangesAsync();
+        await this.LiveMeetingHubContext.MeetingDeleted(meetingId);
+        return this.NoContent();
     }
 }

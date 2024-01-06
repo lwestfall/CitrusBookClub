@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NgbDateStruct, NgbTimeStruct } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import moment from 'moment';
 import { Observable, Subscription } from 'rxjs';
@@ -41,8 +40,7 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
   myRecommendedBookId?: string;
   routeUrl: URL;
 
-  nextMeetingDate: NgbDateStruct;
-  nextMeetingTime: NgbTimeStruct = { hour: 18, minute: 0, second: 0 };
+  nextMeetingDate: Date | null;
 
   constructor(
     private liveMeetingSvc: LiveMeetingService,
@@ -86,12 +84,8 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
       })
     );
 
-    const nextDate = moment().add(5, 'weeks');
-    this.nextMeetingDate = {
-      year: nextDate.year(),
-      month: nextDate.month() + 1,
-      day: nextDate.date(),
-    };
+    const nextDate = moment().add(5, 'weeks').set('hour', 18).startOf('hour');
+    this.nextMeetingDate = nextDate.toDate();
   }
 
   ngOnInit() {
@@ -158,7 +152,6 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
   }
 
   announceWinner(meeting: MeetingDto) {
-    console.log('Winner announced', meeting.winningBook?.title);
     this.store.dispatch(handleMeetingUpdate({ meeting }));
   }
 
@@ -167,9 +160,7 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const nextMeetingDateTime = moment(
-      `${this.nextMeetingDate.year}-${this.nextMeetingDate.month}-${this.nextMeetingDate.day} ${this.nextMeetingTime.hour}:${this.nextMeetingTime.minute}`
-    );
+    const nextMeetingDateTime = moment(this.nextMeetingDate);
 
     const newMeeting: CreateMeetingDto = {
       dateTime: nextMeetingDateTime.toISOString(),

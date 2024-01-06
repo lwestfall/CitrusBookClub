@@ -115,8 +115,6 @@ export class LiveVotingComponent implements OnInit, OnDestroy {
     } else {
       this.liveMeetingSvc.unconfirmVote(this.meetingId);
     }
-
-    // todo use live meeting state to determine if vote was confirmed on backend via meeting user state
   }
 
   rankedRecommendationsToVotes(): CreateBookVoteDto[] {

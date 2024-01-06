@@ -6,28 +6,25 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { MeetingDto } from '../../models/meeting-dto';
 
-export interface UpdateMeeting$Params {
+export interface DeleteMeeting$Params {
   meetingId: string;
-  dateTime?: string;
 }
 
-export function updateMeeting(http: HttpClient, rootUrl: string, params: UpdateMeeting$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingDto>> {
-  const rb = new RequestBuilder(rootUrl, updateMeeting.PATH, 'put');
+export function deleteMeeting(http: HttpClient, rootUrl: string, params: DeleteMeeting$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, deleteMeeting.PATH, 'delete');
   if (params) {
     rb.path('meetingId', params.meetingId, {"style":"simple"});
-    rb.query('dateTime', params.dateTime, {"style":"form"});
   }
 
   return http.request(
-    rb.build({ responseType: 'json', accept: 'text/json', context })
+    rb.build({ responseType: 'text', accept: '*/*', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<MeetingDto>;
+      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
     })
   );
 }
 
-updateMeeting.PATH = '/api/Meetings/{meetingId}';
+deleteMeeting.PATH = '/api/Meetings/{meetingId}';

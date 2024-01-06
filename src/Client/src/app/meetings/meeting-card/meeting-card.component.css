@@ -1,4 +1,18 @@
 .meeting-card {
   max-width: 600px;
-  min-width: 300px;
+  min-width: 350px;
+}
+
+.no-arrow.dropdown-toggle::after {
+  display: none;
+}
+
+.danger {
+  color: red;
+}
+
+.meeting-options {
+  position: absolute;
+  top: 4px;
+  right: 0;
 }

@@ -39,6 +39,7 @@
             <button
               class="btn btn-primary"
               *ngIf="presenterMode && isAdmin"
+              [disabled]="!meeting.bookRecommendations.length"
               (click)="lockInRecommendations()">
               Lock Recommendations & Start Vote
             </button>
@@ -100,11 +101,15 @@
           } @else {
             @if (nextMeeting$ | async; as nextMeeting) {
               <h6 class="display-6 text-center">Next Meeting</h6>
-              <app-meeting-card [meeting]="nextMeeting"></app-meeting-card>
+              <app-meeting-card
+                [meeting]="nextMeeting"
+                [recommendationDetails]="false"></app-meeting-card>
             } @else {
-              <h6 class="display-6 text-center">Let's do it again!</h6>
-              <ngb-datepicker [(ngModel)]="nextMeetingDate"></ngb-datepicker>
-              <ngb-timepicker [(ngModel)]="nextMeetingTime" [meridian]="true" />
+              <h6 class="display-6 text-center" style="min-width: 300px">
+                Let's do it again!
+              </h6>
+              <app-meeting-datetime-editor
+                [(dateTime)]="nextMeetingDate"></app-meeting-datetime-editor>
               <button
                 type="button"
                 class="btn btn-success"
@@ -114,26 +119,28 @@
             }
           }
         </div>
-        <div class="text-center">
-          <h4 class="display-5">Roll Call!</h4>
-          @if (meeting.userStates.length) {
-            <ul class="list-group">
-              <li
-                *ngFor="let userState of meeting.userStates"
-                class="list-group-item"
-                [ngClass]="
-                  userState.status === 'Voted'
-                    ? 'list-group-item-success'
-                    : 'list-group-item-warning'
-                ">
-                {{ userState.user.firstName }}
-                {{ userState.user.lastName[0] }}.
-              </li>
-            </ul>
-          } @else {
-            <span>No one has joined yet!</span>
-          }
-        </div>
+        @if (meeting.status !== MeetingState.Closed) {
+          <div class="text-center">
+            <h4 class="display-5">Roll Call!</h4>
+            @if (meeting.userStates.length) {
+              <ul class="list-group">
+                <li
+                  *ngFor="let userState of meeting.userStates"
+                  class="list-group-item"
+                  [ngClass]="
+                    userState.status === 'Voted'
+                      ? 'list-group-item-success'
+                      : 'list-group-item-warning'
+                  ">
+                  {{ userState.user.firstName }}
+                  {{ userState.user.lastName[0] }}.
+                </li>
+              </ul>
+            } @else {
+              <span>No one has joined yet!</span>
+            }
+          </div>
+        }
         <div
           *ngIf="meeting.previousMeeting?.winningBook as winningBook"
           class="d-flex flex-column align-items-center my-4">
@@ -145,6 +152,9 @@
         <button
           class="btn btn-outline-danger"
           *ngIf="isAdmin && presenterMode"
+          [disabled]="
+            meeting.status === MeetingState.Closed && (nextMeeting$ | async)
+          "
           (click)="resetMeeting()">
           Reset Meeting
         </button>

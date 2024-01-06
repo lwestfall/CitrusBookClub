@@ -1,11 +1,17 @@
 <div class="d-flex flex-wrap justify-content-center gap-4">
-  <div
-    *ngFor="let bookRec of bookRecommendations"
-    style="min-width: 15rem; max-width: 18rem">
-    <app-book-card
-      [book]="bookRec.book"
-      [ripple]="
-        !noRipple && !presenterMode && myRecommendedBookId === bookRec.book.id
-      "></app-book-card>
-  </div>
+  @if (bookRecommendations.length) {
+    <div
+      *ngFor="let bookRec of bookRecommendations"
+      style="min-width: 15rem; max-width: 18rem">
+      <app-book-card
+        [book]="bookRec.book"
+        [ripple]="
+          !noRipple && !presenterMode && myRecommendedBookId === bookRec.book.id
+        "></app-book-card>
+    </div>
+  } @else {
+    <div class="text-center">
+      <h4>No recommendations yet! 🤔</h4>
+    </div>
+  }
 </div>
