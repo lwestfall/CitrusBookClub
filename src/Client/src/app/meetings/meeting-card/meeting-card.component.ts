@@ -1,7 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, map, tap } from 'rxjs';
-import { BookRecommendationDto, MeetingDto } from '../../api/models';
+import { Observable, map } from 'rxjs';
+import { BookDto, MeetingDto } from '../../api/models';
 import { AppState } from '../../app-state';
 import { selectMyRecommendations } from '../../books/state/books.selectors';
 import { LiveMeetingService } from '../../services/websockets/live-meeting.service';
@@ -13,24 +13,30 @@ import { MeetingStatus } from '../meeting-status.enum';
   templateUrl: './meeting-card.component.html',
   styleUrls: ['./meeting-card.component.css'],
 })
-export class MeetingCardComponent {
+export class MeetingCardComponent implements OnInit {
   @Input({ required: true }) meeting!: MeetingDto;
-  myRecommendation$!: Observable<BookRecommendationDto | undefined>;
+  myRecommendedBook$!: Observable<BookDto | undefined>;
   admin$: Observable<boolean>;
   MeetingState = MeetingStatus;
 
   constructor(
-    store: Store<AppState>,
+    private store: Store<AppState>,
     private liveMeetingSvc: LiveMeetingService
   ) {
-    this.myRecommendation$ = store.select(selectMyRecommendations).pipe(
-      tap(recommendations =>
-        recommendations.filter(r => r.meeting.id === this.meeting.id)
-      ),
-      map(recommendations => recommendations[0])
-    );
-
     this.admin$ = store.select(selectAuthenticatedUserIsAdmin);
+  }
+
+  ngOnInit(): void {
+    this.myRecommendedBook$ = this.store
+      .select(selectMyRecommendations)
+      .pipe(
+        map(
+          recommendations =>
+            recommendations
+              .filter(r => r.meeting.id === this.meeting.id)
+              .find(m => m)?.book
+        )
+      );
   }
 
   startMeeting() {

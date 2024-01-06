@@ -1,94 +1,95 @@
 <div class="card meeting-card">
   <div class="card-body">
-    <h5 class="card-title">
+    <h5 class="card-title text-center">
       {{ meeting.dateTime | date: 'EEE, MMMM d, y, h:mm a' }}
     </h5>
-    <h6 class="card-subtitle mb-2 text-muted">
+    <h6 class="card-subtitle mb-2 text-muted text-center">
       @if (meeting.status === MeetingState.Closed) {
         This meeting has ended.
       } @else if (!meeting.status) {
         <app-meeting-countdown [meeting]="meeting"></app-meeting-countdown>
       }
     </h6>
-    <p class="card-text" *ngIf="meeting.previousMeeting?.winningBook">
-      {{
-        meeting.status === MeetingState.Closed
-          ? 'We discussed'
-          : "We'll discuss"
-      }}
-      <i>{{ meeting.previousMeeting?.winningBook?.title }}</i>
-    </p>
-    @if (myRecommendation$ | async; as myRec) {
-      <p class="card-text">
-        You recommended <i>{{ myRec.book.title }}</i>
+    <div class="card-text text-center">
+      <p class="card-text" *ngIf="meeting.previousMeeting?.winningBook">
+        {{
+          meeting.status === MeetingState.Closed
+            ? 'We discussed'
+            : "We'll discuss"
+        }}
+        <i>{{ meeting.previousMeeting?.winningBook?.title }}</i>
       </p>
-    }
-    @if (meeting.status !== MeetingState.Closed) {
-      @if ((myRecommendation$ | async) === undefined) {
-        <p class="card-text my-0">
-          You haven't recommended a book yet.
+      @if (myRecommendedBook$ | async; as myRec) {
+        <p class="card-text">
+          You recommended <i>{{ myRec.title }}</i>
+        </p>
+      }
+      @if (meeting.status !== MeetingState.Closed) {
+        @if ((myRecommendedBook$ | async) === undefined) {
+          <div class="text-center">
+            <p class="card-text my-0">You haven't recommended a book yet.</p>
+            <a
+              [routerLink]="['/books']"
+              routerLinkActive="router-link-active"
+              class="link-primary"
+              >Recommend one now!</a
+            >
+          </div>
+        } @else {
           <a
             [routerLink]="['/books']"
             routerLinkActive="router-link-active"
-            class="link-primary"
-            >Recommend one now!</a
+            class="link-info"
+            >Want to recommend something else?</a
           >
-        </p>
+        }
+      } @else if (meeting.winningBook) {
+        <div class="my-2">
+          In this meeting, we voted for:
+          <app-book-card [book]="meeting.winningBook!"></app-book-card>
+        </div>
       }
-      <p class="my-0">
-        <a
-          [routerLink]="['/books']"
-          routerLinkActive="router-link-active"
-          class="link-info"
-          >Want to recommend something else?</a
-        >
-      </p>
-    } @else if (meeting.winningBook) {
-      <div class="my-2">
-        In this meeting, we voted for:
-        <app-book-card [book]="meeting.winningBook!"></app-book-card>
-      </div>
-    }
 
-    @if (
-      meeting.status === MeetingState.Started ||
-      meeting.status === MeetingState.Voting
-    ) {
-      <div class="d-flex flex-column align-items-center my-2">
-        <span>The meeting is live!</span>
-        <div class="d-flex flex-row gap-2">
-          <button
-            class="btn btn-success my-2"
-            [routerLink]="['/meetings', meeting.id]">
-            Join Meeting!
-          </button>
-          <button
-            *ngIf="admin$ | async"
-            class="btn btn-info my-2"
-            [routerLink]="['/meetings', meeting.id]"
-            [queryParams]="{ presenterMode: true }">
-            Present Meeting!
-          </button>
+      @if (
+        meeting.status === MeetingState.Started ||
+        meeting.status === MeetingState.Voting
+      ) {
+        <div class="d-flex flex-column align-items-center my-2">
+          <span>The meeting is live!</span>
+          <div class="d-flex flex-row gap-2">
+            <button
+              class="btn btn-success my-2"
+              [routerLink]="['/meetings', meeting.id]">
+              Join Meeting!
+            </button>
+            <button
+              *ngIf="admin$ | async"
+              class="btn btn-info my-2"
+              [routerLink]="['/meetings', meeting.id]"
+              [queryParams]="{ presenterMode: true }">
+              Present Meeting!
+            </button>
+          </div>
         </div>
-      </div>
-    } @else if (!meeting.status) {
-      @if (admin$ | async) {
-        <div class="text-center">
-          <button class="btn btn-success my-2" (click)="startMeeting()">
-            Start Meeting
-          </button>
-        </div>
+      } @else if (!meeting.status) {
+        @if (admin$ | async) {
+          <div class="text-center">
+            <button class="btn btn-success my-2" (click)="startMeeting()">
+              Start Meeting
+            </button>
+          </div>
+        } @else {
+          <span>The meeting hasn't started yet.</span>
+        }
       } @else {
-        <span>The meeting hasn't started yet.</span>
+        <div class="d-flex flex-column align-items-center my-2">
+          <button
+            class="btn btn-outline-info my-2"
+            [routerLink]="['/meetings', meeting.id]">
+            See Results!
+          </button>
+        </div>
       }
-    } @else {
-      <div class="d-flex flex-column align-items-center my-2">
-        <button
-          class="btn btn-outline-info my-2"
-          [routerLink]="['/meetings', meeting.id]">
-          See Results!
-        </button>
-      </div>
-    }
+    </div>
   </div>
 </div>
