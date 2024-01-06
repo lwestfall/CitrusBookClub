@@ -5,9 +5,11 @@ using Cbc.WebApi.Dtos;
 using Cbc.WebApi.Hubs;
 using Cbc.WebApi.Models.Entities;
 using Cbc.WebApi.Models.Misc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+[Authorize(Roles = "Verified")]
 public class BookRecommendationsController : ApiControllerBase
 {
     [HttpGet("mine")]

@@ -88,3 +88,8 @@ export const recommendBookForMeetingFailure = createAction(
   '[Books] Recommend Book For Meeting Failure',
   props<{ error: string }>()
 );
+
+export const rateBook = createAction(
+  '[Books] Rate Book',
+  props<{ bookId: string; rating: number }>()
+);

@@ -52,7 +52,8 @@
               <app-live-voting
                 *ngIf="meeting.bookRecommendations?.length"
                 [recommendations]="meeting.bookRecommendations!"
-                [meetingId]="meeting.id!">
+                [meetingId]="meeting.id!"
+                [lastBook]="meeting.previousMeeting?.winningBook ?? null">
               </app-live-voting>
             </div>
             <button

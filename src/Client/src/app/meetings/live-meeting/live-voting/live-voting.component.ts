@@ -10,6 +10,7 @@ import {
   UserSimpleDto,
 } from '../../../api/models';
 import { AppState } from '../../../app-state';
+import { rateBook } from '../../../books/state/books.actions';
 import { LiveMeetingService } from '../../../services/websockets/live-meeting.service';
 import { selectAuthenticatedUser } from '../../../users/state/users.selectors';
 
@@ -22,11 +23,17 @@ export class LiveVotingComponent implements OnInit, OnDestroy {
   @Input({ required: true })
   recommendations!: BookRecommendationForMeetingDto[];
   @Input({ required: true }) meetingId!: string;
+  @Input() lastBook: BookDto | null = null;
 
   rankedRecommendations: RankedBook[] = [];
   votesConfirmed: boolean = false;
 
   userSubscription?: Subscription;
+
+  ratingOptions = Array(11)
+    .fill(1)
+    .map((x, i) => i);
+  selectedRating: number | null = null;
 
   constructor(
     private store: Store<AppState>,
@@ -122,6 +129,12 @@ export class LiveVotingComponent implements OnInit, OnDestroy {
       bookId: r.book.id,
       rank: r.rank,
     }));
+  }
+
+  selectRating(rating: number) {
+    this.selectedRating = rating;
+
+    this.store.dispatch(rateBook({ bookId: this.lastBook!.id, rating }));
   }
 }
 

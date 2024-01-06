@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import moment from 'moment';
 import { Observable, Subscription } from 'rxjs';
-import { BookDto, CreateMeetingDto, MeetingDto } from '../../api/models';
+import { CreateMeetingDto, MeetingDto } from '../../api/models';
 import { AppState } from '../../app-state';
 import { selectMyRecommendations } from '../../books/state/books.selectors';
 import { LiveMeetingService } from '../../services/websockets/live-meeting.service';
@@ -30,7 +30,6 @@ export class LiveMeetingComponent implements OnInit, OnDestroy {
   );
   nextMeeting$: Observable<MeetingDto | null> =
     this.store.select(selectNextMeeting);
-  lastBook: BookDto | null = null;
   MeetingState = MeetingStatus;
 
   isAdmin: boolean = false;
