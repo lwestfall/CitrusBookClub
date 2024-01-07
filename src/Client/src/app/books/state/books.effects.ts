@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, mergeMap, of } from 'rxjs';
-import { BookRecommendationsService, BooksService } from '../../api/services';
+import {
+  BookRatingsService,
+  BookRecommendationsService,
+  BooksService,
+} from '../../api/services';
 import { fetchAppData } from '../../app-state';
 import * as actions from './books.actions';
 
@@ -110,9 +114,22 @@ export class BooksEffects {
     );
   });
 
+  rateBook$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(actions.rateBook),
+        mergeMap(({ bookId, rating }) =>
+          this.bookRatingsService.rateBook({ body: { bookId, rating } })
+        )
+      );
+    },
+    { dispatch: false }
+  );
+
   constructor(
     private actions$: Actions,
     private booksService: BooksService,
-    private bookRecommendationsService: BookRecommendationsService
+    private bookRecommendationsService: BookRecommendationsService,
+    private bookRatingsService: BookRatingsService
   ) {}
 }

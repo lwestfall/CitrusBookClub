@@ -19,4 +19,6 @@ public class Book
     public int? PageCount { get; set; }
 
     public User? User { get; set; }
+
+    public List<BookRating> Ratings { get; set; } = [];
 }

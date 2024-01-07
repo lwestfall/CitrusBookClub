@@ -1,6 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-
-import _ from 'lodash';
+import { orderBy } from 'lodash-es';
 import { BookDto, BookRecommendationDto } from '../../api/models';
 import { fetchAppData } from '../../app-state';
 import * as bookActions from './books.actions';
@@ -234,5 +233,5 @@ export const booksReducer = createReducer(
 );
 
 function sortBooksByTitle(books: BookDto[]) {
-  return _.orderBy(books, b => b.title);
+  return orderBy(books, b => b.title);
 }

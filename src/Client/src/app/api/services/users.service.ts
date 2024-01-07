@@ -21,10 +21,6 @@ import { getUsers } from '../fn/users/get-users';
 import { GetUsers$Params } from '../fn/users/get-users';
 import { getUsers$Plain } from '../fn/users/get-users-plain';
 import { GetUsers$Plain$Params } from '../fn/users/get-users-plain';
-import { updateAuthenticatedUser } from '../fn/users/update-authenticated-user';
-import { UpdateAuthenticatedUser$Params } from '../fn/users/update-authenticated-user';
-import { updateAuthenticatedUser$Plain } from '../fn/users/update-authenticated-user-plain';
-import { UpdateAuthenticatedUser$Plain$Params } from '../fn/users/update-authenticated-user-plain';
 import { updateUser } from '../fn/users/update-user';
 import { UpdateUser$Params } from '../fn/users/update-user';
 import { updateUser$Plain } from '../fn/users/update-user-plain';
@@ -131,53 +127,6 @@ export class UsersService extends BaseService {
    */
   getAuthenticatedUser(params?: GetAuthenticatedUser$Params, context?: HttpContext): Observable<UserDto> {
     return this.getAuthenticatedUser$Response(params, context).pipe(
-      map((r: StrictHttpResponse<UserDto>): UserDto => r.body)
-    );
-  }
-
-  /** Path part for operation `updateAuthenticatedUser()` */
-  static readonly UpdateAuthenticatedUserPath = '/me';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateAuthenticatedUser$Plain()` instead.
-   *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
-   */
-  updateAuthenticatedUser$Plain$Response(params?: UpdateAuthenticatedUser$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDto>> {
-    return updateAuthenticatedUser$Plain(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateAuthenticatedUser$Plain$Response()` instead.
-   *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
-   */
-  updateAuthenticatedUser$Plain(params?: UpdateAuthenticatedUser$Plain$Params, context?: HttpContext): Observable<UserDto> {
-    return this.updateAuthenticatedUser$Plain$Response(params, context).pipe(
-      map((r: StrictHttpResponse<UserDto>): UserDto => r.body)
-    );
-  }
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `updateAuthenticatedUser()` instead.
-   *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
-   */
-  updateAuthenticatedUser$Response(params?: UpdateAuthenticatedUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDto>> {
-    return updateAuthenticatedUser(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `updateAuthenticatedUser$Response()` instead.
-   *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
-   */
-  updateAuthenticatedUser(params?: UpdateAuthenticatedUser$Params, context?: HttpContext): Observable<UserDto> {
-    return this.updateAuthenticatedUser$Response(params, context).pipe(
       map((r: StrictHttpResponse<UserDto>): UserDto => r.body)
     );
   }

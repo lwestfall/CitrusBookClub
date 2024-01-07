@@ -22,4 +22,6 @@ public class BookDto : IMapFrom<Book>
     public int? PageCount { get; set; }
 
     public UserSimpleDto? User { get; set; }
+
+    public List<BookRatingDto>? Ratings { get; set; }
 }

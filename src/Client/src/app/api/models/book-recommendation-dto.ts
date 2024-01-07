@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 import { BookDto } from '../models/book-dto';
-import { MeetingDto } from '../models/meeting-dto';
+import { MeetingSimpleDto } from '../models/meeting-simple-dto';
 export interface BookRecommendationDto {
   book: BookDto;
-  meeting: MeetingDto;
+  meeting: MeetingSimpleDto;
 }

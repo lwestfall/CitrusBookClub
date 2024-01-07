@@ -9,6 +9,7 @@ public class MappingProfile : Profile
     {
         this.ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly(), typeof(IMapFrom<>), nameof(IMapFrom<object>.Mapping));
         this.ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly(), typeof(IMapTo<>), nameof(IMapTo<object>.Mapping));
+        this.ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly(), typeof(IMapBoth<>), nameof(IMapBoth<object>.Mapping));
     }
 
     private void ApplyMappingsFromAssembly(Assembly assembly, Type mappedType, string mappingMethodName)

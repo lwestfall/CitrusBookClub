@@ -11,6 +11,7 @@ import { Observable, catchError, filter, of, switchMap, take, tap } from 'rxjs';
 import { UserDto } from './api/models';
 import { AppState } from './app-state';
 import { BooksPageComponent } from './books/books-page/books-page.component';
+import { LiveMeetingComponent } from './meetings/live-meeting/live-meeting.component';
 import { MeetingsPageComponent } from './meetings/meetings-page/meetings-page.component';
 import { ProfileComponent } from './profile/profile.component';
 import {
@@ -62,6 +63,12 @@ export const routes: Routes = [
     component: MeetingsPageComponent,
     canActivate: [canActivateVerified],
     data: { animation: 'MeetingsPage' },
+  },
+  {
+    path: 'meetings/:id',
+    component: LiveMeetingComponent,
+    canActivate: [canActivateVerified],
+    data: { animation: 'LiveMeeting' },
   },
   {
     path: 'users',

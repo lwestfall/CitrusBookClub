@@ -1,0 +1,53 @@
+<div class="d-flex flex-column gap-3">
+  <ul
+    class="list-group"
+    dndEffectAllowed="move"
+    (dndDrop)="onDrop($event, rankedRecommendations)"
+    [dndDisableIf]="votesConfirmed"
+    dndDropzone>
+    <li
+      class="list-group-item list-group-item-info dndPlaceholder"
+      dndPlaceholderRef></li>
+    <li
+      *ngFor="let rec of rankedRecommendations"
+      class="list-group-item"
+      [ngClass]="{
+        'list-group-item-success': rec.isMine,
+        'list-group-item-dark': votesConfirmed
+      }"
+      [dndDraggable]="rec"
+      [dndDisableDragIf]="votesConfirmed"
+      (dndMoved)="onDragged(rec, rankedRecommendations)"
+      dndEffectAllowed="move">
+      {{ rec.rank }}: {{ rec.book.title }} - {{ rec.recommendedBy.firstName }}
+    </li>
+  </ul>
+  <div *ngIf="lastBook">
+    <h5 class="display-5 text-center">
+      Rate <i>{{ lastBook.title }}</i>
+    </h5>
+    <div class="d-flex flex-row gap-0">
+      <button
+        *ngFor="let i of ratingOptions"
+        class="btn btn-sm flex-fill mx-0"
+        style="border-radius: 0px"
+        [disabled]="votesConfirmed"
+        [ngClass]="{
+          'btn-primary': selectedRating !== null && i <= selectedRating,
+          'btn-outline-primary': selectedRating === null || i > selectedRating
+        }"
+        (click)="selectRating(i)">
+        {{ i }}
+      </button>
+    </div>
+  </div>
+  <button
+    class="btn"
+    [disabled]="lastBook && selectedRating === null"
+    (click)="toggleVotesConfirmed()"
+    [ngClass]="votesConfirmed ? 'btn-warning' : 'btn-success'">
+    {{
+      votesConfirmed ? 'Wait, I need to change something' : 'Confirm My Votes'
+    }}
+  </button>
+</div>

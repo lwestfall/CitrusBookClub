@@ -12,13 +12,18 @@
 </div>
 <h3 class="display-3 my-4 text-lg-start text-center">My Bookshelf</h3>
 <div
-  *ngIf="myBooks$ | async"
+  *ngIf="myBooks$ | async as myBooks"
   class="d-flex flex-wrap align-items-stretch gap-2 justify-content-lg-start justify-content-center">
   <div *ngFor="let book of myBooks$ | async" style="max-width: 22rem">
-    <app-book-card [book]="book" [mine]="true"></app-book-card>
+    <app-book-card
+      [book]="book"
+      [mine]="true"
+      [nextMeetingId]="(nextMeeting$ | async)?.id ?? null"
+      [recommendedForNext]="nextRecommendedBookId === book.id"
+      [ripple]="nextRecommendedBookId === book.id"></app-book-card>
   </div>
   <div
-    *ngIf="!(myBooks$ | async)?.length && (isLoadingMyBooks$ | async) === false"
+    *ngIf="!myBooks.length && (isLoadingMyBooks$ | async) === false"
     class="text-center">
     <h6 class="display-6">You haven't added any books yet!</h6>
     <h6 class="display-6">Add one using the button above!</h6>

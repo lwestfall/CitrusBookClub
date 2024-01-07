@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import _ from 'lodash';
+import { orderBy } from 'lodash-es';
 import { UserDto } from '../../api/models';
 import * as usersActions from './users.actions';
 
@@ -191,5 +191,5 @@ function updateUserInAll(users: UserDto[], user: UserDto): UserDto[] {
 }
 
 function sortUsers(users: UserDto[]): UserDto[] {
-  return _.orderBy(users, ['firstName', 'lastName']);
+  return orderBy(users, ['firstName', 'lastName']);
 }

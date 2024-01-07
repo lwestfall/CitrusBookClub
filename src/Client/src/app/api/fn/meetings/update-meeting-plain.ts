@@ -9,14 +9,14 @@ import { RequestBuilder } from '../../request-builder';
 import { MeetingDto } from '../../models/meeting-dto';
 
 export interface UpdateMeeting$Plain$Params {
-  id: string;
+  meetingId: string;
   dateTime?: string;
 }
 
 export function updateMeeting$Plain(http: HttpClient, rootUrl: string, params: UpdateMeeting$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<MeetingDto>> {
   const rb = new RequestBuilder(rootUrl, updateMeeting$Plain.PATH, 'put');
   if (params) {
-    rb.path('id', params.id, {"style":"simple"});
+    rb.path('meetingId', params.meetingId, {"style":"simple"});
     rb.query('dateTime', params.dateTime, {"style":"form"});
   }
 
@@ -30,4 +30,4 @@ export function updateMeeting$Plain(http: HttpClient, rootUrl: string, params: U
   );
 }
 
-updateMeeting$Plain.PATH = '/api/Meetings/{id}';
+updateMeeting$Plain.PATH = '/api/Meetings/{meetingId}';

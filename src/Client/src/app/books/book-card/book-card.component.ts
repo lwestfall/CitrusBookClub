@@ -1,18 +1,15 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import _ from 'lodash';
 import { Subscription } from 'rxjs';
-import { BookDto, MeetingDto } from '../../api/models';
+import { BookDto } from '../../api/models';
 import { AppState } from '../../app-state';
-import { selectNextMeeting } from '../../meetings/state/meetings.selectors';
 import { ToastsService } from '../../services/toasts.service';
 import {
   deleteBook,
   deleteBookSuccess,
   recommendBookForMeeting,
 } from '../state/books.actions';
-import { selectMyRecommendations } from '../state/books.selectors';
 
 @Component({
   selector: 'app-book-card',
@@ -21,10 +18,10 @@ import { selectMyRecommendations } from '../state/books.selectors';
 })
 export class BookCardComponent implements OnInit, OnDestroy {
   @Input({ required: true }) book!: BookDto;
-  recommendedForMeeting: MeetingDto | null = null;
+  @Input() recommendedForNext = false;
   @Input() mine = false;
-
-  nextMeeting: MeetingDto | null = null;
+  @Input() ripple = false;
+  @Input() nextMeetingId: string | null = null;
 
   expanded = false;
 
@@ -34,13 +31,9 @@ export class BookCardComponent implements OnInit, OnDestroy {
     private store: Store<AppState>,
     private actions$: Actions,
     private toastService: ToastsService
-  ) {
-    const nextMeeting$ = this.store.select(selectNextMeeting);
+  ) {}
 
-    nextMeeting$.subscribe(meeting => {
-      this.nextMeeting = meeting;
-    });
-
+  ngOnInit(): void {
     this.subscriptions.push(
       this.actions$.pipe(ofType(deleteBookSuccess)).subscribe(action => {
         if (action.bookId === this.book.id) {
@@ -48,23 +41,6 @@ export class BookCardComponent implements OnInit, OnDestroy {
         }
       })
     );
-  }
-
-  ngOnInit(): void {
-    const recommendations$ = this.store.select(selectMyRecommendations);
-
-    recommendations$.subscribe(recommendations => {
-      const thisBookRecommendations = _.orderBy(
-        recommendations.filter(r => r.book.id === this.book.id),
-        r => r.meeting.dateTime
-      );
-
-      if (thisBookRecommendations.length > 0) {
-        this.recommendedForMeeting = thisBookRecommendations[0].meeting;
-      } else {
-        this.recommendedForMeeting = null;
-      }
-    });
   }
 
   ngOnDestroy(): void {
@@ -76,14 +52,14 @@ export class BookCardComponent implements OnInit, OnDestroy {
   }
 
   recommendForNext(): void {
-    if (!this.nextMeeting) {
+    if (!this.nextMeetingId) {
       return;
     }
 
     this.store.dispatch(
       recommendBookForMeeting({
         bookId: this.book.id!,
-        meetingId: this.nextMeeting.id!,
+        meetingId: this.nextMeetingId,
       })
     );
   }
