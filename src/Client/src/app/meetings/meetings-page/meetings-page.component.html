@@ -1,10 +1,65 @@
 <h2 class="display-2 text-center">Next Meeting</h2>
 <div class="d-flex flex-column align-items-center mb-4">
-  <app-next-meeting-card
-    *ngIf="nextMeeting$ | async as meeting; else noNextMeeting"
-    [meeting]="meeting"></app-next-meeting-card>
-  <ng-template #noNextMeeting>
+  @if (nextMeeting$ | async; as meeting) {
+    <app-meeting-card [meeting]="meeting"></app-meeting-card>
+  } @else {
     <h4>No upcoming meetings have been set</h4>
-  </ng-template>
+    @if (admin$ | async) {
+      <button
+        class="btn btn-primary"
+        (click)="showCreateMeetingModal(createMeetingModal)">
+        Create a Meeting
+      </button>
+    } @else {
+      <h4>Check back later!</h4>
+    }
+  }
 </div>
-<!-- <h4 class="display-4 text-center">Past Meetings</h4> -->
+<h4 class="display-4 my-4 text-lg-start text-center">Past Meetings</h4>
+<div
+  *ngIf="pastMeetings$ | async as pastMeetings"
+  class="d-flex flex-wrap align-items-stretch gap-2 justify-content-lg-start justify-content-center">
+  <div *ngFor="let pastMeeting of pastMeetings">
+    <app-meeting-card [meeting]="pastMeeting"></app-meeting-card>
+  </div>
+  @if (isLoadingMeetings$ | async) {
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  } @else if (!pastMeetings.length) {
+    <div class="text-center">
+      <h4>No meetings!</h4>
+    </div>
+  }
+</div>
+
+<ng-template #createMeetingModal let-c="close" let-d="dismiss" let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Create a New Meeting</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close button"
+      aria-describedby="modal-title"
+      (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <app-meeting-datetime-editor
+      [(dateTime)]="newMeetingDateTime"></app-meeting-datetime-editor>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      (click)="modal.dismiss()">
+      Nevermind!
+    </button>
+    <button
+      type="button"
+      ngbAutofocus
+      class="btn btn-success"
+      (click)="modal.close('create')">
+      Create Meeting
+    </button>
+  </div>
+</ng-template>

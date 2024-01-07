@@ -32,8 +32,6 @@ export class LoginComponent {
     this.user$ = store.select(selectAuthenticatedUser);
   }
 
-  async signIn(): Promise<void> {}
-
   async signOut(): Promise<void> {
     await this.authService.signOut();
     window.location.reload();

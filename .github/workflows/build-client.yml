@@ -1,4 +1,4 @@
-name: Angular CI
+name: Angular Client CI
 
 on:
   pull_request:
@@ -21,7 +21,7 @@ jobs:
           cd src/Client
           npm install
 
-      - name: Build
+      - name: Angular Build
         run: |
           cd src/Client
           npm run build

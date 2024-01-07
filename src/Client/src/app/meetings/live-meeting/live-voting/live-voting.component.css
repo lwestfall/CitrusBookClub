@@ -1,0 +1,16 @@
+.dndList {
+  transition: all 1ms ease;
+  padding: 5px;
+}
+
+.dndDragging {
+  border: 1px solid green;
+}
+
+.dndDraggingSource {
+  display: none;
+}
+
+.dndPlaceholder {
+  height: 4rem;
+}

@@ -64,6 +64,22 @@ namespace Cbc.WebApi.Migrations
                     b.ToTable("Book", (string)null);
                 });
 
+            modelBuilder.Entity("Cbc.WebApi.Models.Entities.BookRating", b =>
+                {
+                    b.Property<Guid>("BookId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.HasKey("BookId", "UserEmail");
+
+                    b.ToTable("BookRating", (string)null);
+                });
+
             modelBuilder.Entity("Cbc.WebApi.Models.Entities.BookRecommendation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -114,9 +130,10 @@ namespace Cbc.WebApi.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.HasIndex("MeetingId");
-
                     b.HasIndex("MemberEmail");
+
+                    b.HasIndex("MeetingId", "MemberEmail", "BookId")
+                        .IsUnique();
 
                     b.ToTable("BookVote", (string)null);
                 });
@@ -133,6 +150,9 @@ namespace Cbc.WebApi.Migrations
                     b.Property<Guid?>("PreviousMeetingId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("WinningBookId")
                         .HasColumnType("uuid");
 
@@ -145,6 +165,27 @@ namespace Cbc.WebApi.Migrations
                         .IsUnique();
 
                     b.ToTable("Meeting", (string)null);
+                });
+
+            modelBuilder.Entity("Cbc.WebApi.Models.Entities.MeetingUserState", b =>
+                {
+                    b.Property<Guid>("MeetingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserEmailAddress")
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Joined");
+
+                    b.HasKey("MeetingId", "UserEmailAddress");
+
+                    b.HasIndex("UserEmailAddress");
+
+                    b.ToTable("MeetingUserState", (string)null);
                 });
 
             modelBuilder.Entity("Cbc.WebApi.Models.Entities.User", b =>
@@ -191,6 +232,15 @@ namespace Cbc.WebApi.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Cbc.WebApi.Models.Entities.BookRating", b =>
+                {
+                    b.HasOne("Cbc.WebApi.Models.Entities.Book", null)
+                        .WithMany("Ratings")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Cbc.WebApi.Models.Entities.BookRecommendation", b =>
@@ -262,6 +312,23 @@ namespace Cbc.WebApi.Migrations
                     b.Navigation("WinningBook");
                 });
 
+            modelBuilder.Entity("Cbc.WebApi.Models.Entities.MeetingUserState", b =>
+                {
+                    b.HasOne("Cbc.WebApi.Models.Entities.Meeting", null)
+                        .WithMany("UserStates")
+                        .HasForeignKey("MeetingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cbc.WebApi.Models.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserEmailAddress")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Cbc.WebApi.Models.Entities.UserRole", b =>
                 {
                     b.HasOne("Cbc.WebApi.Models.Entities.User", null)
@@ -271,9 +338,16 @@ namespace Cbc.WebApi.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Cbc.WebApi.Models.Entities.Book", b =>
+                {
+                    b.Navigation("Ratings");
+                });
+
             modelBuilder.Entity("Cbc.WebApi.Models.Entities.Meeting", b =>
                 {
                     b.Navigation("BookRecommendations");
+
+                    b.Navigation("UserStates");
 
                     b.Navigation("Votes");
                 });

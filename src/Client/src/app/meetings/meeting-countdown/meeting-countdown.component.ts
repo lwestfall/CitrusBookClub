@@ -1,39 +1,38 @@
-import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import moment from 'moment';
-import { Observable } from 'rxjs';
 import { MeetingDto } from '../../api/models';
-import { AppState } from '../../app-state';
-import { selectNextMeeting } from '../state/meetings.selectors';
 
 @Component({
   selector: 'app-meeting-countdown',
   templateUrl: './meeting-countdown.component.html',
   styleUrls: ['./meeting-countdown.component.css'],
 })
-export class MeetingCountdownComponent {
-  nextMeeting$: Observable<MeetingDto | null>;
+export class MeetingCountdownComponent implements OnInit, OnDestroy {
+  @Input({ required: true }) meeting!: MeetingDto;
   nextMeetingStr?: string;
+  timeUntilMeetingInterval?: NodeJS.Timeout;
 
-  constructor(store: Store<AppState>) {
-    this.nextMeeting$ = store.select(selectNextMeeting);
+  constructor() {}
 
-    this.nextMeeting$.subscribe(nextMeeting => {
-      this.nextMeetingStr = this.timeUntilMeeting(nextMeeting);
+  ngOnInit(): void {
+    this.nextMeetingStr = this.timeUntilMeeting();
 
-      setInterval(() => {
-        this.nextMeetingStr = this.timeUntilMeeting(nextMeeting);
-      }, 1000);
-    });
+    this.timeUntilMeetingInterval = setInterval(() => {
+      this.nextMeetingStr = this.timeUntilMeeting();
+    }, 1000);
   }
 
-  timeUntilMeeting(meeting: MeetingDto | null): string {
-    if (!meeting) {
-      return '';
+  ngOnDestroy(): void {
+    clearInterval(this.timeUntilMeetingInterval);
+  }
+
+  timeUntilMeeting(): string {
+    if (this.meeting.status) {
+      throw new Error("Can't countdown to a meeting that has started!");
     }
 
     const now = moment();
-    const meetingStart = moment(meeting.dateTime);
+    const meetingStart = moment(this.meeting.dateTime);
     const diffSecondsTotal = meetingStart.diff(now, 'seconds');
     const diffDays = Math.floor(diffSecondsTotal / 86400);
     const diffHours = Math.floor((diffSecondsTotal % 86400) / 3600);
@@ -41,7 +40,6 @@ export class MeetingCountdownComponent {
     const diffSeconds = Math.floor(((diffSecondsTotal % 86400) % 3600) % 60);
 
     if (diffSecondsTotal >= -120 && diffSecondsTotal < 0) {
-      // todo: currently this will never hit - next meeting returned is always in the future (or null)
       return 'Meeting in progress';
     }
 

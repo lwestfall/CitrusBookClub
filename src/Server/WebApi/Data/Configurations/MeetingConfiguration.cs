@@ -1,6 +1,7 @@
 namespace Cbc.WebApi.Data.Configurations;
 
 using Cbc.WebApi.Models.Entities;
+using Cbc.WebApi.Models.Misc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,6 +15,11 @@ public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
 
         builder.Property(e => e.DateTime)
             .IsRequired();
+
+        builder.Property(e => e.Status)
+            .HasConversion(
+                v => v.ToString(),
+                v => (MeetingStatus)Enum.Parse(typeof(MeetingStatus), v!));
 
         builder.HasOne(e => e.WinningBook)
             .WithOne()
@@ -32,6 +38,11 @@ public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
 
         builder.HasMany(e => e.BookRecommendations)
             .WithOne(e => e.Meeting)
+            .HasForeignKey(e => e.MeetingId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(e => e.UserStates)
+            .WithOne()
             .HasForeignKey(e => e.MeetingId)
             .OnDelete(DeleteBehavior.Cascade);
     }

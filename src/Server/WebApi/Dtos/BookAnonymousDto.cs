@@ -18,4 +18,6 @@ public class BookAnonymousDto : IMapFrom<Book>
     public string? Isbn { get; set; }
 
     public int? PageCount { get; set; }
+
+    public List<BookRatingDto>? Ratings { get; set; }
 }

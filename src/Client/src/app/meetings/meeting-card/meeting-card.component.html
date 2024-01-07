@@ -1,0 +1,199 @@
+<div class="card meeting-card h-100">
+  <h5
+    class="card-header text-center"
+    [ngClass]="!meeting.status && (admin$ | async) ? 'pe-1' : null">
+    <div class="d-flex flex-row align-items-center justify-content-center">
+      <div style="width: 98%; white-space: nowrap">
+        {{ meeting.dateTime | date: 'EEE, MMMM d, y, h:mm a' }}
+      </div>
+      @if (!meeting.status && (admin$ | async)) {
+        <div ngbDropdown class="d-inline-block">
+          <button
+            type="button"
+            class="btn btn-sm btn-link ms-auto no-arrow my-0 py-0"
+            ngbDropdownToggle>
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+            <button
+              ngbDropdownItem
+              (click)="showUpdateMeetingConfirmation(update)">
+              Change Date / Time
+            </button>
+            <div class="dropdown-divider"></div>
+            <button
+              ngbDropdownItem
+              class="danger"
+              (click)="showDeleteMeetingConfirmation(confirmDelete)">
+              Delete Meeting
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </h5>
+  <div class="card-body">
+    <h6 class="card-subtitle mb-2 text-muted text-center">
+      @if (meeting.status === MeetingState.Closed) {
+        This meeting has ended.
+      } @else if (!meeting.status) {
+        <app-meeting-countdown [meeting]="meeting"></app-meeting-countdown>
+      }
+    </h6>
+    <div class="card-text text-center d-flex flex-column h-100">
+      <p class="card-text" *ngIf="meeting.previousMeeting?.winningBook">
+        {{
+          meeting.status === MeetingState.Closed
+            ? 'We discussed'
+            : "We'll discuss"
+        }}
+        <i>{{ meeting.previousMeeting?.winningBook?.title }}</i>
+      </p>
+      @if (recommendationDetails) {
+        @if (myRecommendedBook$ | async; as myRec) {
+          <p class="card-text">
+            You recommended <i>{{ myRec.title }}</i>
+          </p>
+        }
+        @if (meeting.status !== MeetingState.Closed) {
+          @if ((myRecommendedBook$ | async) === undefined) {
+            <div class="text-center">
+              <p class="card-text my-0">You haven't recommended a book yet.</p>
+              <a
+                [routerLink]="['/books']"
+                routerLinkActive="router-link-active"
+                class="link-primary"
+                >Recommend one now!</a
+              >
+            </div>
+          } @else {
+            <a
+              [routerLink]="['/books']"
+              routerLinkActive="router-link-active"
+              class="link-info"
+              >Want to recommend something else?</a
+            >
+          }
+        }
+      }
+
+      @if (meeting.winningBook) {
+        <div class="my-2">
+          In this meeting, we voted for:
+          <app-book-card [book]="meeting.winningBook!"></app-book-card>
+        </div>
+      }
+
+      @if (
+        meeting.status === MeetingState.Started ||
+        meeting.status === MeetingState.Voting
+      ) {
+        <div class="d-flex flex-column align-items-center my-2">
+          <span>The meeting is live!</span>
+          <div class="d-flex flex-row gap-2">
+            <button
+              class="btn btn-success my-2"
+              [routerLink]="['/meetings', meeting.id]">
+              Join Meeting!
+            </button>
+            <button
+              *ngIf="admin$ | async"
+              class="btn btn-info my-2"
+              [routerLink]="['/meetings', meeting.id]"
+              [queryParams]="{ presenterMode: true }">
+              Present Meeting!
+            </button>
+          </div>
+        </div>
+      } @else if (!meeting.status) {
+        @if ((admin$ | async) && withinStartWindow) {
+          <div class="text-center">
+            <button class="btn btn-success my-2" (click)="startMeeting()">
+              Start Meeting
+            </button>
+          </div>
+        } @else {
+          <span>The meeting hasn't started yet.</span>
+        }
+      } @else {
+        <div class="d-flex flex-column align-items-center my-2 mt-auto">
+          <button
+            class="btn btn-outline-info my-2"
+            [routerLink]="['/meetings', meeting.id]">
+            See Results!
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<ng-template #update let-c="close" let-d="dismiss" let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Delete Meeting</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close button"
+      aria-describedby="modal-title"
+      (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <app-meeting-datetime-editor
+      [(dateTime)]="newDateTime"></app-meeting-datetime-editor>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      (click)="modal.dismiss()">
+      Nevermind!
+    </button>
+    <button
+      type="button"
+      ngbAutofocus
+      class="btn btn-success"
+      (click)="modal.close('update')">
+      Save Changes
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #confirmDelete let-c="close" let-d="dismiss" let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Delete Meeting</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close button"
+      aria-describedby="modal-title"
+      (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong
+        >Are you sure you want to delete the meeting on
+        {{ meeting.dateTime | date: 'EEE, MMMM d, y, h:mm a' }}?</strong
+      >
+    </p>
+    <p>
+      This meeting cannot be restored, and all recommendations for this meeting
+      will be destroyed. Consider using the "Change Date / Time" option instead.
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      (click)="modal.dismiss()">
+      Nevermind!
+    </button>
+    <button
+      type="button"
+      ngbAutofocus
+      class="btn btn-danger"
+      (click)="modal.close('confirm')">
+      Yes, delete this meeting
+    </button>
+  </div>
+</ng-template>

@@ -1,0 +1,24 @@
+<canvas
+  *ngIf="votesChartData"
+  baseChart
+  class="chart"
+  height="300"
+  [data]="votesChartData"
+  [options]="votesChartOptions"
+  type="bar">
+</canvas>
+@if (lastBook && ratingChartData) {
+  <h5 class="display-5 text-center">
+    Ratings for <i>{{ lastBook.title }}</i>
+  </h5>
+  <h6 class="display-6 text-center">
+    Average: {{ averageRating | number: '0.0-1' }}
+  </h6>
+  <canvas
+    baseChart
+    class="chart"
+    [data]="ratingChartData"
+    [options]="ratingChartOptions"
+    type="bar">
+  </canvas>
+}

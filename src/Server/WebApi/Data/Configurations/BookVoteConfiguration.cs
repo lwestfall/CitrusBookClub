@@ -12,6 +12,9 @@ public class BookVoteConfiguration : IEntityTypeConfiguration<BookVote>
 
         builder.HasKey(e => e.Id);
 
+        builder.HasIndex(e => new { e.MeetingId, e.MemberEmail, e.BookId })
+            .IsUnique();
+
         builder.HasOne(e => e.Book)
             .WithMany()
             .HasForeignKey(bookVote => bookVote.BookId)

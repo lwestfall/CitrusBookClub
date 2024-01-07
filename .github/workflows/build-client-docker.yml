@@ -1,0 +1,22 @@
+name: Angular Client Docker CI
+
+on:
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "*"
+
+      - name: Docker Build
+        run: |
+          cd src/Client
+          docker build --build-arg PROFILE=prod -t ${{ secrets.DOCKER_USERNAME }}/cbc-app .

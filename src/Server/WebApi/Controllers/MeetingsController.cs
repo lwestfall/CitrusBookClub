@@ -1,7 +1,7 @@
 namespace Cbc.WebApi.Controllers;
 
-using AutoMapper.QueryableExtensions;
 using Cbc.WebApi.Dtos;
+using Cbc.WebApi.Hubs;
 using Cbc.WebApi.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,38 +10,23 @@ using Microsoft.EntityFrameworkCore;
 [Authorize(Roles = "Verified")]
 public class MeetingsController : ApiControllerBase
 {
-    [HttpGet("next")]
-    public async Task<ActionResult<MeetingDto>> GetNextMeeting()
+    [HttpGet]
+    public async Task<ActionResult<List<MeetingDto>>> GetMeetings()
     {
-        var email = this.GetEmail();
-
-        if (email is null)
-        {
-            return this.Unauthorized();
-        }
-
-        var meeting = await this.CbcContext.Meetings
-            .Where(m => m.WinningBookId == null)
-            .OrderBy(m => m.DateTime)
-            .Include(m => m.PreviousMeeting)
-                .ThenInclude(m => m!.WinningBook)
-            .FirstOrDefaultAsync();
         // note: avoid projection here because of the recursive relationship to last meeting
+        var meetings = await this.CbcContext.Meetings
+            .Include(e => e.PreviousMeeting!.WinningBook)
+            .Include(e => e.WinningBook)
+            .ToListAsync();
 
-        if (meeting is null)
-        {
-            return this.NotFound();
-        }
-
-        return this.Ok(this.Mapper.Map<MeetingDto>(meeting));
+        return this.Ok(this.Mapper.Map<List<MeetingDto>>(meetings));
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<MeetingDto>> GetMeeting(Guid id)
     {
-        var meeting = await this.CbcContext.Meetings
-            .ProjectTo<MeetingDto>(this.Mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var meeting = await LiveMeetingHubExtensions
+            .GetMeeting(this.CbcContext, id);
 
         if (meeting is null)
         {
@@ -61,11 +46,11 @@ public class MeetingsController : ApiControllerBase
         return this.CreatedAtAction(nameof(GetMeeting), new { id = meeting.Id }, this.Mapper.Map<MeetingDto>(meeting));
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{meetingId}")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<MeetingDto>> UpdateMeeting(Guid id, DateTime dateTime)
+    public async Task<ActionResult<MeetingDto>> UpdateMeeting(Guid meetingId, DateTime dateTime)
     {
-        var meeting = await this.CbcContext.Meetings.FindAsync(id);
+        var meeting = await this.CbcContext.Meetings.FindAsync(meetingId);
 
         if (meeting is null)
         {
@@ -74,6 +59,29 @@ public class MeetingsController : ApiControllerBase
 
         meeting.DateTime = dateTime;
         await this.CbcContext.SaveChangesAsync();
+        await this.LiveMeetingHubContext.MeetingChanged(this.CbcContext, this.Mapper, meetingId);
         return this.Ok(this.Mapper.Map<MeetingDto>(meeting));
+    }
+
+    [HttpDelete("{meetingId}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> DeleteMeeting(Guid meetingId)
+    {
+        var meeting = await this.CbcContext.Meetings.FindAsync(meetingId);
+
+        if (meeting is null)
+        {
+            return this.NotFound();
+        }
+
+        if (meeting.Status != null)
+        {
+            return this.BadRequest("Cannot delete a meeting that has already started.");
+        }
+
+        this.CbcContext.Meetings.Remove(meeting);
+        await this.CbcContext.SaveChangesAsync();
+        await this.LiveMeetingHubContext.MeetingDeleted(meetingId);
+        return this.NoContent();
     }
 }

@@ -1,0 +1,166 @@
+<div class="d-flex flex-row justify-content-center align-items-start gap-4">
+  <ng-container
+    *ngIf="
+      (liveMeetingConnected$ | async) &&
+      (meetingState$ | async)?.meeting as meeting
+    ">
+    <div
+      class="d-flex flex-column align-items-center"
+      [ngClass]="presenterMode ? ' me-auto w-75' : ''">
+      @switch (meeting.status) {
+        @case (null) {
+          <div class="d-flex flex-column gap-2 align-items-center">
+            <h6 class="display-6 text-center text-dark-emphasis">
+              This meeting hasn't started yet.
+            </h6>
+            <button
+              class="btn btn-success my-2"
+              *ngIf="presenterMode && isAdmin"
+              (click)="startMeeting()">
+              Start Meeting
+            </button>
+          </div>
+        }
+        @case (MeetingState.Started) {
+          <div class="d-flex flex-column gap-2 align-items-center">
+            <h6 class="display-6 text-center">
+              The meeting has started! This is your last chance to lock in your
+              recommendation!
+            </h6>
+            <div class="d-flex flex-column align-items-center">
+              <h4 class="display-4 text-center">Recommendations</h4>
+              <app-meeting-recommendations
+                [bookRecommendations]="meeting.bookRecommendations"
+                [presenterMode]="presenterMode"
+                [myRecommendedBookId]="
+                  myRecommendedBookId
+                "></app-meeting-recommendations>
+            </div>
+            <button
+              class="btn btn-primary"
+              *ngIf="presenterMode && isAdmin"
+              [disabled]="!meeting.bookRecommendations.length"
+              (click)="lockInRecommendations()">
+              Lock Recommendations & Start Vote
+            </button>
+          </div>
+        }
+        @case (MeetingState.Voting) {
+          <div class="d-flex flex-column gap-2 align-items-center">
+            <h4 class="display-4">Voting is OPEN!</h4>
+            <div *ngIf="!presenterMode">
+              <app-live-voting
+                *ngIf="meeting.bookRecommendations?.length"
+                [recommendations]="meeting.bookRecommendations!"
+                [meetingId]="meeting.id!"
+                [lastBook]="meeting.previousMeeting?.winningBook ?? null">
+              </app-live-voting>
+            </div>
+            <button
+              class="btn btn-primary"
+              *ngIf="presenterMode && isAdmin"
+              [disabled]="!meeting.userStates"
+              (click)="lockInVotes()">
+              Lock Votes & Get Winner
+            </button>
+          </div>
+        }
+        @case (MeetingState.Closed) {
+          @if (meeting.winningBook) {
+            <div class="d-flex flex-column gap-2 align-items-center w-100">
+              <h4 class="display-4">And the winner is...</h4>
+              <app-book-card
+                [book]="meeting.winningBook"
+                [ripple]="true"></app-book-card>
+              <app-meeting-results [meeting]="meeting"></app-meeting-results>
+            </div>
+          }
+          <div class="d-flex flex-column align-items-center">
+            <h6 class="display-6 text-center">Recommendations</h6>
+            <app-meeting-recommendations
+              [bookRecommendations]="meeting.bookRecommendations"
+              [presenterMode]="presenterMode"
+              [noRipple]="true"
+              [myRecommendedBookId]="
+                myRecommendedBookId
+              "></app-meeting-recommendations>
+          </div>
+        }
+      }
+    </div>
+    <div class="justify-content-end" *ngIf="presenterMode && isAdmin">
+      <div class="d-flex flex-column align-items-center gap-2">
+        <div class="d-flex flex-column align-items-center">
+          @if (meeting.status !== MeetingState.Closed) {
+            <h5 class="display-5 text-center">Join!</h5>
+            <qrcode
+              [qrdata]="routeUrl.toString()"
+              imageSrc="./assets/lemon.png"
+              [imageHeight]="60"
+              [imageWidth]="60"
+              [width]="200"
+              lightColor="var(--bg-color)"></qrcode>
+          } @else {
+            @if (nextMeeting$ | async; as nextMeeting) {
+              <h6 class="display-6 text-center">Next Meeting</h6>
+              <app-meeting-card
+                [meeting]="nextMeeting"
+                [recommendationDetails]="false"></app-meeting-card>
+            } @else {
+              <h6 class="display-6 text-center" style="min-width: 300px">
+                Let's do it again!
+              </h6>
+              <app-meeting-datetime-editor
+                [(dateTime)]="nextMeetingDate"></app-meeting-datetime-editor>
+              <button
+                type="button"
+                class="btn btn-success"
+                (click)="scheduleNextMeeting()">
+                Schedule Next Meeting
+              </button>
+            }
+          }
+        </div>
+        @if (meeting.status !== MeetingState.Closed) {
+          <div class="text-center">
+            <h4 class="display-5">Roll Call!</h4>
+            @if (meeting.userStates.length) {
+              <ul class="list-group">
+                <li
+                  *ngFor="let userState of meeting.userStates"
+                  class="list-group-item"
+                  [ngClass]="
+                    userState.status === 'Voted'
+                      ? 'list-group-item-success'
+                      : 'list-group-item-warning'
+                  ">
+                  {{ userState.user.firstName }}
+                  {{ userState.user.lastName[0] }}.
+                </li>
+              </ul>
+            } @else {
+              <span>No one has joined yet!</span>
+            }
+          </div>
+        }
+        <div
+          *ngIf="meeting.previousMeeting?.winningBook as winningBook"
+          class="d-flex flex-column align-items-center my-4">
+          <h5 class="display-5">Last Winner</h5>
+          <div style="min-width: 15rem">
+            <app-book-card [book]="winningBook"></app-book-card>
+          </div>
+        </div>
+        <button
+          class="btn btn-outline-danger"
+          *ngIf="isAdmin && presenterMode"
+          [disabled]="
+            meeting.status === MeetingState.Closed && (nextMeeting$ | async)
+          "
+          (click)="resetMeeting()">
+          Reset Meeting
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</div>

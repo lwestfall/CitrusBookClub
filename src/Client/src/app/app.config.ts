@@ -20,12 +20,13 @@ import {
   withInterceptors,
 } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { EffectsModule } from '@ngrx/effects';
-import { StoreModule, provideStore } from '@ngrx/store';
+import { StoreModule } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
 import { ApiModule } from './api/api.module';
-import { booksReducer } from './books/state/books.reducer';
+import { WebsocketServicesModule } from './services/websockets/websocket-services.module';
 
 export const authenticationInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
@@ -67,13 +68,18 @@ export const appConfig: ApplicationConfig = {
       } as SocialAuthServiceConfig,
     },
     importProvidersFrom(ApiModule.forRoot({ rootUrl: environment.apiBaseUrl })),
+    importProvidersFrom(
+      WebsocketServicesModule.forRoot({ rootUrl: environment.apiBaseUrl })
+    ),
     importProvidersFrom(HttpClientModule),
     provideHttpClient(withInterceptors([authenticationInterceptor])),
     provideRouter(routes),
     provideAnimations(),
     importProvidersFrom(StoreModule.forRoot()),
     importProvidersFrom(EffectsModule.forRoot()),
-    provideStore({ books: booksReducer }),
+    // provideStore({ books: booksReducer }),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
+    importProvidersFrom(NgbModal),
+    importProvidersFrom(NgbModalConfig),
   ],
 };

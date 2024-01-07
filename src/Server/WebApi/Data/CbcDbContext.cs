@@ -20,4 +20,6 @@ public class CbcDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<User> Users { get; set; }
 
     public DbSet<BookRecommendation> BookRecommendations { get; set; }
+
+    public DbSet<BookRating> BookRatings { get; set; }
 }

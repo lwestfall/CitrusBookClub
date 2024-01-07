@@ -2,7 +2,7 @@ name: ASP.NET Core CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: ["*"]
 
 jobs:
   build:
