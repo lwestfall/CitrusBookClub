@@ -1,12 +1,14 @@
-<canvas
-  *ngIf="votesChartData"
-  baseChart
-  class="chart"
-  height="300"
-  [data]="votesChartData"
-  [options]="votesChartOptions"
-  type="bar">
-</canvas>
+@if (bookVotes.length) {
+  <canvas
+    *ngIf="votesChartData"
+    baseChart
+    class="chart"
+    height="300"
+    [data]="votesChartData"
+    [options]="votesChartOptions"
+    type="bar">
+  </canvas>
+}
 @if (lastBook && ratingChartData) {
   <h5 class="display-5 text-center">
     Ratings for <i>{{ lastBook.title }}</i>
