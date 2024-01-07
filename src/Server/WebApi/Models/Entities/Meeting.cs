@@ -28,15 +28,20 @@ public class Meeting
     {
         var bookGroups = this.Votes
             .GroupBy(v => v.BookId)
-            .Select(g => new
-            {
-                g.First().Book,
-                RankSum = g.Sum(v => v.Rank)
-            })
-            .OrderByDescending(g => g.RankSum)
-            .Select(x => x.Book)
             .ToList();
 
-        return bookGroups.FirstOrDefault();
+        var pointsDict = new Dictionary<Book, int>();
+        var bookCount = bookGroups.Count;
+
+        foreach (var bookGroup in bookGroups)
+        {
+            var book = bookGroup.First().Book;
+            var votes = bookGroup.ToList();
+            pointsDict.Add(book, 0);
+
+            votes.ForEach(v => pointsDict[book] += bookCount - v.Rank);
+        }
+
+        return pointsDict.SingleOrDefault(kvp => kvp.Value == pointsDict.Values.Max()).Key;
     }
 }

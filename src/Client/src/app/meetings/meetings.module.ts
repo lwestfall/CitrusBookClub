@@ -10,11 +10,13 @@ import {
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { QRCodeModule } from 'angularx-qrcode';
+import { NgChartsModule } from 'ng2-charts';
 import { DndModule } from 'ngx-drag-drop';
 import { BooksModule } from '../books/books.module';
 import { LiveMeetingComponent } from './live-meeting/live-meeting.component';
 import { LiveVotingComponent } from './live-meeting/live-voting/live-voting.component';
 import { MeetingRecommendationsComponent } from './live-meeting/meeting-recommendations/meeting-recommendations.component';
+import { MeetingResultsComponent } from './live-meeting/meeting-results/meeting-results.component';
 import { MeetingCardComponent } from './meeting-card/meeting-card.component';
 import { MeetingCountdownComponent } from './meeting-countdown/meeting-countdown.component';
 import { MeetingDatetimeEditorComponent } from './meeting-datetime-editor/meeting-datetime-editor.component';
@@ -35,6 +37,7 @@ import { meetingsReducer } from './state/meetings.reducer';
     NgbTimepickerModule,
     NgbDatepickerModule,
     FormsModule,
+    NgChartsModule,
   ],
   declarations: [
     MeetingCountdownComponent,
@@ -44,6 +47,7 @@ import { meetingsReducer } from './state/meetings.reducer';
     LiveMeetingComponent,
     LiveVotingComponent,
     MeetingDatetimeEditorComponent,
+    MeetingResultsComponent,
   ],
   exports: [MeetingCountdownComponent, MeetingCardComponent],
 })

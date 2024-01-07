@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 public class BookRatingsController : ApiControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<RatingDto>> RateBook([FromBody] RatingDto ratingDto)
+    public async Task<ActionResult<BookRatingDto>> RateBook([FromBody] BookRatingDto ratingDto)
     {
         var email = this.GetEmail();
 
@@ -42,11 +42,11 @@ public class BookRatingsController : ApiControllerBase
 
         await this.CbcContext.SaveChangesAsync();
 
-        return this.Ok(this.Mapper.Map<RatingDto>(newRating));
+        return this.Ok(this.Mapper.Map<BookRatingDto>(newRating));
     }
 
     [HttpGet("{bookId}/all")]
-    public async Task<ActionResult<List<RatingDto>>> GetBookRatings(Guid bookId)
+    public async Task<ActionResult<List<BookRatingDto>>> GetBookRatings(Guid bookId)
     {
         var book = await this.CbcContext.Books.FindAsync(bookId);
 
@@ -57,7 +57,7 @@ public class BookRatingsController : ApiControllerBase
 
         var ratings = await this.CbcContext.BookRatings
             .Where(r => r.BookId == bookId)
-            .ProjectTo<RatingDto>(this.Mapper.ConfigurationProvider)
+            .ProjectTo<BookRatingDto>(this.Mapper.ConfigurationProvider)
             .ToListAsync();
 
         return this.Ok(ratings);

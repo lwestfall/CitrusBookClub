@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-export interface RatingDto {
+export interface BookRatingDto {
   bookId: string;
   rating: number;
 }

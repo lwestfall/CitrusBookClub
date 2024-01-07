@@ -67,11 +67,12 @@
         }
         @case (MeetingState.Closed) {
           @if (meeting.winningBook) {
-            <div class="d-flex flex-column gap-2 align-items-center">
+            <div class="d-flex flex-column gap-2 align-items-center w-100">
               <h4 class="display-4">And the winner is...</h4>
               <app-book-card
                 [book]="meeting.winningBook"
                 [ripple]="true"></app-book-card>
+              <app-meeting-results [meeting]="meeting"></app-meeting-results>
             </div>
           }
           <div class="d-flex flex-column align-items-center">

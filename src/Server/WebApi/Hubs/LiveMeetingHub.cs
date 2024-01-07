@@ -413,6 +413,12 @@ public static class LiveMeetingHubExtensions
                 .Query()
                     .Include(e => e.Book)
                 .LoadAsync();
+
+            await dbContext.Entry(meeting)
+                .Reference(e => e.PreviousMeeting)
+                .Query()
+                    .Include(e => e.WinningBook!.Ratings)
+                .LoadAsync();
         }
 
         // reorder book recommendations by title

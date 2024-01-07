@@ -3,7 +3,7 @@ namespace Cbc.WebApi.Dtos;
 using Cbc.WebApi.Mapping;
 using Cbc.WebApi.Models.Entities;
 
-public class RatingDto : IMapBoth<BookRating>
+public class BookRatingDto : IMapBoth<BookRating>
 {
     public Guid BookId { get; set; }
 

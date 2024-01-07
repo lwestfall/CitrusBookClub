@@ -9,6 +9,7 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
+import { BookRatingDto } from '../models/book-rating-dto';
 import { getBookRatings } from '../fn/book-ratings/get-book-ratings';
 import { GetBookRatings$Params } from '../fn/book-ratings/get-book-ratings';
 import { getBookRatings$Plain } from '../fn/book-ratings/get-book-ratings-plain';
@@ -17,7 +18,6 @@ import { rateBook } from '../fn/book-ratings/rate-book';
 import { RateBook$Params } from '../fn/book-ratings/rate-book';
 import { rateBook$Plain } from '../fn/book-ratings/rate-book-plain';
 import { RateBook$Plain$Params } from '../fn/book-ratings/rate-book-plain';
-import { RatingDto } from '../models/rating-dto';
 
 @Injectable({ providedIn: 'root' })
 export class BookRatingsService extends BaseService {
@@ -34,7 +34,7 @@ export class BookRatingsService extends BaseService {
    *
    * This method sends `application/*+json` and handles request body of type `application/*+json`.
    */
-  rateBook$Plain$Response(params?: RateBook$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<RatingDto>> {
+  rateBook$Plain$Response(params?: RateBook$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<BookRatingDto>> {
     return rateBook$Plain(this.http, this.rootUrl, params, context);
   }
 
@@ -44,9 +44,9 @@ export class BookRatingsService extends BaseService {
    *
    * This method sends `application/*+json` and handles request body of type `application/*+json`.
    */
-  rateBook$Plain(params?: RateBook$Plain$Params, context?: HttpContext): Observable<RatingDto> {
+  rateBook$Plain(params?: RateBook$Plain$Params, context?: HttpContext): Observable<BookRatingDto> {
     return this.rateBook$Plain$Response(params, context).pipe(
-      map((r: StrictHttpResponse<RatingDto>): RatingDto => r.body)
+      map((r: StrictHttpResponse<BookRatingDto>): BookRatingDto => r.body)
     );
   }
 
@@ -56,7 +56,7 @@ export class BookRatingsService extends BaseService {
    *
    * This method sends `application/*+json` and handles request body of type `application/*+json`.
    */
-  rateBook$Response(params?: RateBook$Params, context?: HttpContext): Observable<StrictHttpResponse<RatingDto>> {
+  rateBook$Response(params?: RateBook$Params, context?: HttpContext): Observable<StrictHttpResponse<BookRatingDto>> {
     return rateBook(this.http, this.rootUrl, params, context);
   }
 
@@ -66,9 +66,9 @@ export class BookRatingsService extends BaseService {
    *
    * This method sends `application/*+json` and handles request body of type `application/*+json`.
    */
-  rateBook(params?: RateBook$Params, context?: HttpContext): Observable<RatingDto> {
+  rateBook(params?: RateBook$Params, context?: HttpContext): Observable<BookRatingDto> {
     return this.rateBook$Response(params, context).pipe(
-      map((r: StrictHttpResponse<RatingDto>): RatingDto => r.body)
+      map((r: StrictHttpResponse<BookRatingDto>): BookRatingDto => r.body)
     );
   }
 
@@ -81,7 +81,7 @@ export class BookRatingsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBookRatings$Plain$Response(params: GetBookRatings$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<RatingDto>>> {
+  getBookRatings$Plain$Response(params: GetBookRatings$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookRatingDto>>> {
     return getBookRatings$Plain(this.http, this.rootUrl, params, context);
   }
 
@@ -91,9 +91,9 @@ export class BookRatingsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBookRatings$Plain(params: GetBookRatings$Plain$Params, context?: HttpContext): Observable<Array<RatingDto>> {
+  getBookRatings$Plain(params: GetBookRatings$Plain$Params, context?: HttpContext): Observable<Array<BookRatingDto>> {
     return this.getBookRatings$Plain$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<RatingDto>>): Array<RatingDto> => r.body)
+      map((r: StrictHttpResponse<Array<BookRatingDto>>): Array<BookRatingDto> => r.body)
     );
   }
 
@@ -103,7 +103,7 @@ export class BookRatingsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBookRatings$Response(params: GetBookRatings$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<RatingDto>>> {
+  getBookRatings$Response(params: GetBookRatings$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<BookRatingDto>>> {
     return getBookRatings(this.http, this.rootUrl, params, context);
   }
 
@@ -113,9 +113,9 @@ export class BookRatingsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBookRatings(params: GetBookRatings$Params, context?: HttpContext): Observable<Array<RatingDto>> {
+  getBookRatings(params: GetBookRatings$Params, context?: HttpContext): Observable<Array<BookRatingDto>> {
     return this.getBookRatings$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<RatingDto>>): Array<RatingDto> => r.body)
+      map((r: StrictHttpResponse<Array<BookRatingDto>>): Array<BookRatingDto> => r.body)
     );
   }
 
