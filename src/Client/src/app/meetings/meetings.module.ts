@@ -10,7 +10,7 @@ import {
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { QRCodeModule } from 'angularx-qrcode';
-import { NgChartsModule } from 'ng2-charts';
+import { BaseChartDirective } from 'ng2-charts';
 import { DndModule } from 'ngx-drag-drop';
 import { BooksModule } from '../books/books.module';
 import { LiveMeetingComponent } from './live-meeting/live-meeting.component';
@@ -37,7 +37,7 @@ import { meetingsReducer } from './state/meetings.reducer';
     NgbTimepickerModule,
     NgbDatepickerModule,
     FormsModule,
-    NgChartsModule,
+    BaseChartDirective,
   ],
   declarations: [
     MeetingCountdownComponent,
