@@ -2,6 +2,8 @@
   class="d-flex flex-column justify-content-center align-items-center text-center">
   <ngb-datepicker
     [(ngModel)]="nextMeetingDate"
+    [startDate]="nextMeetingDate"
+    [firstDayOfWeek]="7"
     (ngModelChange)="changeDate()"></ngb-datepicker>
   <ngb-timepicker
     [(ngModel)]="nextMeetingTime"
