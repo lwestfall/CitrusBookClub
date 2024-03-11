@@ -72,13 +72,13 @@
     "ng-openapi-gen": "^0.51.0",
     "prettier": "^3.2.5",
     "prettier-eslint": "^16.3.0",
-    "typescript": "~5.3.0"
+    "typescript": "~5.4.2"
   },
   "optionalDependencies": {
-    "@nx/nx-darwin-arm64": "18.0.7",
-    "@nx/nx-darwin-x64": "18.0.7",
-    "@nx/nx-linux-x64-gnu": "18.0.7",
-    "@nx/nx-win32-x64-msvc": "18.0.7"
+    "@nx/nx-darwin-arm64": "18.0.8",
+    "@nx/nx-darwin-x64": "18.0.8",
+    "@nx/nx-linux-x64-gnu": "18.0.8",
+    "@nx/nx-win32-x64-msvc": "18.0.8"
   },
   "browser": {
     "http": false,
