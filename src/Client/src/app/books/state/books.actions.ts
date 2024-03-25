@@ -21,6 +21,21 @@ export const addBookFailure = createAction(
   props<{ error: string }>()
 );
 
+export const updateBook = createAction(
+  '[Books] Update Book',
+  props<{ bookId: string; bookDto: CreateBookDto }>()
+);
+
+export const updateBookSuccess = createAction(
+  '[Books] Update Book Success',
+  props<{ book: BookDto }>()
+);
+
+export const updateBookFailure = createAction(
+  '[Books] Update Book Failure',
+  props<{ error: string }>()
+);
+
 export const getMyBooks = createAction('[Books] Get My Books');
 
 export const getMyBooksSuccess = createAction(

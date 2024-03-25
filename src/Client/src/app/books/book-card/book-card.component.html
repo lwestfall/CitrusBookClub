@@ -48,6 +48,16 @@
       <hr class="flex-grow-1" />
     </div>
     <div #collapse="ngbCollapse" [(ngbCollapse)]="!expanded">
+      <div class="my-2 text-center" *ngIf="mine">
+        <button
+          type="button"
+          class="btn btn-outline-info"
+          [disabled]="true"
+          (click)="showEditor(editModal)">
+          <i class="bi bi-pencil"></i>
+          Edit (Coming soon!)
+        </button>
+      </div>
       <div>
         {{ book.description }}
       </div>
@@ -56,9 +66,27 @@
           type="button"
           class="btn btn-outline-danger"
           (click)="deleteBook()">
+          <i class="bi bi-trash"></i>
           Delete
         </button>
       </div>
     </div>
   </div>
 </div>
+
+<ng-template #editModal let-c="close" let-d="dismiss" let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">
+      Edit <em>{{ book.title }}</em>
+    </h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close button"
+      aria-describedby="modal-title"
+      (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <app-book-creator [editingBook]="book"></app-book-creator>
+  </div>
+</ng-template>

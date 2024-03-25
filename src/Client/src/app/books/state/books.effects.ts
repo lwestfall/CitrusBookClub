@@ -25,6 +25,20 @@ export class BooksEffects {
     );
   });
 
+  updateBook$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(actions.updateBook),
+      mergeMap(({ bookId, bookDto }) =>
+        this.booksService.updateBook({ id: bookId, body: bookDto }).pipe(
+          map(book => actions.updateBookSuccess({ book })),
+          catchError(error =>
+            of(actions.updateBookFailure({ error: error.message }))
+          )
+        )
+      )
+    );
+  });
+
   getMyBooks$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(actions.getMyBooks, fetchAppData),
