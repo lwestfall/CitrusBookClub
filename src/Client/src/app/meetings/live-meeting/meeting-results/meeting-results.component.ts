@@ -10,7 +10,6 @@ import {
   LinearScale,
 } from 'chart.js';
 import { _DeepPartialArray } from 'chart.js/dist/types/utils';
-import { orderBy } from 'lodash-es';
 import { BookDto, BookVoteDto, MeetingDto } from '../../../api/models';
 
 @Component({
@@ -163,7 +162,8 @@ export class MeetingResultsComponent implements OnChanges {
       }
     }
 
-    labels = orderBy(labels, lbl => bookVoteMap.get(lbl)!.points, 'desc');
+    // Sort labels by points - note, this only changes the sort order of the labels, not the datasets
+    // labels = orderBy(labels, lbl => bookVoteMap.get(lbl)!.points, 'desc');
 
     labels = labels.map(lbl => {
       const voteCounter = bookVoteMap.get(lbl)!;
