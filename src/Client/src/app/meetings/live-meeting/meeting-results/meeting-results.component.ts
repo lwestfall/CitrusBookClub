@@ -1,5 +1,15 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { ChartConfiguration, ChartData, ChartDataset } from 'chart.js';
+import {
+  BarController,
+  BarElement,
+  CategoryScale,
+  Chart,
+  ChartConfiguration,
+  ChartData,
+  ChartDataset,
+  LinearScale,
+} from 'chart.js';
+import { _DeepPartialArray } from 'chart.js/dist/types/utils';
 import { orderBy } from 'lodash-es';
 import { BookDto, BookVoteDto, MeetingDto } from '../../../api/models';
 
@@ -30,6 +40,8 @@ export class MeetingResultsComponent implements OnChanges {
       y: {
         ticks: {
           display: true,
+          stepSize: 1,
+          maxTicksLimit: 100,
         },
       },
     },
@@ -64,7 +76,12 @@ export class MeetingResultsComponent implements OnChanges {
 
   ratingChartData: ChartData<'bar'> | null = null;
 
-  constructor() {}
+  constructor() {
+    Chart.register(CategoryScale);
+    Chart.register(LinearScale);
+    Chart.register(BarController);
+    Chart.register(BarElement);
+  }
 
   ngOnChanges() {
     this.bookVotes = this.meeting.votes;
@@ -110,6 +127,8 @@ export class MeetingResultsComponent implements OnChanges {
       (number | [number, number] | null)[]
     >[] = [];
 
+    const innerLabels: _DeepPartialArray<string> = [];
+
     const seriesColors = this.getSeriesColors(labels.length);
 
     for (let lblIndex = 0; lblIndex < labels.length; lblIndex++) {
@@ -117,12 +136,17 @@ export class MeetingResultsComponent implements OnChanges {
       const voteCounter = bookVoteMap.get(label)!;
 
       for (let rank = 1; rank <= labels.length; rank++) {
-        const count = voteCounter[rank] ?? 0;
+        let count = voteCounter[rank] ?? 0;
+        innerLabels.push(`Rank ${rank}`);
 
         voteCounter.points =
           voteCounter.points + count * (labels.length - rank);
 
         const dataset = datasets.find(d => d.label === `Rank ${rank}`);
+
+        if (count === 0) {
+          count = 0.05;
+        }
 
         if (dataset) {
           dataset.data.push(count);
@@ -131,6 +155,9 @@ export class MeetingResultsComponent implements OnChanges {
             data: [count],
             label: `Rank ${rank}`,
             backgroundColor: seriesColors[rank - 1],
+            yAxisID: 'yAxis1',
+            barPercentage: 1.0,
+            categoryPercentage: 1.0,
           });
         }
       }
@@ -144,6 +171,9 @@ export class MeetingResultsComponent implements OnChanges {
       return `${lbl} (${voteCounter.points} points)`;
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (this.votesChartOptions!.scales!['y']! as any).labels = innerLabels;
+
     return {
       labels,
       datasets,
@@ -155,7 +185,7 @@ export class MeetingResultsComponent implements OnChanges {
     const datasets: ChartDataset<
       'bar',
       (number | [number, number] | null)[]
-    >[] = [{ data: [] }];
+    >[] = [{ data: [], backgroundColor: '#bf00b3' }];
 
     this.lastBookRatings.forEach(r => {
       const ratingCount = ratingMap.get(r);
@@ -230,7 +260,7 @@ export class MeetingResultsComponent implements OnChanges {
 
     for (let i = 0; i < dataCount; i++) {
       const startColor: number[] = [0, 128, 0]; // Dark green
-      const endColor: number[] = [144, 238, 144]; // Light green
+      const endColor: number[] = [128, 0, 0]; // Dark Yellow
       const factor: number = i / (dataCount - 1);
       seriesColors.push(
         rgb2hex(interpolateColor(startColor, endColor, factor))

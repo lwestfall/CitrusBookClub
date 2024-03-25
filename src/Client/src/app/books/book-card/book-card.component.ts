@@ -1,4 +1,11 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  TemplateRef,
+} from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
@@ -9,6 +16,7 @@ import {
   deleteBook,
   deleteBookSuccess,
   recommendBookForMeeting,
+  updateBook,
 } from '../state/books.actions';
 
 @Component({
@@ -30,7 +38,8 @@ export class BookCardComponent implements OnInit, OnDestroy {
   constructor(
     private store: Store<AppState>,
     private actions$: Actions,
-    private toastService: ToastsService
+    private toastService: ToastsService,
+    private modalSvc: NgbModal
   ) {}
 
   ngOnInit(): void {
@@ -62,5 +71,23 @@ export class BookCardComponent implements OnInit, OnDestroy {
         meetingId: this.nextMeetingId,
       })
     );
+  }
+
+  showEditor(ref: TemplateRef<Element>): void {
+    this.modalSvc.open(ref).closed.subscribe(result => {
+      if (result === 'confirm') {
+        this.store.dispatch(
+          updateBook({ bookId: this.book.id!, bookDto: this.book })
+        );
+
+        this.actions$.subscribe(action => {
+          if (action.type === '[Books] Update Book Success') {
+            this.toastService.showSuccess('Book updated');
+          }
+
+          this.modalSvc.dismissAll();
+        });
+      }
+    });
   }
 }

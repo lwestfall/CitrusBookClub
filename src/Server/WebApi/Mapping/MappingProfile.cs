@@ -28,7 +28,7 @@ public class MappingProfile : Profile
 
             if (methodInfo is not null)
             {
-                methodInfo.Invoke(instance, new object[] { this });
+                methodInfo.Invoke(instance, [this]);
             }
             else
             {
@@ -40,7 +40,7 @@ public class MappingProfile : Profile
                     {
                         var interfaceMethodInfo = @interface.GetMethod(mappingMethodName, argumentTypes);
 
-                        interfaceMethodInfo?.Invoke(instance, new object[] { this });
+                        interfaceMethodInfo?.Invoke(instance, [this]);
                     }
                 }
             }

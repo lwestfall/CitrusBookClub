@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { ofType } from '@ngrx/effects';
 import { ActionsSubject, Store } from '@ngrx/store';
@@ -10,7 +10,7 @@ import {
   GoogleBooksService,
 } from '../../services/google-books.service';
 import { ToastsService } from '../../services/toasts.service';
-import { addBook, addBookSuccess } from '../state/books.actions';
+import { addBook, addBookSuccess, updateBook } from '../state/books.actions';
 import {
   selectAddFormError,
   selectAddFormPending,
@@ -22,6 +22,9 @@ import {
   styleUrls: ['./book-creator.component.css'],
 })
 export class BookCreatorComponent implements OnInit {
+  @Input() editingBook: BookDto | null = null;
+  @Output() saveSuccess = new EventEmitter<CreateBookDto>();
+
   suggestions: BookDto[] = [];
   suppressSuggestions = false;
   suggestionsCollapsed = true;
@@ -58,9 +61,14 @@ export class BookCreatorComponent implements OnInit {
     this.addPending$ = this.store.select(selectAddFormPending);
     this.addError$ = this.store.select(selectAddFormError);
 
-    actionsSubj.pipe(ofType(addBookSuccess)).subscribe(() => {
+    if (this.editingBook) {
+      this.isbnChangedByHandler = true;
+    }
+
+    actionsSubj.pipe(ofType(addBookSuccess)).subscribe(result => {
       this.clear();
       this.toastsService.showSuccess('Book Created!');
+      this.saveSuccess.emit(result.book);
     });
   }
 
@@ -103,6 +111,17 @@ export class BookCreatorComponent implements OnInit {
 
         this.fetchSuggestions();
       });
+
+    if (this.editingBook) {
+      this.bookForm.setValue({
+        title: this.editingBook.title,
+        author: this.editingBook.author,
+        description: this.editingBook.description ?? '',
+        isbn: this.editingBook.isbn ?? '',
+        pageCount: this.editingBook.pageCount ?? 0,
+        thumbnailLink: this.editingBook.thumbnailLink ?? '',
+      });
+    }
   }
 
   async searchIsbn(isbn: string | null) {
@@ -180,9 +199,18 @@ export class BookCreatorComponent implements OnInit {
   }
 
   save() {
-    this.store.dispatch(
-      addBook({ bookDto: this.bookForm.value as CreateBookDto })
-    );
+    if (this.editingBook) {
+      this.store.dispatch(
+        updateBook({
+          bookId: this.editingBook.id,
+          bookDto: this.bookForm.value as CreateBookDto,
+        })
+      );
+    } else {
+      this.store.dispatch(
+        addBook({ bookDto: this.bookForm.value as CreateBookDto })
+      );
+    }
   }
 
   fillFromSuggestion(suggestion: BookDto) {

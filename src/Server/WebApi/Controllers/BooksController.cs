@@ -81,6 +81,29 @@ public class BooksController : ApiControllerBase
         return this.CreatedAtAction(nameof(GetBook), new { id = book.Id }, this.Mapper.Map<BookDto>(book));
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult<BookDto>> UpdateBook(Guid id, [FromBody] CreateBookDto updateBookDto)
+    {
+        var email = this.GetEmail();
+
+        if (email is null)
+        {
+            return this.Unauthorized();
+        }
+
+        var book = this.CbcContext.Books.Find(id);
+
+        if (book == null)
+        {
+            return this.NotFound(id);
+        }
+
+        this.Mapper.Map(updateBookDto, book);
+
+        await this.CbcContext.SaveChangesAsync();
+        return this.Ok(this.Mapper.Map<BookDto>(book));
+    }
+
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteBook(Guid id)
     {

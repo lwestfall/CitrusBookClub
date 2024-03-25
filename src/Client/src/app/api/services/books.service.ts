@@ -33,6 +33,10 @@ import { getUsersBooks } from '../fn/books/get-users-books';
 import { GetUsersBooks$Params } from '../fn/books/get-users-books';
 import { getUsersBooks$Plain } from '../fn/books/get-users-books-plain';
 import { GetUsersBooks$Plain$Params } from '../fn/books/get-users-books-plain';
+import { updateBook } from '../fn/books/update-book';
+import { UpdateBook$Params } from '../fn/books/update-book';
+import { updateBook$Plain } from '../fn/books/update-book-plain';
+import { UpdateBook$Plain$Params } from '../fn/books/update-book-plain';
 
 @Injectable({ providedIn: 'root' })
 export class BooksService extends BaseService {
@@ -271,6 +275,53 @@ export class BooksService extends BaseService {
    */
   getBook(params: GetBook$Params, context?: HttpContext): Observable<BookDto> {
     return this.getBook$Response(params, context).pipe(
+      map((r: StrictHttpResponse<BookDto>): BookDto => r.body)
+    );
+  }
+
+  /** Path part for operation `updateBook()` */
+  static readonly UpdateBookPath = '/api/Books/{id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateBook$Plain()` instead.
+   *
+   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   */
+  updateBook$Plain$Response(params: UpdateBook$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<BookDto>> {
+    return updateBook$Plain(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateBook$Plain$Response()` instead.
+   *
+   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   */
+  updateBook$Plain(params: UpdateBook$Plain$Params, context?: HttpContext): Observable<BookDto> {
+    return this.updateBook$Plain$Response(params, context).pipe(
+      map((r: StrictHttpResponse<BookDto>): BookDto => r.body)
+    );
+  }
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateBook()` instead.
+   *
+   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   */
+  updateBook$Response(params: UpdateBook$Params, context?: HttpContext): Observable<StrictHttpResponse<BookDto>> {
+    return updateBook(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateBook$Response()` instead.
+   *
+   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   */
+  updateBook(params: UpdateBook$Params, context?: HttpContext): Observable<BookDto> {
+    return this.updateBook$Response(params, context).pipe(
       map((r: StrictHttpResponse<BookDto>): BookDto => r.body)
     );
   }
