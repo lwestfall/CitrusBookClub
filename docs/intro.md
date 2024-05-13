@@ -24,15 +24,12 @@ This application was created to help us organize and has the following features:
 This application uses the following tech stack:
 
 - **Frontend**: Angular 17, Bootstrap 5, ngRx for state management
-- **Backend**: ASP.NET 8
+- **Backend**: ASP.NET 8 w/ SignalR (websockets) for real-time messaging
 - **Database**: PostgreSQL (via EF Core)
 - **Containerization**: Docker
 - **Logging**: Serilog and Seq
 - **Hosting**: At my house!
-
-## Backend Architecture
-
-The backend is a REST API built with ASP.NET 8, with a squeeze of SignalR (websockets) for real-time communication in the voting area.
+- **CI/CD**: Github Actions (simplified)
 
 ## Planned Features
 
