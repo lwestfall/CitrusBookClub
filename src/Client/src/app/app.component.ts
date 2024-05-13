@@ -90,7 +90,7 @@ export class AppComponent {
   winter(): boolean {
     const date = new Date();
 
-    return date.getMonth() === 11 || date.getMonth() === 0;
+    return [0, 4, 11].includes(date.getMonth());
   }
 
   snowSwitchChanged() {
